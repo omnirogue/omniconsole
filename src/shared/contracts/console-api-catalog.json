@@ -1,0 +1,2106 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/actions/capabilities",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Discover signed-person advertising actions for OmniRogue or BetaCorp; the typed native client exposes only pause and resume of campaigns, ad sets and ads. Discovery grants no execution authority."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/actions/{action_id}",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Read one exact advertising proposal and its recorded receipt, fenced to its requested company, action and native object."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/actions/preview",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Preview a signed person's exact pause or resume of one advertising object. The server resolves authority and a review revision; preview does not change the provider object."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/actions/{action_id}/execute",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Execute a reviewed advertising action with its exact SHA-256 revision, stable idempotency key and explicit approval. The hub rechecks signed-person authority; acceptance is not verified completion."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/actions/{action_id}/verify",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Request provider readback for one retained advertising action without issuing another provider mutation. Preserve pending, mismatch and unknown evidence."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/collab/board/{task_id}/deps",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one task's dependency edges both ways, each with its derived state and reason; relayed under the member task check"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/collab/board/{task_id}/deps",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "add one dependency edge as the signed-in person; the relay checks both tasks, the hub refuses cycles"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/gtd/hub/api/collab/board/{task_id}/deps/{depends_on_task_id}",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "remove one dependency edge, idempotent and audited on the dependent"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/sessions/{session_id}",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Verify the signed person's exact confirmed session-task binding before and after refreshing the task brief for an ordinary controlled send. This read neither changes attachment nor grants execution authority."
+  },
+  {
+    "method": "GET",
+    "path": "/api/team/tasks/{task_id}/agent-context",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Read the signed person's existing hub-compiled task memory after an exact session attachment. Preserve task ID, revision, readiness warnings and provenance; this context grants no execution authority."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/task-continuation/capabilities",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Read whether this signed person's server currently supports task continuation. Missing, disabled or unverifiable capability never authorizes admission; the server checks again for each request."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-tasks/{task_id}/reconciliation-capabilities",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Read the signed person's exact-task admission reconciliation contract before dispatch; unavailable support cannot authorize execution."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-tasks/{task_id}/reconcile",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Reconcile the signed person's exact retained command against its canonical admission. The workflow, digest and revision must match; unresolved proof never authorizes a fresh workflow."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-tasks/{task_id}/outcome-plan",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Preview a signed person's exact staged task plan. The server derives root filing and acceptance; preview creates no execution claim."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/cancel",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Cancel a retained admitted stage under the signed person. Running work additionally requires its bound Console stop and physical terminal receipt before replacement admission."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/retry",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Queue one failed or cancelled stage of a workflow the signed person admitted for its next attempt; refused while its process is unresolved or an earlier stage is stopped."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-graphs/{graph_id}/cancel",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Cancel every unfinished stage of a workflow the signed person admitted; running fleet stages stop at their runner's next beat and finished stages stay."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-tasks/{task_id}/continue",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "The signed recipient requests one exact provider, model, effort, instruction and local work location. The server authorizes the task and admits an idempotent workflow job; existing claim and process-start gates remain required."
+  },
+  {
+    "method": "GET",
+    "path": "/api/access/mine",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "My own effective grant through the estate gateway, optionally searched by intent. Discloses one person's reach to that person only; the hub refuses a request naming anybody else."
+  },
+  {
+    "method": "GET",
+    "path": "/api/accounting",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "bank balances, bank activity and the books connection"
+  },
+  {
+    "method": "POST",
+    "path": "/api/accounting/acme/sync",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "bank balances, bank activity and the books connection"
+  },
+  {
+    "method": "GET",
+    "path": "/api/accounting/connections/quickbooks",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "the books connection state and its OAuth requirements"
+  },
+  {
+    "method": "POST",
+    "path": "/api/accounting/connections/quickbooks/check",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "re-test the books connection"
+  },
+  {
+    "method": "GET",
+    "path": "/api/accounting/connections/quickbooks/companies/{company}/accounts",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "the chart of accounts for a mapping"
+  },
+  {
+    "method": "POST",
+    "path": "/api/accounting/connections/quickbooks/companies/{company}/authorize",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": false,
+    "note": "begin the books OAuth grant"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/accounting/connections/quickbooks/companies/{company}/mapping",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "map accounts for a company"
+  },
+  {
+    "method": "POST",
+    "path": "/api/accounting/omnirogue/sync",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "bank balances, bank activity and the books connection"
+  },
+  {
+    "method": "GET",
+    "path": "/api/accounting/{company}/transactions.csv",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "the bank export, as CSV text"
+  },
+  {
+    "method": "GET",
+    "path": "/api/activity",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "recent estate activity"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/access/people",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "Every principal and their capability count, for a super admin. The hub's own access policy names its super admins and refuses a console administrator who is not one."
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/access/people/{ref}",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "One principal's effective shelf, the source of each capability, their standing overrides and the grantable catalogue. Super admins only, decided at the hub."
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/admin/access/people/{ref}",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "One standing-access change (grant, deny or remove an override) on one principal's shelf. A reason is required and recorded; the estate floor cannot be lifted by any grant."
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/access/sections",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "The derived tool sections (Advertising, Finance, Servers\u2026), their capabilities and the named shelf templates. Carries no per-person data; the hub decides who may read the policy at all."
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/admin/access/people",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "Several shelves in one all-or-nothing change: explicit rows, a template applied to named people, or one section column turned on or off. A reason is required, every row is audited as a single override would be, and dry_run writes nothing."
+  },
+  {
+    "method": "GET",
+    "path": "/api/attention",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "what needs a person, estate-wide"
+  },
+  {
+    "method": "GET",
+    "path": "/api/board",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the board, paged"
+  },
+  {
+    "method": "GET",
+    "path": "/api/board/blocker-requests",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "open blocker requests"
+  },
+  {
+    "method": "GET",
+    "path": "/api/board/task-slices",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one employee's slices of work"
+  },
+  {
+    "method": "GET",
+    "path": "/api/board/{task_id}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one board card"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/collab/board/{task_id}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one board card, patched"
+  },
+  {
+    "method": "POST",
+    "path": "/api/collab/board/{task_id}/lifecycle",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one board card, moved along the canonical lifecycle rail"
+  },
+  {
+    "method": "GET",
+    "path": "/api/compute/estate",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "compute capacity across the estate"
+  },
+  {
+    "method": "GET",
+    "path": "/api/employees",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": false,
+    "note": "the active employee list"
+  },
+  {
+    "method": "GET",
+    "path": "/api/estate/company/{id}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one company cockpit"
+  },
+  {
+    "method": "GET",
+    "path": "/api/estate/missions",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "read-only estate projections of the hub"
+  },
+  {
+    "method": "GET",
+    "path": "/api/estate/rollup",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "read-only estate projections of the hub"
+  },
+  {
+    "method": "GET",
+    "path": "/api/estate/today",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "read-only estate projections of the hub"
+  },
+  {
+    "method": "GET",
+    "path": "/api/fleet/accounts",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": false,
+    "note": "enrolled agent account roots and their quota windows"
+  },
+  {
+    "method": "GET",
+    "path": "/api/forecast",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one employee's forecast"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/activity/insights",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": false,
+    "note": "per-person activity rollup"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/classify",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "filing classification for a new card"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/cs/stats",
+    "kind": "bff-native",
+    "sensitivity": "customer",
+    "activated": false,
+    "note": "per-person customer-service duty stats"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/estate/scorecard",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "every company revenue, ad spend, API cost and P&L"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "advertising coordinator state, decisions and evidence"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "create a coordinator instance"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "advertising coordinator state, decisions and evidence"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "edit a coordinator instance"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/coordinator",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "change coordinator settings"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/coordinator/run-now",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "run the coordinator now"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/coordinator/tick",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "advance the coordinator one tick"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/decision",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "advertising coordinator state, decisions and evidence"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/enforcement",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "enforcement status for one coordinator"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/enforcement/sync",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "re-sync enforcement state"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/exact-rule/check",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "check one exact rule"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/questions",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "ask the coordinator a question"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/instances/{instance_id}/runs",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "start a coordinator run"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/questions/{question_id}/answer",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "answer a coordinator question"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/runs/{run_id}",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "one coordinator run's payload"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/runs/{run_id}/error",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "record a run error"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/adops/runs/{run_id}/payload",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "record a run payload"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/summary",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "the advertising roll-up across accounts"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/adops/webinarjam/summary",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "first-party webinar funnel counts"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/artifacts/preview/raw",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "a raw artifact preview"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "activated desktop operation"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/blockers",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one card's blockers"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/deliver",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "produced artifacts reaching a person or a card"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/deliveries/adopt-email",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": false,
+    "note": "adopt an email as a delivery"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/drive",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "the card's scoped Drive destination and folder"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/drive/intakes",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "files taken in for a card"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/drive/declare",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "idempotently declare the card's scoped Drive folder"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/drive/intakes",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "request files from a named person with persistent project-folder writer access"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/files",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "produced artifacts reaching a person or a card"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/files/download",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "the signed person reads exact task-file bytes"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/files/upload",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "produced artifacts reaching a person or a card"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/lifecycle",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one card's lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/purchase-review",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "a purchase awaiting review"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/board/{task_id}/reply-context",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": false,
+    "note": "the correspondence a reply answers"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/board/{task_id}/triage",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "triage a card"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/decisions/bulk-dismiss",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "dismiss the owner machine-generated decisions"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/decisions/{decision_id}/decide",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "answer an agent's handoff question"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/deliveries",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "deliveries of produced artifacts"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/employees",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "the employee directory"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/agents",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "estate agents"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/chats",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": false,
+    "note": "estate conversations"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/devflow",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "development flow state"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/objectives",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "estate objectives; the hub may refuse a machine principal"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/queue",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "the estate queue"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/estate/scorecard",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "the collector's money document, at the hub"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/flow/state",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the flow invariant for one subject"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/flow/work",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the flow speedometer"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/handoffs",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/archive",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "archive or restore a participant's own handoff without changing shared completion"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/bind",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/entries",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/files/return",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/files/upload",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/files/{file_id}",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "one file on a handoff thread"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/forward",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/read",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/handoffs/{thread_id}/review",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/orgchart",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "the people chart"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/orgchart/photo/{person_id}",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": false,
+    "note": "one person's photo"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/resources",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "declared estate resources"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/routing/estate",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "estate-wide routing"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/routing/tasks/{task_id}",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "routing for one card"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/sales/ads",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "per-object Meta spend, revenue and conversion counts"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/sales/ads/monitor",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "account capacity and paused winners"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/ads/monitor/review",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "record a review of a monitor candidate"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/ads/{object_id}/pause",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "pause one live ad object"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/connections/connect",
+    "kind": "hub-relay",
+    "sensitivity": "credential",
+    "activated": false,
+    "note": "begin or renew an ad-platform grant"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/connections/test",
+    "kind": "hub-relay",
+    "sensitivity": "credential",
+    "activated": false,
+    "note": "test an ad-platform connection"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/sales/daily",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "multichannel daily sales and cash"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/routine",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "pause or resume the Sales collection routine"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sales/sync",
+    "kind": "hub-relay",
+    "sensitivity": "money",
+    "activated": false,
+    "note": "ask a Sales source to refresh"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sessions/ingest",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a session declaring itself and its commitment"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sessions/{session_id}/attach",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a session declaring itself and its commitment"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/sessions/{session_id}/update",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a session declaring itself and its commitment"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/team/tasks/{task_id}/events",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one card's event timeline"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/team/tasks/{task_id}/evidence",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one card's evidence"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/team/tasks/{task_id}/evidence",
+    "kind": "hub-relay",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "add evidence to a card"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/team/tasks/{task_id}/handoffs",
+    "kind": "hub-relay",
+    "sensitivity": "customer",
+    "activated": true,
+    "note": "handoff threads addressed to a person, and their files"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/triggers/catalog",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "the vocabulary a rule may use"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/triggers/fires",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "the rule fire ledger"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/triggers/rules",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "automation rules"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/workflow-templates",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the durable workflow graph"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/workflows",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "the durable workflow list"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/workflows",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "admit a native workflow"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/workflows/{workflow_id}",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "one workflow"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/workflows/{workflow_id}/human-queue",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "what a workflow is waiting on a person for"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/jobs",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/jobs/{job_id}",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/jobs/{job_id}/events",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/playbooks",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the dispatch playbook library"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/prefs",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "this person's stored console preferences"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/gtd/prefs/{key}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "forget one stored preference"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/gtd/prefs/{key}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "store one preference value for this person"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/scorecard/attention",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "the scorecard health judgement"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-actions",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the durable workflow graph"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-graphs/admit",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the durable workflow graph"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-graphs/preview",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the durable workflow graph"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-graphs/{graph_id}",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the durable workflow graph"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/activate",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/artifact",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a claimed folder execution's retained result artifact"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/decision",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-jobs/{job_id}/events",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-jobs/{job_id}/handoff",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/progress",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/result",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-jobs/{job_id}/started",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a job, its events and its lifecycle"
+  },
+  {
+    "method": "GET",
+    "path": "/api/health",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "host health view"
+  },
+  {
+    "method": "GET",
+    "path": "/api/host",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "this host's CPU, memory, disk and uptime"
+  },
+  {
+    "method": "GET",
+    "path": "/api/machines",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the fleet's machines and whether they are online"
+  },
+  {
+    "method": "GET",
+    "path": "/api/me",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "who is signed in and their scope"
+  },
+  {
+    "method": "GET",
+    "path": "/api/org",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "companies and domains this reader may see"
+  },
+  {
+    "method": "GET",
+    "path": "/api/processes",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "processes on a host"
+  },
+  {
+    "method": "POST",
+    "path": "/api/qa/handoff",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "hand a QA item to a person"
+  },
+  {
+    "method": "GET",
+    "path": "/api/qa/policies",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "QA policies for one subject"
+  },
+  {
+    "method": "POST",
+    "path": "/api/qa/policies/{policy_id}/verdict",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "record a QA verdict"
+  },
+  {
+    "method": "GET",
+    "path": "/api/routines",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the routine registry"
+  },
+  {
+    "method": "GET",
+    "path": "/api/routines/{routine_id}",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "one routine"
+  },
+  {
+    "method": "POST",
+    "path": "/api/routines/{routine_id}/disable",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "disable a routine"
+  },
+  {
+    "method": "POST",
+    "path": "/api/routines/{routine_id}/enable",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "enable a routine"
+  },
+  {
+    "method": "GET",
+    "path": "/api/routines/{routine_id}/runs",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "one routine's run history"
+  },
+  {
+    "method": "GET",
+    "path": "/api/sessions",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "live agent sessions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/sessions/{ledger_id}",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "public canonical session detail for a principal-bound local pane's exact ledger id; confirms task context without relying on a bounded live feed"
+  },
+  {
+    "method": "POST",
+    "path": "/api/sessions/{session_id}/pause",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "pause a session"
+  },
+  {
+    "method": "POST",
+    "path": "/api/sessions/{session_id}/resume",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "resume a session"
+  },
+  {
+    "method": "POST",
+    "path": "/api/sessions/{session_id}/stop",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": false,
+    "note": "stop a session"
+  },
+  {
+    "method": "GET",
+    "path": "/api/team/employees/{employee_id}/console-prefs",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one employee's hub-side console preferences"
+  },
+  {
+    "method": "GET",
+    "path": "/api/team/reports/hubstaff",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": false,
+    "note": "the Hubstaff time report"
+  },
+  {
+    "method": "GET",
+    "path": "/api/team/reports/weekly",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": false,
+    "note": "the weekly personnel report"
+  },
+  {
+    "method": "GET",
+    "path": "/api/usage",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": false,
+    "note": "rate-limit quota windows per enrolled account root"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/board",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "the work board"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/card/{task_id}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one task read whole, and its sessions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/card/{task_id}/sessions",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "one task read whole, and its sessions"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/folders",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "companies and departments work may be filed under"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/qa",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "QA waiting on a verdict"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/qa/{policy_id}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one QA policy"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/ready",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "work ready to start"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/todo",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": false,
+    "note": "one person's todo list"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/users",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Admin-only sign-in directory; Add Next reads it while /api/work/recipients is not served, members are refused and fall back to employees."
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/recipients",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Member-readable authorized sign-in directory; older consoles fall back to active human employees on not-served responses."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-dispatch-inventory",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the signed person fleet machine, provider and model inventory"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/workflow-tasks/{task_id}/context",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the existing task filing and readiness for conversation dispatch"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-tasks/{task_id}/preview",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "preview a conversation workflow using server-derived task authority"
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/workflow-tasks/{task_id}/admit",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "admit the exact reviewed conversation workflow on the fleet"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/jobs/{job_id}/log",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "the authorized job attempt execution log"
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/jobs/{job_id}/evidence",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "a bounded page of authorized session and event evidence"
+  },
+  {
+    "method": "POST",
+    "path": "/api/agent-sessions/events",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "the desktop's own session ledger events, batched; identity is the principal"
+  },
+  {
+    "method": "GET",
+    "path": "/api/agent-sessions/now",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "live and today's sessions across the estate, public projection only"
+  },
+  {
+    "method": "GET",
+    "path": "/api/agent-sessions/by-card/{task_id}",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "every conversation attached to one task card, public projection only"
+  },
+  {
+    "method": "GET",
+    "path": "/api/agent-sessions/{ledger_id}/peers",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "who else is live on the same card or branch as one of this desktop's own rows"
+  },
+  {
+    "method": "POST",
+    "path": "/api/agent-sessions/{ledger_id}/register",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "enrich this desktop's own row: repo, branch, waiting mark"
+  },
+  {
+    "method": "POST",
+    "path": "/api/team-feed/work-posts",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "this desktop's own work sessions as omnios Work feed posts (Sal 2026-09-25); identity is the principal, secrets are scrubbed by the console before storage"
+  },
+  {
+    "method": "POST",
+    "path": "/api/session-questions/sync",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Session Questions on OmniOS (Sal 2026-10-11): this desktop's own sessions' pending AskUserQuestion cards, owned by the signed-in principal; upsert open, resolve answered or gone"
+  },
+  {
+    "method": "GET",
+    "path": "/api/session-questions/answers",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Session Questions on OmniOS (Sal 2026-10-11): this desktop's own sessions' pending AskUserQuestion cards, owned by the signed-in principal; answers the person gave on OmniOS, to type into the session"
+  },
+  {
+    "method": "POST",
+    "path": "/api/session-questions/{question_id}/ack",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Session Questions on OmniOS (Sal 2026-10-11): this desktop's own sessions' pending AskUserQuestion cards, owned by the signed-in principal; delivered only after the answer was applied in the pane"
+  },
+  {
+    "method": "POST",
+    "path": "/api/employee-transcripts",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "one agent session's gate-checked transcript, uploaded on the signed-in employee's own behalf (Sal 2026-09-13; kept 48 h, readable by Sal and Uma only)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/app-health",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "a feature name, a status and a short code from this IDE \u2014 startup, MCP wiring, transcript upload, team memory, crash"
+  },
+  {
+    "method": "GET",
+    "path": "/api/team-memory/status",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "whether Sal and Uma's instructions (everyone + mine) are loaded into my connector"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/transcripts",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": false,
+    "note": "viewer-only list of employee transcripts; the console UI owns this page"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/transcripts/{id}/content",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": false,
+    "note": "viewer-only transcript text; never read by the IDE"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/employee-memory",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": false,
+    "note": "viewer-only memory entries per employee; edited in the console UI"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/admin/employee-memory/{employee_id}",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": false,
+    "note": "viewer-only memory write; the IDE never writes memory"
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/app-health",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": false,
+    "note": "viewer-only app-health list; read in the console UI"
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/board-all",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Signed-person Work task history and session linking; task authorization remains server enforced."
+  },
+  {
+    "method": "GET",
+    "path": "/api/board/{task_id}/lifecycle",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Signed-person Work task history and session linking; task authorization remains server enforced."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/team/tasks/{task_id}/comment",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Signed-person Work task history and session linking; task authorization remains server enforced."
+  },
+  {
+    "method": "POST",
+    "path": "/api/peer/send",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Explicit signed-person Inbox message to an exact employee. The captured account fences the send; canonical recipient resolution and idempotency remain server-owned."
+  },
+  {
+    "method": "POST",
+    "path": "/api/peer/reply",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Explicit signed-person collaboration using the same peer operation as agent tools. Retained caller operation IDs recover uncertain requests; canonical project, endpoint and membership checks remain server-owned."
+  },
+  {
+    "method": "POST",
+    "path": "/api/peer/rooms/{room_id}/join",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Explicit signed-person collaboration using the same peer operation as agent tools. Retained caller operation IDs recover uncertain requests; canonical project, endpoint and membership checks remain server-owned."
+  },
+  {
+    "method": "POST",
+    "path": "/api/peer/rooms/{room_id}/messages",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Explicit signed-person collaboration using the same peer operation as agent tools. Retained caller operation IDs recover uncertain requests; canonical project, endpoint and membership checks remain server-owned."
+  },
+  {
+    "method": "GET",
+    "path": "/api/communication/config",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Read the signed connection messaging authority, legacy write fence and native room service readiness. Room traffic uses a separately consented device credential in main; this read exchanges no credentials."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/session-peers/projects",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Read the signed employee\u2019s authorized agent-message projects."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/session-peers/directory",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Read enrolled agent endpoints in an authorized project; exact session IDs remain the recipients."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/session-peers/messages",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Send a typed chat message and exact attachments to one explicitly selected agent session through the existing peer inbox."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Open, acknowledge, or complete a participant-authorized peer message and verify its private attachments through the existing inbox."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}/files",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Open, acknowledge, or complete a participant-authorized peer message and verify its private attachments through the existing inbox."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}/files/{file_id}",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Open, acknowledge, or complete a participant-authorized peer message and verify its private attachments through the existing inbox."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}/read",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Open, acknowledge, or complete a participant-authorized peer message and verify its private attachments through the existing inbox."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}/resolve",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Open, acknowledge, or complete a participant-authorized peer message and verify its private attachments through the existing inbox."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/session-peers/messages/{message_id}/archive",
+    "kind": "hub-relay",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Delete or restore only the signed participant's inbox copy, with a retained operation and an exact employee receipt."
+  },
+  {
+    "method": "GET",
+    "path": "/api/connections/browser-profiles",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "Every shared AirTop browser profile this reader may see, with its live login status and which of open/save/verify they may take. Never a credential value -- status, a live-view URL to act inside, and reasons only."
+  },
+  {
+    "method": "GET",
+    "path": "/api/connections/browser-profiles/{id}",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "One shared profile's live login state. The hub decides who may see which company-scope profile; owner-private profiles stay owner-only."
+  },
+  {
+    "method": "POST",
+    "path": "/api/connections/browser-profiles",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "Add a new shared site to the browser-login rail. Any active employee whose companies include the target company; never a password or API key."
+  },
+  {
+    "method": "POST",
+    "path": "/api/connections/browser-profiles/{id}/open",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "Open the AirTop live view to re-login a shared profile. The hub checks the actor's operate grant on this profile's connector before returning a live-view URL."
+  },
+  {
+    "method": "POST",
+    "path": "/api/connections/browser-profiles/{id}/save",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "I've logged in: save the session at the revision it was opened at. The hub refuses a stale revision rather than overwriting a session someone else re-logged."
+  },
+  {
+    "method": "POST",
+    "path": "/api/connections/browser-profiles/{id}/verify",
+    "kind": "bff-native",
+    "sensitivity": "credential",
+    "activated": true,
+    "note": "Re-check whether a shared profile's saved session is still signed in, without opening the live view."
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/browser-profiles/verify-all",
+    "kind": "bff-native",
+    "sensitivity": "admin",
+    "activated": true,
+    "note": "Run the daily verify sweep for every company browser-login profile synchronously and bounded. Managers only."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/agenda/calendar",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Read this signed person\u2019s authorized appointments, task deadlines and project deadlines in the requested date range; preserve partial-layer errors."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/agenda",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Create the appointment submitted in the calendar editor under the signed person\u2019s company and participant permissions."
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/gtd/hub/api/agenda/{entry_id}",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Save the signed person\u2019s explicit appointment edits to the canonical OmniOS agenda."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/agenda/{entry_id}/cancel",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Cancel the selected appointment when the signed person requests it."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/agenda/{entry_id}/complete",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Record the selected appointment as completed when the signed person requests it."
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/gtd/hub/api/projects/{project_id}",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Set or clear the selected project\u2019s deadline under the signed person\u2019s project permissions; no execution is started."
+  },
+  {
+    "method": "POST",
+    "path": "/api/routines/{routine_id}/share",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Add a collaborator as the signed person; the hub enforces ownership and company/department access."
+  },
+  {
+    "method": "POST",
+    "path": "/api/routines",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Local-to-team conversion: create the AI routine (the relay only accepts it disabled) in the selected company/department; the app then enables it as a separate deliberate call."
+  },
+  {
+    "method": "GET",
+    "path": "/api/work/card/{task_id}/conversation",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Read a routine run card conversation as the signed person; the BFF enforces card visibility."
+  },
+  {
+    "method": "POST",
+    "path": "/api/board/{task_id}/message",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Post steering content to the selected routine run card; the BFF and hub enforce membership and return delivery flags."
+  },
+  {
+    "method": "GET",
+    "path": "/api/jira-tasks/config",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "Signed person Jira connection readiness and allowed companies; no credential enrollment."
+  },
+  {
+    "method": "GET",
+    "path": "/api/jira-tasks/issues",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "Signed person company-bounded Jira issue search with an opaque cursor; no raw JQL."
+  },
+  {
+    "method": "GET",
+    "path": "/api/jira-tasks/issues/{issue}",
+    "kind": "bff-native",
+    "sensitivity": "public-internal",
+    "activated": true,
+    "note": "One current Jira issue through the signed person connection; used only as session context."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/routine-alerts/slack/status",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Routine Slack status through the authenticated hub delivery adapter."
+  },
+  {
+    "method": "GET",
+    "path": "/api/gtd/hub/api/routine-alerts/slack/channels",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Routine Slack channels through the authenticated hub delivery adapter."
+  },
+  {
+    "method": "POST",
+    "path": "/api/gtd/hub/api/routine-alerts/slack/send",
+    "kind": "hub-relay",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Routine Slack send through the authenticated hub delivery adapter."
+  },
+  {
+    "method": "GET",
+    "path": "/api/waits/people",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Roster people a conversation may wait on, with which channels (Slack, email, Jira, sign-in apps) are usable for each; no raw provider ids."
+  },
+  {
+    "method": "GET",
+    "path": "/api/waits/facts",
+    "kind": "bff-native",
+    "sensitivity": "personnel",
+    "activated": true,
+    "note": "Whether a named person's reply, Jira approval or sign-in has happened since a time. Read-only; omnios reads through the estate broker as the signed-in person."
+  },
+  {
+    "method": "POST",
+    "path": "/api/waits/ask",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Post a conversation's ask to a staff member on Slack or email; idempotent on operation_id, staff only, and only when the requester's own words name that channel."
+  },
+  {
+    "method": "GET",
+    "path": "/api/customer-service/session-launches/{launch_id}",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Read an immutable issue brief only as the person who selected it; the opaque protocol link opens a native preview."
+  },
+  {
+    "method": "POST",
+    "path": "/api/customer-service/session-launches/{launch_id}/claim",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Claim one issue batch after explicit native confirmation using the enrolled desktop bearer. Durable local consumption prevents replay after an unknown launch."
+  },
+  {
+    "method": "POST",
+    "path": "/api/customer-service/session-launches/{launch_id}/receipt",
+    "kind": "bff-native",
+    "sensitivity": "execution",
+    "activated": true,
+    "note": "Record the same person's locally observed session ledger after a claimed launch; retrying a receipt never launches work."
+  }
+]

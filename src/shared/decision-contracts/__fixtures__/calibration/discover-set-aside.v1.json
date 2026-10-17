@@ -1,0 +1,316 @@
+{
+  "contract": "discover-set-aside@1",
+  "contractDigest": "fb90c840166628197f9ff51f9b7b8df72f1d68d7e3ffc6da32f6402e785a386b",
+  "golden": {
+    "set": "discover-set-aside",
+    "version": 1
+  },
+  "goldenDigest": "8b9581ddb1cb9b92452c262a3e4e3b7cc0588e4ae4e6554e88d1feb63220e615",
+  "jevModel": "jev-1.13.0",
+  "commit": "test-fixture",
+  "command": "test fixture: a fake JEV, not a real calibration run",
+  "ranAt": "2026-09-24T00:00:00.000Z",
+  "rows": [
+    {
+      "id": "B01",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B02",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B03",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B04",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B05",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B06",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B07",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B08",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B09",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B10",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B11",
+      "truth": "yes",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    },
+    {
+      "id": "B12",
+      "truth": "yes",
+      "decision": null,
+      "probability": null,
+      "unsure": false,
+      "failed": "JEV answered overloaded",
+      "tokens": null,
+      "band": "unknown",
+      "alone": false,
+      "agree": null
+    },
+    {
+      "id": "D01",
+      "truth": "no",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": false
+    },
+    {
+      "id": "D02",
+      "truth": "no",
+      "decision": "yes",
+      "probability": 1,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": false
+    },
+    {
+      "id": "D03",
+      "truth": "no",
+      "decision": "no",
+      "probability": 0.9,
+      "unsure": false,
+      "tokens": {
+        "input": 1000,
+        "output": 0
+      },
+      "band": "sure",
+      "alone": true,
+      "agree": true
+    }
+  ],
+  "summary": {
+    "n": 15,
+    "truths": {
+      "yes": 12,
+      "no": 3
+    },
+    "bands": [
+      {
+        "band": "sure",
+        "n": 14,
+        "known": 14,
+        "agree": 12,
+        "disagreeRate": 0.142857,
+        "upper": 0.399414,
+        "tokens": {
+          "input": 14000,
+          "output": 0
+        }
+      },
+      {
+        "band": "0.8-0.9",
+        "n": 0,
+        "known": 0,
+        "agree": 0,
+        "disagreeRate": null,
+        "upper": 1,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        }
+      },
+      {
+        "band": "0.65-0.8",
+        "n": 0,
+        "known": 0,
+        "agree": 0,
+        "disagreeRate": null,
+        "upper": 1,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        }
+      },
+      {
+        "band": "low",
+        "n": 0,
+        "known": 0,
+        "agree": 0,
+        "disagreeRate": null,
+        "upper": 1,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        }
+      },
+      {
+        "band": "unsure",
+        "n": 0,
+        "known": 0,
+        "agree": 0,
+        "disagreeRate": null,
+        "upper": 1,
+        "tokens": {
+          "input": 0,
+          "output": 0
+        }
+      },
+      {
+        "band": "unknown",
+        "n": 1,
+        "known": 0,
+        "agree": 0,
+        "disagreeRate": null,
+        "upper": 1,
+        "tokens": "unknown"
+      }
+    ],
+    "escalationShare": 0.066667,
+    "accuracy": 0.857143,
+    "confident": {
+      "n": 14,
+      "misses": 2,
+      "rate": 0.142857,
+      "upper": 0.399414
+    },
+    "costly": {
+      "n": 14,
+      "misses": 0,
+      "rate": 0,
+      "upper": 0.215311
+    },
+    "tokens": "unknown"
+  }
+}

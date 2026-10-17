@@ -1,0 +1,119 @@
+{
+  "set": "decide-v1",
+  "version": 1,
+  "frozenAt": "2026-09-23",
+  "status": "skeleton: reference answers and pair labels are the author's; no human panel has reviewed them yet",
+  "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+  "questions": [
+    {
+      "id": "Q01",
+      "kind": "one-answer",
+      "question": "A Postgres table has 40 million rows averaging 180 bytes. Roughly how much disk does the heap need, ignoring indexes, bloat and TOAST, if each row also carries a 24-byte tuple header and a 4-byte line pointer?",
+      "reference": "About 40M × (180 + 24 + 4) = 8.32 GB, so roughly 8.3 GB (about 7.7 GiB) before page overhead; with 8 kB pages and fill it lands near 8.5 GB.",
+      "pair": {
+        "a": "About 7.2 GB: 40 million × 180 bytes.",
+        "b": "About 8.3 GB: each row is 180 bytes of data plus a 24-byte header and a 4-byte line pointer, 208 bytes, and 40 million × 208 bytes ≈ 8.32 GB (≈7.7 GiB), a little more once page overhead is counted.",
+        "better": "b"
+      }
+    },
+    {
+      "id": "Q02",
+      "kind": "one-answer",
+      "question": "In JavaScript, what does [10, 1, 5, 100].sort() return, and why?",
+      "reference": "[1, 10, 100, 5]: without a comparator, sort converts elements to strings and orders them by UTF-16 code units, so '10' and '100' sort before '5'.",
+      "pair": {
+        "a": "[1, 10, 100, 5], because the default sort compares the elements as strings, so '100' comes before '5'. Pass (x, y) => x - y to sort numerically.",
+        "b": "[1, 5, 10, 100]; sort orders numbers ascending by default.",
+        "better": "a"
+      }
+    },
+    {
+      "id": "Q03",
+      "kind": "one-answer",
+      "question": "A service answers 99.95% of requests within its SLO. Over a 30-day month, how many minutes of complete outage would use up that whole error budget if traffic is uniform?",
+      "reference": "0.05% of 43,200 minutes = 21.6 minutes.",
+      "pair": {
+        "a": "About 21.6 minutes: a 30-day month has 43,200 minutes and 0.05% of that is 21.6.",
+        "b": "About 4.3 hours, since 0.05% downtime is roughly 4 hours a year spread over the month.",
+        "better": "a"
+      }
+    },
+    {
+      "id": "Q04",
+      "kind": "one-answer",
+      "question": "Which HTTP status should an API return when a request is well-formed but the authenticated user lacks permission for the resource, and how does it differ from 401?",
+      "reference": "403 Forbidden: the server knows who the caller is but refuses; 401 means the request lacks valid authentication (and should carry WWW-Authenticate).",
+      "pair": {
+        "a": "401 Unauthorized, since the user is not authorized for that resource.",
+        "b": "403 Forbidden. 401 is for a request without valid credentials (it asks the client to authenticate); 403 means the caller is known but not allowed. Some APIs return 404 instead to avoid revealing that the resource exists.",
+        "better": "b"
+      }
+    },
+    {
+      "id": "Q05",
+      "kind": "one-answer",
+      "question": "A job queue retries with delays of 1s, 2s, 4s … doubling and capped at 5 minutes. After the 10th failure, how long until the 11th attempt?",
+      "reference": "The 10th retry delay is 2^9 s = 512 s, capped to 300 s, so 5 minutes.",
+      "pair": {
+        "a": "512 seconds, about 8.5 minutes, since the delay doubles each time.",
+        "b": "5 minutes: the uncapped delay would be 512 s (2^9), which the cap brings down to 300 s.",
+        "better": "b"
+      }
+    },
+    {
+      "id": "Q06",
+      "kind": "judgment",
+      "question": "We are a five-person team running one Node API on Postgres. Should we add Redis for caching now, or wait?",
+      "reference": "Wait unless there is a measured hot path Postgres cannot serve: add indexes, query tuning and in-process caching first; add Redis when you need shared cache across instances, rate limits or queues, and budget for its operational cost.",
+      "pair": {
+        "a": "Yes, add Redis now; every serious API uses a cache and it will be harder later.",
+        "b": "Probably wait. Measure first: most small APIs get further with indexes, query fixes and a small in-process cache. Add Redis when you run several instances that must share a cache, need rate limiting or a queue, or a measured hot path still misses its target, and plan for another service to operate.",
+        "better": "b"
+      }
+    },
+    {
+      "id": "Q07",
+      "kind": "judgment",
+      "question": "Should a two-person startup's landing page lead with price or with the outcome the product delivers?",
+      "reference": "Lead with the outcome and the audience it is for; show price early (above the fold or one click away) when it is a selling point or the buyer is price-sensitive, and test both.",
+      "pair": {
+        "a": "Lead with the outcome for a specific audience, then make the price easy to find; if you are much cheaper than the alternative, the price can be the headline. Run both versions for a week.",
+        "b": "Lead with the outcome. Price should be hidden until the demo so it doesn't scare people off.",
+        "better": "a"
+      }
+    },
+    {
+      "id": "Q08",
+      "kind": "judgment",
+      "question": "Our monorepo CI takes 25 minutes. Is it worth a week to split the tests by affected package?",
+      "reference": "Usually yes when many PRs touch few packages: estimate saved minutes × PRs per week × people waiting, compare to a week of work and ongoing maintenance; try caching and parallel shards first if they are cheaper.",
+      "pair": {
+        "a": "Likely, but check the arithmetic: if most PRs touch one or two packages, affected-only runs could cut CI to a few minutes; at 30 PRs a week that returns the week within a month or two. Try caching and sharding first, which may get most of it for a day's work.",
+        "b": "Yes, a 25-minute CI is always too slow; split it.",
+        "better": "a"
+      }
+    },
+    {
+      "id": "Q09",
+      "kind": "judgment",
+      "question": "Should customer-support replies for refunds be fully automated with an LLM?",
+      "reference": "Not fully: automate drafting and routing, keep a human approval or strict policy rules for money-moving actions, and audit a sample; automate end to end only low-value, policy-clear cases with monitoring.",
+      "pair": {
+        "a": "Yes: LLMs are accurate enough now, and it saves the support team hours a day.",
+        "b": "Automate the drafting and triage, not the decision: refunds move money, so keep a person or a strict policy check on every one, and audit a sample. Low-value cases that the policy decides unambiguously can go end to end once the error rate is measured.",
+        "better": "b"
+      }
+    },
+    {
+      "id": "Q10",
+      "kind": "judgment",
+      "question": "Is it better to write the next feature's design doc before or after a one-day spike?",
+      "reference": "Spike first when the main risk is technical feasibility; write a short doc first when the risk is scope or alignment across people; either way keep both short.",
+      "pair": {
+        "a": "Always write the design doc first; spikes lead to throwaway code.",
+        "b": "It depends on the risk. If you do not know whether it can work, spike for a day and write the doc from what you learned; if the uncertainty is what to build or who agrees, write a one-page doc first. Keep both short.",
+        "better": "b"
+      }
+    }
+  ]
+}

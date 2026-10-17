@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "pluginKey": "stablyai.omni-navigation-shortcuts",
+      "path": "stablyai.omni-navigation-shortcuts",
+      "contentHash": "38abfc8df68152140b3d27824d23b9ba8b8287132d729bfb6875aef8916b4797"
+    }
+  ]
+}

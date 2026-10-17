@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`files a final_report only when every Done When has a receipt 1`] = `
+{
+  "note": "Ship the launch page — 2/2 done when
+✓ the plan document exists and matches work-plan-v1
+✓ you approved the plan
+Next: Ship it",
+  "note_kind": "final_report",
+  "payload": {
+    "done": [
+      "the plan document exists and matches work-plan-v1",
+      "you approved the plan",
+    ],
+    "evidence": [
+      {
+        "kind": "file",
+        "label": "the plan document exists and matches work-plan-v1",
+        "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:/workspace/launch/.omni/runs/chain-plan-report/plan-1/plan.json",
+      },
+      {
+        "kind": "text",
+        "label": "you approved the plan",
+        "ref": "review:approved:1",
+      },
+      {
+        "kind": "text",
+        "label": "verdict on plan-judge · attempt attempt-plan-judge",
+        "ref": "plan-judge:select-winner:1",
+      },
+    ],
+    "knowledge": [
+      {
+        "op": "none",
+        "reason": "This Outcome was proved by its own execution-host receipts; no estate knowledge search was part of the run.",
+      },
+    ],
+    "next_action": "Ship it",
+    "summary": "Ship the launch page: 2/2 done when",
+  },
+}
+`;

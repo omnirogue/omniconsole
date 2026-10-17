@@ -1,0 +1,88 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000
+          },
+          "endLine": {
+            "type": ["integer", "null"],
+            "minimum": 1,
+            "maximum": 10000000
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "trigger": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "scenario": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "fix": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          }
+        },
+        "required": [
+          "title",
+          "file",
+          "line",
+          "endLine",
+          "severity",
+          "trigger",
+          "scenario",
+          "evidence",
+          "fix"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 8
+    },
+    "omitted": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "filesRead": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      },
+      "minItems": 0,
+      "maxItems": 200
+    }
+  },
+  "required": ["findings", "omitted", "filesRead"]
+}

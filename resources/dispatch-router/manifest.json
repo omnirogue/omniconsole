@@ -1,0 +1,18 @@
+{
+  "version": "estate-2026-10-14-opus-astra-high-v1",
+  "sourceRevision": "928dca043c",
+  "sourceWorkingTreeDirty": true,
+  "files": {
+    "omni_route.py": "a41978eb8f5b8b63f4909efb246bb4b820f654eee03a4915751e74415090fb7b",
+    "jev_route.py": "8056eb8c5fea2147c979d13f10eca17b90f3dd9e416fa0261e53021f99c95254"
+  },
+  "sourceFiles": {
+    "omni_route.py": "f5dd3e3ed9fd4d27300e0ea5d3dbb6a274dcb66e6a56ae76778d1c9c1c35b20c",
+    "jev_route.py": "8056eb8c5fea2147c979d13f10eca17b90f3dd9e416fa0261e53021f99c95254"
+  },
+  "changes": [
+    "Remove prompt preview from decision log; preserve state hash. Classification, JEV questions/thresholds and pin safeguards unchanged.",
+    "2026-10-11: standard tier and the Claude-pinned fast tier route to claude-sonnet-5-5 at medium (Sal, OmniOS decision 264; estate commit 84f9beebd7). Frontier stays claude-opus-5-5 at high; JEV questions and thresholds unchanged.",
+    "2026-10-14: upgrade standard tier to claude-opus-5-5 at high and codex standard/frontier to gpt-6-astra at high/xhigh."
+  ]
+}

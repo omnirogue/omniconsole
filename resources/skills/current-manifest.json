@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 2,
+  "skills": [
+    {
+      "name": "computer-cleanup",
+      "sourcePath": "skills/computer-cleanup",
+      "releaseRevision": 1,
+      "packageDigest": "df7b2f4b75af032463ac95f9f8314183fb159888d48615d78662d5e45144fc1f",
+      "gitTreeSha": "d1d7578f9007a5568c1d1e7d18bfafb94bc1fa09",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 4585,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "0394319cdaddb7665a53e543124c1c141af28637db58cc5ffd1bc70e57008b08",
+          "textNormalizedSha256": "0394319cdaddb7665a53e543124c1c141af28637db58cc5ffd1bc70e57008b08",
+          "identitySha256": "0394319cdaddb7665a53e543124c1c141af28637db58cc5ffd1bc70e57008b08"
+        }
+      ]
+    },
+    {
+      "name": "computer-use",
+      "sourcePath": "skills/computer-use",
+      "releaseRevision": 9,
+      "packageDigest": "1ec3f37dca01265130543a149eea960fd25a7e704f9815e42e660228662a5753",
+      "gitTreeSha": "fe17bd37300469b973691b55b4412f9752896b8d",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3667,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "a37636f129764944787249b72bd8251dac8c4681e855d63b8e0777d5771284eb",
+          "textNormalizedSha256": "a37636f129764944787249b72bd8251dac8c4681e855d63b8e0777d5771284eb",
+          "identitySha256": "a37636f129764944787249b72bd8251dac8c4681e855d63b8e0777d5771284eb"
+        }
+      ]
+    },
+    {
+      "name": "linear-tickets",
+      "sourcePath": "skills/linear-tickets",
+      "releaseRevision": 11,
+      "packageDigest": "a04734dfa6515b98c35e88dbda848d3aca22beebfc4767866696ecbf0add34dc",
+      "gitTreeSha": "7d65fb8919929002a0eb03ae0180e76963799934",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 4148,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "80cdae58fafdb706b4ee99f17366d906a0887ced3a5035929c196bdddddfb619",
+          "textNormalizedSha256": "80cdae58fafdb706b4ee99f17366d906a0887ced3a5035929c196bdddddfb619",
+          "identitySha256": "80cdae58fafdb706b4ee99f17366d906a0887ced3a5035929c196bdddddfb619"
+        }
+      ]
+    },
+    {
+      "name": "omni-boundary-review",
+      "sourcePath": "skills/omni-boundary-review",
+      "releaseRevision": 1,
+      "packageDigest": "87fd07fe754669926276574202b1d840a8137639ede5198b12e499d21d987045",
+      "gitTreeSha": "41ceda3c6baba817268bf5ffbbf35b2a3b2405f7",
+      "files": [
+        {
+          "path": "LICENSE",
+          "size": 1071,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "textNormalizedSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "identitySha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2"
+        },
+        {
+          "path": "SKILL.md",
+          "size": 4728,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a",
+          "textNormalizedSha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a",
+          "identitySha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "size": 252,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "82ae80039f99ef081e44c0189d1e809b7f7c07e82ee29c1285747e9ffae31d69",
+          "textNormalizedSha256": "82ae80039f99ef081e44c0189d1e809b7f7c07e82ee29c1285747e9ffae31d69",
+          "identitySha256": "82ae80039f99ef081e44c0189d1e809b7f7c07e82ee29c1285747e9ffae31d69"
+        }
+      ]
+    },
+    {
+      "name": "omni-cli",
+      "sourcePath": "skills/omni-cli",
+      "releaseRevision": 1,
+      "packageDigest": "ecca04cec7400642ebd114e423f2f5aeaf323baecf5282d011d8f9ba2fdddf8a",
+      "gitTreeSha": "ade4470b502c0a7449f5031cf583276340f4af69",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 4002,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "58fe985a29857066ee9533b56d9571d6e53f3288457f2ab17a2cc2d0a346aeb2",
+          "textNormalizedSha256": "58fe985a29857066ee9533b56d9571d6e53f3288457f2ab17a2cc2d0a346aeb2",
+          "identitySha256": "58fe985a29857066ee9533b56d9571d6e53f3288457f2ab17a2cc2d0a346aeb2"
+        }
+      ]
+    },
+    {
+      "name": "omni-emulator",
+      "sourcePath": "skills/omni-emulator",
+      "releaseRevision": 1,
+      "packageDigest": "b887170f6a628e8b3acec98cbe9594a32182e8019667de8c6e8ce2a91bf3f478",
+      "gitTreeSha": "f851bd999047ac022097593ede668c3d0c1565b1",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3724,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "dd42cfa9d4501855d1079ac69e0d68b298663b662b4795cc7db423cbc2bec6de",
+          "textNormalizedSha256": "dd42cfa9d4501855d1079ac69e0d68b298663b662b4795cc7db423cbc2bec6de",
+          "identitySha256": "dd42cfa9d4501855d1079ac69e0d68b298663b662b4795cc7db423cbc2bec6de"
+        }
+      ]
+    },
+    {
+      "name": "omni-emulator-android",
+      "sourcePath": "skills/omni-emulator-android",
+      "releaseRevision": 1,
+      "packageDigest": "1cc81979b09f87f60d3fd0920ea1cf22b82127aa0a39bc8351a891672617c073",
+      "gitTreeSha": "dc7ec1fed0770c923817ac29bf4a60bf47275de6",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3529,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "ff283071c97c7cbf6ef43978644dde76ba24dc304e45ffc6eff0ea6f18317c89",
+          "textNormalizedSha256": "ff283071c97c7cbf6ef43978644dde76ba24dc304e45ffc6eff0ea6f18317c89",
+          "identitySha256": "ff283071c97c7cbf6ef43978644dde76ba24dc304e45ffc6eff0ea6f18317c89"
+        }
+      ]
+    },
+    {
+      "name": "omni-linear",
+      "sourcePath": "skills/omni-linear",
+      "releaseRevision": 1,
+      "packageDigest": "25368ddd4ac5953002c8177e354a145ecfe2a09740c2c09b0f98bb7dcb00652d",
+      "gitTreeSha": "39ff0aec1526d0d56b01e108c4e3e8f7a23b58a2",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3902,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "a6420e245ec80f34c746701aad18f23852a39c19f9423c4d51837fb351ad1713",
+          "textNormalizedSha256": "a6420e245ec80f34c746701aad18f23852a39c19f9423c4d51837fb351ad1713",
+          "identitySha256": "a6420e245ec80f34c746701aad18f23852a39c19f9423c4d51837fb351ad1713"
+        }
+      ]
+    },
+    {
+      "name": "omni-per-workspace-env",
+      "sourcePath": "skills/omni-per-workspace-env",
+      "releaseRevision": 1,
+      "packageDigest": "59f01c8882d2b0928b002fed2d09dd71e0f9e97ff09fc854c64a5f677bbe4752",
+      "gitTreeSha": "526939a13d7cb08215db50526ed970b4b9b6eb03",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 4222,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "2434f47e67b59137f791b4f4b830df02d925c7a3fce2b1424eb69cbad4feebfc",
+          "textNormalizedSha256": "2434f47e67b59137f791b4f4b830df02d925c7a3fce2b1424eb69cbad4feebfc",
+          "identitySha256": "2434f47e67b59137f791b4f4b830df02d925c7a3fce2b1424eb69cbad4feebfc"
+        }
+      ]
+    },
+    {
+      "name": "omni-reuse-research",
+      "sourcePath": "skills/omni-reuse-research",
+      "releaseRevision": 1,
+      "packageDigest": "f1606c90df4b92e9b19f3538afeefefa286ade3d911b652bb418d64c7cfff18c",
+      "gitTreeSha": "5907b104988befd0888689a13786fe16bcecf354",
+      "files": [
+        {
+          "path": "LICENSE",
+          "size": 1071,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "textNormalizedSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "identitySha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2"
+        },
+        {
+          "path": "SKILL.md",
+          "size": 4526,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78",
+          "textNormalizedSha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78",
+          "identitySha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "size": 223,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "e51b4d607fc5e12144943c5243f22f39ce093fb2c8e792f8014a908a419affec",
+          "textNormalizedSha256": "e51b4d607fc5e12144943c5243f22f39ce093fb2c8e792f8014a908a419affec",
+          "identitySha256": "e51b4d607fc5e12144943c5243f22f39ce093fb2c8e792f8014a908a419affec"
+        }
+      ]
+    },
+    {
+      "name": "omni-sessions",
+      "sourcePath": "skills/omni-sessions",
+      "releaseRevision": 1,
+      "packageDigest": "296a51089706ffc83bcac7f2da76e6c3bb439b99232a320248385f554ed8828f",
+      "gitTreeSha": "70e2dd7e9edf2ed84215db6f9c1a234298112b94",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3266,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "3b971230dc1f687fdf8e0f07492ae186c67e7dca9921a17336f823c7975a4655",
+          "textNormalizedSha256": "3b971230dc1f687fdf8e0f07492ae186c67e7dca9921a17336f823c7975a4655",
+          "identitySha256": "3b971230dc1f687fdf8e0f07492ae186c67e7dca9921a17336f823c7975a4655"
+        }
+      ]
+    },
+    {
+      "name": "omni-typescript-review",
+      "sourcePath": "skills/omni-typescript-review",
+      "releaseRevision": 1,
+      "packageDigest": "a35cbfb619a32647fbee2c2d775a0f24378f39c509d9f8d5c8ec2fa8bad499f1",
+      "gitTreeSha": "7de18a81b0fd8db1a437a41c222c390c307059e6",
+      "files": [
+        {
+          "path": "LICENSE",
+          "size": 1071,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "textNormalizedSha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+          "identitySha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2"
+        },
+        {
+          "path": "SKILL.md",
+          "size": 4611,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25",
+          "textNormalizedSha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25",
+          "identitySha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25"
+        },
+        {
+          "path": "agents/openai.yaml",
+          "size": 231,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "47a2267864cc00cb5948474ccf9f20cff03351b00232946de5f047fd0aa00ef6",
+          "textNormalizedSha256": "47a2267864cc00cb5948474ccf9f20cff03351b00232946de5f047fd0aa00ef6",
+          "identitySha256": "47a2267864cc00cb5948474ccf9f20cff03351b00232946de5f047fd0aa00ef6"
+        }
+      ]
+    },
+    {
+      "name": "omni-workspace-create",
+      "sourcePath": "skills/omni-workspace-create",
+      "releaseRevision": 1,
+      "packageDigest": "baf5cb3c59b6fc38b36bc92c72d2beff23db5b16029aedcd21dbc988bec0cc74",
+      "gitTreeSha": "0d5d746c214279f1785b59d29dfa1d9064e59b0a",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 3619,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "5551ad594617af474d0d85f9c7296ffe7708c495b4d7d0898d4be0fdf4c3fc64",
+          "textNormalizedSha256": "5551ad594617af474d0d85f9c7296ffe7708c495b4d7d0898d4be0fdf4c3fc64",
+          "identitySha256": "5551ad594617af474d0d85f9c7296ffe7708c495b4d7d0898d4be0fdf4c3fc64"
+        }
+      ]
+    },
+    {
+      "name": "orchestration",
+      "sourcePath": "skills/orchestration",
+      "releaseRevision": 29,
+      "packageDigest": "37216512d4d5da76ea586066d556312af28c3348fc0cec539d48de149c4f42b4",
+      "gitTreeSha": "60e91e8b60499bb5210d6270d52f5b99d163346c",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 4220,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "f94b1e595c4473dea17e00e98bcc4985682a60e5134b3ac5c05fe66558061f41",
+          "textNormalizedSha256": "f94b1e595c4473dea17e00e98bcc4985682a60e5134b3ac5c05fe66558061f41",
+          "identitySha256": "f94b1e595c4473dea17e00e98bcc4985682a60e5134b3ac5c05fe66558061f41"
+        }
+      ]
+    }
+  ]
+}

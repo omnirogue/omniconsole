@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "summary": { "type": "string", "minLength": 1, "maxLength": 8000 },
+    "ranking": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "findingId": { "type": "string", "minLength": 1, "maxLength": 240 },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "nextAction": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "finding": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string", "minLength": 1, "maxLength": 240 },
+              "location": { "type": "string", "minLength": 1, "maxLength": 1000 },
+              "trigger": { "type": "string", "minLength": 1, "maxLength": 2000 },
+              "impact": { "type": "string", "minLength": 1, "maxLength": 3000 },
+              "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 15,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "ref": { "type": "string", "minLength": 1, "maxLength": 1000 },
+                    "description": { "type": "string", "minLength": 1, "maxLength": 2000 }
+                  },
+                  "required": ["ref", "description"]
+                }
+              }
+            },
+            "required": ["title", "location", "trigger", "impact", "severity", "evidence"]
+          }
+        },
+        "required": ["findingId", "reason", "nextAction", "finding"]
+      }
+    }
+  },
+  "required": ["summary", "ranking"]
+}

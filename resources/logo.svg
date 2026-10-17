@@ -1,0 +1,17 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- OmniConsole mark: the O ring (orbit) holding the C arc (console) — an
+       aperture opening toward the work. -->
+  <defs>
+    <linearGradient id="oc-ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b9dff"/>
+      <stop offset="1" stop-color="#9cc6ff"/>
+    </linearGradient>
+  </defs>
+  <!-- O: full outer ring -->
+  <circle cx="256" cy="256" r="196" fill="none" stroke="url(#oc-ring)" stroke-width="46"/>
+  <!-- C: inner arc, opening east -->
+  <path d="M 325.6 173.3 A 108 108 0 1 0 325.6 338.7"
+        fill="none" stroke="#eef3fb" stroke-width="46" stroke-linecap="round"/>
+  <!-- cursor dot in the C's mouth: the prompt -->
+  <circle cx="364" cy="256" r="27" fill="#5b9dff"/>
+</svg>

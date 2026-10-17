@@ -1,0 +1,45 @@
+    **Colors**: Green, Blue
+
+  ◆︎ Green, Blue
+
+  > Use ask_user_question once with TWO questions: (1) single choice 'Which ocean?' options Atlantic, Pacific, Indian; (2) multi-select 'Which colors?' options
+     Red, Green, Blue. Then reply with just my answers.
+  ✓ AskUserQuestion Ask user 2 questions
+    User has provided the following answers:
+
+    **Ocean**: Atlantic
+    **Colors**: Red, Blue
+
+  ◆︎ Atlantic
+    Red, Blue
+
+  > 21 3Use ask_user_question once with TWO questions: (1) single choice 'Which ocean?' options Atlantic, Pacific, Indian; (2) multi-select 'Which colors?'
+    options Red, Green, Blue. Then reply with just my answers.
+  ✓ AskUserQuestion Ask user 2 questions
+    User has provided the following answers:
+
+    **Ocean**: Pacific
+    **Colors**: Red, Blue
+
+  ◆︎ Pacific
+    Red, Blue
+
+  > Use ask_user_question once with TWO questions: (1) single choice 'Which ocean?' options Atlantic, Pacific, Indian; (2) multi-select 'Which colors?' options
+     Red, Green, Blue. Then reply with just my answers.
+  ✓ AskUserQuestion Ask user 2 questions
+    User has provided the following answers:
+
+    **Ocean**: Indian
+    **Colors**: Green, Blue
+
+  ◆︎ Indian
+    Green, Blue
+
+  > Use ask_user_question with ONE single-choice question 'Which fruit?' options Apple, Banana, Cherry.
+  - AskUserQuestion Ask user 1 question
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+>   Type your message or @path/to/file
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ➜ qlab · git:(main) · qwen/qwen3-coder · 262.1k Context 10.7% used
+  Auto mode (shift + tab to cycle)

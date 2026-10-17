@@ -1,0 +1,250 @@
+{
+  "version": 2,
+  "frozenAt": "2026-09-21",
+  "status": "pre-registered v2; five v1 calibration cases replaced before any v2 output",
+  "scope": "Synthetic evidence packets; no repository access or external facts permitted",
+  "roster": {
+    "council": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+    "discover": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+    "baseline": "claude-sonnet-5",
+    "effort": "low for supported seats; Grok native default",
+    "comparison": "One low-effort and one high-effort Claude baseline per case with identical frozen task and evidence; high effort is an effort comparator, not compute matched; blind outputs before independent human scoring"
+  },
+  "rubric": {
+    "council": [
+      "Correct factual claims and arithmetic from cited packet references",
+      "Coverage of decisive evidence and material disagreement",
+      "Uncertainty stated when evidence is insufficient",
+      "Actionable, proportionate recommendation without unsupported high-impact claims",
+      "Concise response without needless repetition"
+    ],
+    "discover": [
+      "Every reported finding has a concrete trigger, location and packet reference",
+      "True seeded defects survive two independent skeptical checks",
+      "Decoys and clean controls yield no false survivor",
+      "Unknown caller context is labeled insufficient evidence, not a proved defect",
+      "Ranking contains only survivors and prioritizes actionable impact"
+    ],
+    "scale": "Human scores each axis 0 (miss/harm), 1 (partial), 2 (sound); preserve all failed/empty runs and latency/usage",
+    "mustPass": [
+      "No unsupported high-impact factual claim",
+      "No invented survivor ID",
+      "No high-severity seeded defect lost without a visible disposition",
+      "No clean-control false survivor"
+    ]
+  },
+  "cases": [
+    {
+      "id": "council-01",
+      "kind": "stratified-rollout-decision",
+      "prompt": "Should we make the new incident triage rule the default next week? Calculate what the packet supports, identify the comparison trap, and give a decision with a measurable next step.",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "In the voluntary pilot, the new rule routed 50 critical incidents, of which 45 met the 10-minute target; it routed 100 routine incidents, of which 40 met their target."
+        },
+        {
+          "ref": "p2",
+          "text": "The old rule routed 10 critical incidents, of which 9 met the 10-minute target; it routed 400 routine incidents, of which 288 met their target. Incident severity and participation were not randomized."
+        },
+        {
+          "ref": "p3",
+          "text": "The team can run a one-week shadow route with matched severity strata and no live page changes. A live default would page 60 additional people per day; no interruption or downstream resolution measure was collected."
+        }
+      ],
+      "adjudication": "Do not recommend default rollout from aggregate rates: new 85/150=56.7%, old 297/410=72.4%; critical success is 90% in both, while routine is 40% versus 72%. The severity mix and voluntary participation confound the comparison. Recommend matched shadow test and interruption/resolution measures before live default."
+    },
+    {
+      "id": "council-02",
+      "kind": "source-conflict-and-scope",
+      "prompt": "Can the status page say that all customer exports were blocked during yesterday's incident? Resolve conflicting records and write the exact safe claim.",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "The incident commander wrote at 12:10 that exports were blocked for all tenants from 11:40 to 12:05. This was based on an intended feature flag rollout."
+        },
+        {
+          "ref": "p2",
+          "text": "The flag audit shows the block reached 94 of 100 tenants at 11:48 and all 100 at 12:03. The six late tenants retained exports between those times."
+        },
+        {
+          "ref": "p3",
+          "text": "Two successful export requests from one late tenant were logged at 11:51 and 11:57. The packet has no records for the first eight minutes of the incident or a full count of exports."
+        }
+      ],
+      "adjudication": "Reject the all-customers/all-window claim. Safe wording: the block reached every tenant by 12:03; before that six tenants remained unblocked and at least two exports succeeded. Do not infer total exports or behavior before 11:48."
+    },
+    {
+      "id": "council-03",
+      "kind": "plan-file-artifact",
+      "prompt": "Draft the contents of rollout-plan.md for this data migration. The host may later offer Save result; do not claim the file has been written. Include the release gate, phases, verification, and rollback decision.",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "The accounts table has 12 million rows. The proposed one-step migration adds a non-null region column with no default; the staging test used 500 rows."
+        },
+        {
+          "ref": "p2",
+          "text": "Production requests time out if the table is locked for more than 20 seconds. The deploy window is 15 minutes. Existing account reads must keep working during the migration."
+        },
+        {
+          "ref": "p3",
+          "text": "The app can deploy a backward-compatible nullable column first, backfill in bounded batches, then switch reads after verified coverage. A rollback can revert app reads, but deleting a partly backfilled column would be destructive."
+        }
+      ],
+      "adjudication": "Produce usable markdown plan content, not a claim that rollout-plan.md already exists. Gate on representative lock/runtime rehearsal; use nullable expand, bounded backfill, verified coverage, then compatible read switch and later constraint. Rollback app reads without destructive column drop; include lock and error monitoring."
+    },
+    {
+      "id": "council-04",
+      "kind": "engineering-tradeoff",
+      "prompt": "Choose an initial retry policy for the payment webhook worker under these constraints.",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "The provider may deliver each webhook more than once. The worker currently has no idempotency key store."
+        },
+        {
+          "ref": "p2",
+          "text": "A failed handler may have charged the customer before its acknowledgement was lost."
+        },
+        {
+          "ref": "p3",
+          "text": "The team can add a durable event-ID ledger and replay queue this week; it cannot change the provider protocol."
+        }
+      ],
+      "adjudication": "Recommend durable idempotency before automatic retry; an immediate blind retry risks duplicate charge. Discuss recovery and uncertain side effects."
+    },
+    {
+      "id": "council-05",
+      "kind": "negative-blocker",
+      "prompt": "Is this release safe to ship today? Give the deciding reason and next proof.",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "A migration adds a non-null column to a 14-million-row table without a default."
+        },
+        {
+          "ref": "p2",
+          "text": "Staging used a 200-row empty-like fixture and passed. No production-sized rehearsal or rollback path exists."
+        },
+        {
+          "ref": "p3",
+          "text": "The deploy window is 20 minutes, and a lock beyond 30 seconds causes requests to time out."
+        }
+      ],
+      "adjudication": "Do not greenlight. Require a representative lock/runtime rehearsal and rollback or phased migration before shipment."
+    },
+    {
+      "id": "council-06",
+      "kind": "insufficient-evidence",
+      "prompt": "Which of option A or B reduced churn more, and by how much?",
+      "evidence": [
+        {
+          "ref": "p1",
+          "text": "Option A was shown to 300 new users; option B was shown to 280 existing users."
+        },
+        {
+          "ref": "p2",
+          "text": "No churn outcomes, observation periods, assignment method or baseline characteristics are in this packet."
+        }
+      ],
+      "adjudication": "No winner or effect size is inferable. Explain missing churn outcomes and incomparable cohorts; suggest a defensible measurement design."
+    },
+    {
+      "id": "discover-01",
+      "kind": "positive-tenant-isolation",
+      "prompt": "Inspect the supplied report endpoint for concrete cross-tenant defects. No external files exist.",
+      "evidence": [
+        {
+          "ref": "src/report.ts:1-9",
+          "text": "async function getReport(req) { const key = `report:${req.params.id}`; const hit = cache.get(key); if (hit) return hit; const report = await db.report.findFirst({where:{id:req.params.id, tenantId:req.user.tenantId}}); cache.set(key, report); return report; }"
+        },
+        {
+          "ref": "contract:report",
+          "text": "Report IDs are unique only within a tenant. The cache is shared between tenants. A returned report contains private customer data. Authentication verifies the caller's tenant, but this function is the only report authorization check."
+        }
+      ],
+      "adjudication": "The cache lookup precedes tenant filtering and uses a key without tenant ID. Tenant B requesting an ID cached from tenant A receives A's private report. A high-severity security survivor should name trigger, location and tenant-scoped cache fix."
+    },
+    {
+      "id": "discover-02",
+      "kind": "positive-concurrent-side-effect",
+      "prompt": "Inspect the supplied payment handler for a concrete duplicate-side-effect defect. No external files exist.",
+      "evidence": [
+        {
+          "ref": "src/webhook.ts:1-8",
+          "text": "async function handle(event) { if (await db.hasProcessed(event.id)) return; await payment.capture(event.chargeId); await db.markProcessed(event.id); }"
+        },
+        {
+          "ref": "contract:webhook",
+          "text": "The provider may deliver the same event concurrently to two workers. capture causes an external charge and has no provider idempotency key in this integration. hasProcessed and markProcessed are separate database operations."
+        }
+      ],
+      "adjudication": "Two workers can both observe unprocessed then both capture before either marks the event. A high-severity correctness finding should survive. Explain that merely moving markProcessed before capture risks lost charges after a crash; require an atomic reservation/outbox plus provider idempotency or reconciliation strategy."
+    },
+    {
+      "id": "discover-03",
+      "kind": "positive-usability",
+      "prompt": "Inspect the supplied dialog for a concrete keyboard-access issue. No external files exist.",
+      "evidence": [
+        {
+          "ref": "src/Dialog.tsx:1-8",
+          "text": "<div role='dialog' aria-modal='true'><button onClick={close}>Close</button><button onClick={save}>Save</button></div>"
+        },
+        {
+          "ref": "contract:dialog",
+          "text": "On open, focus remains on a background text field. The background stays keyboard-focusable and there is no focus trap or focus-return behavior."
+        }
+      ],
+      "adjudication": "Report keyboard focus escaping the modal and missing initial/final focus behavior, grounded in contract. A severity below threshold must still have a visible disposition."
+    },
+    {
+      "id": "discover-04",
+      "kind": "guarded-decoy",
+      "prompt": "Inspect this file download path; report only exploitable defects with the supplied guards.",
+      "evidence": [
+        {
+          "ref": "src/download.ts:1-9",
+          "text": "const requested = resolve(DATA_DIR, req.query.name); const real = await realpath(requested); if (!real.startsWith(DATA_DIR + sep)) return res.sendStatus(403); return res.sendFile(real);"
+        },
+        {
+          "ref": "contract:download",
+          "text": "DATA_DIR is a canonical absolute directory without trailing separator; the only files inside it are authorized for every signed-in caller; req.query.name is a string."
+        }
+      ],
+      "adjudication": "Traversal and symlink escape are blocked by canonical path and separator boundary. Do not emit a high-severity traversal survivor; absence of an exact-root file is not a security defect in this contract."
+    },
+    {
+      "id": "discover-05",
+      "kind": "insufficient-evidence",
+      "prompt": "Inspect this helper for a concrete customer-visible defect, using only the supplied packet.",
+      "evidence": [
+        {
+          "ref": "src/parse.ts:1-3",
+          "text": "export function parseLimit(value) { return Number(value) || 10; }"
+        },
+        {
+          "ref": "contract:parse",
+          "text": "The caller's accepted input range, meaning of zero, and validation are not supplied."
+        }
+      ],
+      "adjudication": "Zero becomes 10, but customer impact cannot be established without caller contract. Any tentative issue should be rejected or explicitly labeled insufficient evidence, not a confirmed defect."
+    },
+    {
+      "id": "discover-06",
+      "kind": "clean-control",
+      "prompt": "Inspect this bounded lookup for concrete defects, using only the supplied packet.",
+      "evidence": [
+        {
+          "ref": "src/lookup.ts:1-8",
+          "text": "function lookup(items, index) { if (!Number.isInteger(index) || index < 0 || index >= items.length) return null; return items[index]; }"
+        },
+        {
+          "ref": "contract:lookup",
+          "text": "items is an immutable dense array. Null denotes missing. Every element is non-null and safe to return to this caller."
+        }
+      ],
+      "adjudication": "No supported correctness/security/usability defect. Zero false survivors required; an empty valid result is acceptable."
+    }
+  ]
+}

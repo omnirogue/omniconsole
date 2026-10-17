@@ -1,0 +1,36 @@
+{
+  "name": "OmniConsole Official Plugins",
+  "owner": "stablyai",
+  "plugins": [
+    {
+      "id": "stablyai.omni-portuguese",
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/stablyai/omni-portuguese.git",
+        "ref": "v1.0.0"
+      },
+      "description": "Brazilian Portuguese translations for common OmniConsole navigation.",
+      "categories": ["languages", "official"]
+    },
+    {
+      "id": "stablyai.omni-multipass-recipes",
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/stablyai/omni-multipass-recipes.git",
+        "ref": "v1.0.0"
+      },
+      "description": "A reviewed starter lifecycle for disposable Multipass workspaces.",
+      "categories": ["vm-recipes", "official"]
+    },
+    {
+      "id": "stablyai.omni-navigation-shortcuts",
+      "source": {
+        "kind": "git",
+        "url": "https://github.com/stablyai/omni-navigation-shortcuts.git",
+        "ref": "v1.0.0"
+      },
+      "description": "Command aliases and optional shortcuts for frequent Orca views.",
+      "categories": ["keybindings", "official"]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+[
+  { "name": "council-default", "template": "council" },
+  { "name": "decide-default", "template": "decide" }
+]

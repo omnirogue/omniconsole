@@ -1,0 +1,45 @@
+ ·  ask (1 questions)                                                                                                                                          │
+      · Which fruit? (no answer)                                                                                                                               │
+      (cancelled)                                                                                                                                              │
+                                                                                                                                                               │
+ └─ ▾ Tool calls (1)  ~2 tokens                                                                                                                                │
+   └─ ● Clarify (2.2s)                                                                                                                                         │
+                                                                                                                                                               │
+ ┊  No fruit selected.                                                                                                                                         │
+                                                                                                                                                               │
+ ───                                                                                                                                                           │
+                                                                                                                                                               │
+ ❯ Call clarify ONCE using its questions array with two items: {question:'Which fruit?', choices:[Apple,Banana,Cherry]} and {question:'Which ocean?',          │
+   choices:[Atlantic,Pacific,Indian]}.                                                                                                                         │
+                                                                                                                                                               │
+ ·  ask (2 questions)                                                                                                                                          │
+      · Which fruit? (no answer)                                                                                                                               │
+      · Which ocean? (no answer)                                                                                                                               │
+      (cancelled)                                                                                                                                              │
+                                                                                                                                                               │
+ └─ ▾ Tool calls (1)  ~2 tokens                                                                                                                                │
+   └─ ● Clarify (2.4s)                                                                                                                                         │
+                                                                                                                                                               │
+ ┊  No selections made for fruit or ocean.                                                                                                                     ┃
+                                                                                                                                                               ┃
+ ───                                                                                                                                                           ┃
+                                                                                                                                                               ┃
+ ❯ Call clarify ONCE using its questions array with two items: {question:'Which fruit?', choices:[Apple,Banana,Cherry]} and {question:'Which ocean?',          ┃
+   choices:[Atlantic,Pacific,Indian]}.                                                                                                                         ┃
+                                                                                                                                                               ┃
+ └─ ▾ Tool calls (1)                                                                                                                                           ┃
+   └─ ● ⣿ Clarify (4.5s)                                                                                                                                       ┃
+
+ ask 2 questions
+ ✓ Which fruit?
+   Banana
+ ▸ Which ocean?
+   ▸ 1. Atlantic (Recommended)
+     2. Pacific
+     3. Indian
+     4. Other (type your answer)
+ 1/2 answered · ↑/↓ select · Enter confirm and continue · Tab/Shift+Tab switch question · Esc/Ctrl+C cancel
+
+
+
+ ─ ヽ(>∀<☆)☆ cogitating…    · 5s │ qwen3 coder │ 15.6k/262.1k │ [█░░░░░░░░░] 6% │ 1h 16m │ ◎ 48% │ ◷ 3.0s │ ↑ 11 t/s │ voice off       ─  Clarify fruit choice

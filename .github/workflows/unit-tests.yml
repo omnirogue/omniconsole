@@ -1,0 +1,113 @@
+name: Unit tests
+
+on:
+  workflow_call:
+    inputs:
+      node_versions:
+        description: JSON array of Node.js major versions to test.
+        required: true
+        type: string
+      fail_fast:
+        description: Cancel the remaining shards once one fails. PRs set this; scheduled runs do not.
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests node ${{ matrix.node }} ${{ matrix.shard }}/${{ matrix.shard_total }}
+    runs-on: ${{ (vars.OMNI_CI_GITHUB_HOSTED == 'true' || contains(github.event.pull_request.labels.*.name, 'ci-github-hosted')) && 'ubuntu-24.04' || fromJSON('["self-hosted","Linux","omni-ci"]') }}
+    # Why: a wedged shard otherwise holds a self-hosted runner for the 6h default,
+    # which starves every other PR on the pool. A healthy shard is far under 30m.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: ${{ inputs.fail_fast }}
+      matrix:
+        node: ${{ fromJSON(inputs.node_versions) }}
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard_total: [8]
+
+    steps:
+      # This runner reuses its workspace between jobs, so a stale clone filter or a
+      # damaged object store from the previous job fails checkout before any of this
+      # repo's code runs — a red that belongs to the machine, not the pull request. fsck
+      # cannot see objects a promisor pack promised, so a blob:none store passes it — the
+      # partial-clone markers themselves are the signal.
+      - name: Repair a reused runner workspace
+        run: |
+          git config --unset-all remote.origin.partialclonefilter 2>/dev/null || true
+          git config --unset-all remote.origin.promisor 2>/dev/null || true
+          if [ -d .git ]; then
+            if ls .git/objects/pack/*.promisor >/dev/null 2>&1 ||
+               [ -n "$(git config --get extensions.partialclone 2>/dev/null)" ] ||
+               ! git rev-parse --verify HEAD >/dev/null 2>&1 ||
+               ! git fsck --connectivity-only --no-progress --no-dangling >/dev/null 2>&1; then
+              echo "workspace object store is partial or damaged; discarding it"
+              rm -rf .git
+            fi
+          fi
+        continue-on-error: true
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/install-node-dependencies
+        with:
+          native-runtime: node
+          node-version: ${{ matrix.node }}
+          cache-electron-package: 'true'
+
+      - name: Install Electron package binary for tests
+        run: node config/scripts/install-electron-package-binary.mjs
+
+      # Linux Electron probes also run in the Node shards. A reused runner may
+      # never have run an E2E job that installed its virtual display dependencies.
+      - name: Install virtual display for Electron probes
+        run: |
+          if ! command -v xvfb-run >/dev/null || ! command -v xauth >/dev/null; then
+            # The runner pool shares a host; serialize package installation.
+            sudo flock -w 300 /var/lock/omni-ci-xvfb.lock sh -eu -c '
+              if ! command -v xvfb-run >/dev/null || ! command -v xauth >/dev/null; then
+                apt-get update
+                apt-get -o DPkg::Lock::Timeout=300 install -y xvfb xauth
+              fi
+            '
+          fi
+
+      # Why the worker cap: vitest sizes its pool from the host's CPU count, and on the
+      # shared omni-ci runners all eight shards run at once on ONE box. Uncapped that is
+      # about 256 workers fighting over 32 cores, which showed up as 15s, 20s and 30s test
+      # timeouts landing on a different test each run.
+      #
+      # Two, not four: the omnios runners are now capped at two CPUs each, so four workers
+      # per shard oversubscribes every one of them 2:1 — and the symptom of that is exactly
+      # the class of red we are chasing, a process-tree or timeout race landing on a
+      # different test each run. A worker cap above the CPU cap buys no parallelism, it
+      # only adds context switching to tests that are already timing-sensitive.
+      - name: Test shard
+        run: |
+          pnpm exec vitest run --config config/vitest.config.ts \
+            --exclude=src/main/daemon/repro-13767-shell-ready-marker-lost-to-exec.test.ts \
+            --exclude=src/main/daemon/shell-ready.test.ts \
+            --exclude=src/main/daemon/node-pty-fd-leak.test.ts \
+            --exclude=src/main/providers/local-pty-shell-ready-zsh-launch-environment.test.ts \
+            --exclude=src/main/providers/__tests__/shell-ready-framework-example.test.ts \
+            --exclude=src/main/pty/omp-shell-wrapper.node-pty.test.ts \
+            --exclude=src/main/shell-startup-feature-channel.test.ts \
+            --exclude=src/main/terminal-history-fish-session.node-pty.test.ts \
+            --exclude=src/main/zsh-scoped-histfile.live-shell.test.ts \
+            --exclude=src/main/zsh-startup-hook-user-config-equivalence.live-shell.test.ts \
+            --exclude=src/main/zsh-wrapper-version-mismatch.live-shell.test.ts \
+            --exclude=src/renderer/src/components/terminal-pane/fish-color-scheme-child-stdin.node-pty.test.ts \
+            --exclude=src/shared/fish-query-reply-child-stdin.node-pty.test.ts \
+            --exclude=src/shared/pty-reply-echo-shapes.node-pty.test.ts \
+            --exclude=src/shared/startup-shell-portability.live-shell.test.ts \
+            --exclude=src/shared/posix-command-path-lookup.test.ts \
+            --exclude=tests/e2e/cross-version-wire/** \
+            --shard=${{ matrix.shard }}/${{ matrix.shard_total }} \
+            --maxWorkers=2

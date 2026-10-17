@@ -1,0 +1,172 @@
+/* Fleet Office — local styles for the vendored the-delegation UI.
+ *
+ * The office was authored as a LIGHT/white panel world, and the console re-skinned
+ * it to that shell's dark palette. In this app the theme is the user's, so every
+ * rule below is scoped to `:root.dark` — dark theme gets the console's skin, light
+ * theme keeps the office's own. `.dark` is toggled on <html>, so this follows the
+ * app with no JavaScript and no second source of truth.
+ *
+ * Rather than rewrite the Tailwind classes in every panel, the light utilities the
+ * vendored components use (bg-white, text-zinc-*, border-zinc-*, the semantic
+ * 50-tints) are remapped to dark equivalents, scoped under `.office-root`. These
+ * rules are PLAIN (unlayered) CSS, so they beat Tailwind v4's layered `@utility`
+ * output regardless of class order — a single, reviewable place for the whole
+ * dark conversion.
+ *
+ * Palette (the console's, matching its design tokens):
+ *   ground #0b0e14 · surface #131a29 · surface-2 #0f1522 · hover #1a2233
+ *   border #212c40 / #2b3a55 · text #e7edf5 / #8b97ad / #5f6d84
+ *   accent #4c8dff · green #2fd27a · red #ff5a72 · amber #ffb020
+ */
+
+/* ── Chrome tokens ─────────────────────────────────────────────────────────
+ * The office's own frame (ground, resize grip, panel divider) is written with
+ * arbitrary colour classes rather than Tailwind's palette, so the utility remap
+ * below cannot reach it. These few are read from variables instead, which is the
+ * one place the frame's two themes are defined.
+ */
+.office-root {
+  --office-ground: #ffffff;
+  --office-hover: #f4f4f5;
+  --office-border: #e4e4e7;
+  --office-grip: #d4d4d8;
+  --office-grip-hover: #a1a1aa;
+}
+
+:root.dark .office-root {
+  --office-ground: #0b0e14;
+  --office-hover: #1a2233;
+  --office-border: #212c40;
+  --office-grip: #2b3a55;
+  --office-grip-hover: #3a4d70;
+}
+
+:root.dark .office-root {
+  color-scheme: dark;
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────────── */
+:root.dark .office-root .bg-white { background-color: #131a29 !important; }
+:root.dark .office-root .bg-white\/90 { background-color: rgba(19, 26, 41, 0.9) !important; }
+:root.dark .office-root .bg-white\/60 { background-color: rgba(19, 26, 41, 0.6) !important; }
+:root.dark .office-root .bg-white\/50 { background-color: rgba(19, 26, 41, 0.5) !important; }
+:root.dark .office-root .bg-white\/40 { background-color: rgba(19, 26, 41, 0.4) !important; }
+
+:root.dark .office-root .bg-zinc-50 { background-color: #0f1522 !important; }
+:root.dark .office-root .bg-zinc-50\/50 { background-color: rgba(15, 21, 34, 0.5) !important; }
+:root.dark .office-root .bg-zinc-50\/30 { background-color: rgba(15, 21, 34, 0.3) !important; }
+:root.dark .office-root .bg-zinc-50\/20 { background-color: rgba(15, 21, 34, 0.2) !important; }
+:root.dark .office-root .bg-zinc-100 { background-color: #1a2233 !important; }
+:root.dark .office-root .bg-zinc-100\/50 { background-color: rgba(26, 34, 51, 0.5) !important; }
+:root.dark .office-root .bg-zinc-200 { background-color: #212c40 !important; }
+:root.dark .office-root .bg-zinc-300 { background-color: #2b3a55 !important; }
+:root.dark .office-root .bg-black\/5 { background-color: #0b0e14 !important; }
+
+/* Hover states used across rows/buttons. */
+:root.dark .office-root .hover\:bg-zinc-50:hover { background-color: #0f1522 !important; }
+:root.dark .office-root .hover\:bg-zinc-100:hover { background-color: #1a2233 !important; }
+:root.dark .office-root .hover\:bg-zinc-200:hover { background-color: #212c40 !important; }
+:root.dark .office-root .hover\:bg-white:hover { background-color: #1a2233 !important; }
+
+/* ── Borders ───────────────────────────────────────────────────────────── */
+:root.dark .office-root .border-zinc-50 { border-color: #1a2233 !important; }
+:root.dark .office-root .border-zinc-100 { border-color: #212c40 !important; }
+:root.dark .office-root .border-zinc-100\/50 { border-color: rgba(33, 44, 64, 0.5) !important; }
+:root.dark .office-root .border-zinc-100\/60 { border-color: rgba(33, 44, 64, 0.6) !important; }
+:root.dark .office-root .border-zinc-200 { border-color: #2b3a55 !important; }
+:root.dark .office-root .border-zinc-200\/50 { border-color: rgba(43, 58, 85, 0.5) !important; }
+:root.dark .office-root .border-zinc-300 { border-color: #2b3a55 !important; }
+:root.dark .office-root .border-zinc-400 { border-color: #3a4d70 !important; }
+:root.dark .office-root .border-black\/5 { border-color: #212c40 !important; }
+:root.dark .office-root .border-black\/8 { border-color: #212c40 !important; }
+:root.dark .office-root .border-black\/10 { border-color: #2b3a55 !important; }
+
+/* ── Text (prominence inverts on dark: darker light-theme greys → lighter) ─ */
+:root.dark .office-root .text-black { color: #e7edf5 !important; }
+:root.dark .office-root .text-zinc-800 { color: #e7edf5 !important; }
+:root.dark .office-root .text-zinc-700 { color: #dbe3ee !important; }
+:root.dark .office-root .text-zinc-600 { color: #c3cddd !important; }
+:root.dark .office-root .text-zinc-500 { color: #8b97ad !important; }
+:root.dark .office-root .text-zinc-400 { color: #8b97ad !important; }
+:root.dark .office-root .text-zinc-400\/50 { color: rgba(139, 151, 173, 0.5) !important; }
+:root.dark .office-root .text-zinc-300 { color: #6b7890 !important; }
+:root.dark .office-root .text-zinc-200 { color: #5f6d84 !important; }
+
+/* ── Semantic: brighten for legibility on dark, keep solid dots vivid ────── */
+:root.dark .office-root .text-emerald-700,
+:root.dark .office-root .text-emerald-600,
+:root.dark .office-root .text-emerald-500 { color: #2fd27a !important; }
+:root.dark .office-root .text-emerald-400 { color: #4ade80 !important; }
+:root.dark .office-root .bg-emerald-50 { background-color: rgba(47, 210, 122, 0.14) !important; }
+:root.dark .office-root .bg-emerald-50\/20 { background-color: rgba(47, 210, 122, 0.08) !important; }
+:root.dark .office-root .border-emerald-100 { border-color: rgba(47, 210, 122, 0.3) !important; }
+:root.dark .office-root .border-emerald-200 { border-color: rgba(47, 210, 122, 0.4) !important; }
+:root.dark .office-root .border-emerald-100\/50 { border-color: rgba(47, 210, 122, 0.2) !important; }
+:root.dark .office-root .border-emerald-100\/30 { border-color: rgba(47, 210, 122, 0.15) !important; }
+:root.dark .office-root .border-emerald-100\/20 { border-color: rgba(47, 210, 122, 0.1) !important; }
+
+:root.dark .office-root .text-red-500 { color: #ff5a72 !important; }
+:root.dark .office-root .bg-red-50 { background-color: rgba(255, 90, 114, 0.14) !important; }
+:root.dark .office-root .border-red-500 { border-color: #ff5a72 !important; }
+
+:root.dark .office-root .text-yellow-700 { color: #ffb020 !important; }
+:root.dark .office-root .text-amber-500 { color: #ffb020 !important; }
+:root.dark .office-root .bg-yellow-50 { background-color: rgba(255, 176, 32, 0.14) !important; }
+:root.dark .office-root .border-yellow-200 { border-color: rgba(255, 176, 32, 0.35) !important; }
+
+/* `darkDelegation` (#313437) is the vendored accent — used both as a dark button
+ * /bubble FILL (keep dark) and as the primary heading/label TEXT (invisible on a
+ * dark panel, so relight it). Selection borders read as the console accent. */
+:root.dark .office-root .text-darkDelegation { color: #e7edf5 !important; }
+:root.dark .office-root .hover\:text-darkDelegation:hover { color: #ffffff !important; }
+:root.dark .office-root .border-darkDelegation { border-color: #4c8dff !important; }
+:root.dark .office-root .focus\:ring-darkDelegation:focus { --tw-ring-color: #4c8dff !important; }
+
+/* ── Dark scrollbars for the panels ────────────────────────────────────── */
+:root.dark .office-root ::-webkit-scrollbar { width: 10px; height: 10px; }
+:root.dark .office-root ::-webkit-scrollbar-track { background: transparent; }
+:root.dark .office-root ::-webkit-scrollbar-thumb {
+  background: #212c40;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+:root.dark .office-root ::-webkit-scrollbar-thumb:hover { background: #2b3a55; background-clip: padding-box; }
+
+/* ── Markdown content (Project-Info brief, agent notes) ─────────────────── */
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 0.75rem;
+  margin-left: 1rem;
+}
+.markdown-content ul:last-child,
+.markdown-content ol:last-child {
+  margin-bottom: 0;
+}
+.markdown-content ul {
+  list-style-type: disc;
+}
+.markdown-content ol {
+  list-style-type: decimal;
+}
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+.markdown-content strong {
+  font-weight: 700;
+}
+:root:not(.dark) .office-root .markdown-content strong {
+  color: color-mix(in srgb, var(--color-zinc-700) 90%, transparent);
+}
+:root.dark .office-root .markdown-content strong {
+  color: #dbe3ee;
+}
+.markdown-content em {
+  font-style: italic;
+}

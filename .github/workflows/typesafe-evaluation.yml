@@ -1,0 +1,129 @@
+name: Typesafe Evaluation
+
+on:
+  # Registers this optional workflow without inference, secrets, or an added merge gate.
+  pull_request:
+    paths:
+      - .github/workflows/typesafe-evaluation.yml
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Synthetic experiment (never changes production decisions)
+        required: true
+        default: core
+        type: choice
+        options: [core, advertising, advertising_pairwise, adset_profitability, decision_recipes]
+      expected_sha:
+        description: Exact reviewed main-next commit (40 lowercase hex characters)
+        required: true
+        type: string
+      split:
+        description: Predeclared corpus split (no production data)
+        required: true
+        default: development
+        type: choice
+        options: [development, holdout, all]
+      comparator:
+        description: Compare Jev with Gemini or the pinned local Laya worker
+        required: true
+        default: gemini
+        type: choice
+        options: [gemini, laya-local]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: typesafe-evaluation
+  cancel-in-progress: false
+
+jobs:
+  registration:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Register manual experiment
+        run: echo 'Live inference is manual-only on main-next; no credentials or evaluation run in PRs.'
+
+  evaluate:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main-next'
+    runs-on: ubuntu-latest
+    environment: typesafe-evaluation
+    timeout-minutes: 20
+    steps:
+      - name: Require exact commit
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          EVALUATION_SUITE: ${{ inputs.suite }}
+          EVALUATION_COMPARATOR: ${{ inputs.comparator }}
+        shell: bash
+        run: |
+          [[ "$EXPECTED_SHA" =~ ^[a-f0-9]{40}$ && "$EXPECTED_SHA" == "$GITHUB_SHA" ]] || exit 1
+          [[ "$EVALUATION_COMPARATOR" != 'laya-local' || "$EVALUATION_SUITE" == 'core' ]] || exit 1
+      - name: Checkout reviewed commit
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install frozen dependencies without lifecycle scripts
+        uses: ./.github/actions/install-node-dependencies
+        with:
+          native-runtime: none
+      - name: Package portable advisory decision CLI
+        if: inputs.suite == 'decision_recipes'
+        run: node config/scripts/build-decision-recipes.mjs
+      - name: Bounded synthetic paired evaluation
+        if: inputs.comparator != 'laya-local'
+        env:
+          TYPESAFE_EVALUATION_LIVE: '1'
+          EVALUATION_EXPECTED_SHA: ${{ inputs.expected_sha }}
+          EVALUATION_SPLIT: ${{ inputs.split }}
+          EVALUATION_SUITE: ${{ inputs.suite }}
+          TYPESAFE_EVALUATION_KEY: ${{ secrets.TYPESAFE_EVALUATION_KEY }}
+          GEMINI_EVALUATION_KEY: ${{ secrets.GEMINI_EVALUATION_KEY }}
+        run: node --experimental-transform-types --disable-warning=ExperimentalWarning config/scripts/run-typesafe-evaluation.mjs
+      - name: Set up Python for optional Laya comparison
+        if: inputs.comparator == 'laya-local'
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Provision pinned Laya outside inference
+        if: inputs.comparator == 'laya-local'
+        run: |
+          python -m pip install --no-cache-dir torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --no-cache-dir -r config/laya/requirements.txt
+          python -c 'import torch; assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None, "expected pinned CPU-only PyTorch"'
+          python config/laya/checkpoint.py download "$RUNNER_TEMP/laya-checkpoint"
+          mkdir -p typesafe-evaluation-results
+          python -m pip freeze > typesafe-evaluation-results/laya-python-packages.txt
+      - name: Preload Laya and compare identical synthetic inputs
+        if: inputs.comparator == 'laya-local'
+        env:
+          TYPESAFE_EVALUATION_LIVE: '1'
+          EVALUATION_EXPECTED_SHA: ${{ inputs.expected_sha }}
+          EVALUATION_SPLIT: ${{ inputs.split }}
+          EVALUATION_COMPARATOR: laya-local
+          EVALUATION_SUITE: ${{ inputs.suite }}
+          TYPESAFE_EVALUATION_KEY: ${{ secrets.TYPESAFE_EVALUATION_KEY }}
+        run: |
+          export LAYA_SHADOW_TOKEN="$(openssl rand -hex 32)"
+          python -c 'import json,os,pathlib; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"laya-settings.json"; p.write_text(json.dumps({"token":os.environ["LAYA_SHADOW_TOKEN"]})); p.chmod(0o600)'
+          env -u TYPESAFE_EVALUATION_KEY python -B config/laya/serve.py --checkpoint "$RUNNER_TEMP/laya-checkpoint" --settings "$RUNNER_TEMP/laya-settings.json" --device cpu > "$RUNNER_TEMP/laya-ready.json" 2> "$RUNNER_TEMP/laya-worker.log" &
+          LAYA_PID=$!
+          trap 'kill "$LAYA_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 120); do
+            if grep -q '"ready": true' "$RUNNER_TEMP/laya-ready.json"; then break; fi
+            kill -0 "$LAYA_PID" || exit 1
+            sleep 1
+          done
+          grep -q '"ready": true' "$RUNNER_TEMP/laya-ready.json"
+          cp "$RUNNER_TEMP/laya-ready.json" typesafe-evaluation-results/laya-worker-ready.json
+          node --experimental-transform-types --disable-warning=ExperimentalWarning config/scripts/run-typesafe-evaluation.mjs
+      - name: Preserve metadata-only observations, including incomplete runs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: typesafe-evaluation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: typesafe-evaluation-results/
+          if-no-files-found: warn
+          retention-days: 30

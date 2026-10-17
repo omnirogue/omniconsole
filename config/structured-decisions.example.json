@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "enabled": false,
+  "killSwitch": false,
+  "model": "jev-1.13.0",
+  "timeoutMs": 5000,
+  "capabilities": {
+    "advertising.routine": { "mode": "live" },
+    "routine.structured": { "mode": "live" },
+    "orchestration.judge": { "mode": "shadow" },
+    "orchestration.review": { "mode": "shadow" },
+    "orchestration.adversarial_review": { "mode": "shadow" },
+    "orchestration.verify": { "mode": "shadow" },
+    "orchestration.routing": { "mode": "shadow" },
+    "orchestration.handoff": { "mode": "shadow" },
+    "orchestration.done_when": { "mode": "shadow" },
+    "orchestration.tool_action": { "mode": "shadow" },
+    "orchestration.error_classification": { "mode": "shadow" }
+  },
+  "routines": {}
+}

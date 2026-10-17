@@ -1,0 +1,122 @@
+{
+  "set": "decide-compare-line",
+  "version": 1,
+  "frozenAt": "2026-09-24",
+  "status": "skeleton",
+  "reviewedBy": null,
+  "labels": "key",
+  "contract": "decide-compare-line@1",
+  "source": "decide/questions.json (decide-v1 v1): each question's (a, b) pair with its better answer. The label is overall-better on the shared rubric, not one rubric line, and is the author's, unreviewed. Too small to calibrate: measured at most.",
+  "items": [
+    {
+      "id": "Q01",
+      "source": "decide/questions.json Q01 pair",
+      "state": {
+        "task": "A Postgres table has 40 million rows averaging 180 bytes. Roughly how much disk does the heap need, ignoring indexes, bloat and TOAST, if each row also carries a 24-byte tuple header and a 4-byte line pointer?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "About 7.2 GB: 40 million × 180 bytes.",
+        "b": "About 8.3 GB: each row is 180 bytes of data plus a 24-byte header and a 4-byte line pointer, 208 bytes, and 40 million × 208 bytes ≈ 8.32 GB (≈7.7 GiB), a little more once page overhead is counted."
+      },
+      "truth": "b"
+    },
+    {
+      "id": "Q02",
+      "source": "decide/questions.json Q02 pair",
+      "state": {
+        "task": "In JavaScript, what does [10, 1, 5, 100].sort() return, and why?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "[1, 10, 100, 5], because the default sort compares the elements as strings, so '100' comes before '5'. Pass (x, y) => x - y to sort numerically.",
+        "b": "[1, 5, 10, 100]; sort orders numbers ascending by default."
+      },
+      "truth": "a"
+    },
+    {
+      "id": "Q03",
+      "source": "decide/questions.json Q03 pair",
+      "state": {
+        "task": "A service answers 99.95% of requests within its SLO. Over a 30-day month, how many minutes of complete outage would use up that whole error budget if traffic is uniform?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "About 21.6 minutes: a 30-day month has 43,200 minutes and 0.05% of that is 21.6.",
+        "b": "About 4.3 hours, since 0.05% downtime is roughly 4 hours a year spread over the month."
+      },
+      "truth": "a"
+    },
+    {
+      "id": "Q04",
+      "source": "decide/questions.json Q04 pair",
+      "state": {
+        "task": "Which HTTP status should an API return when a request is well-formed but the authenticated user lacks permission for the resource, and how does it differ from 401?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "401 Unauthorized, since the user is not authorized for that resource.",
+        "b": "403 Forbidden. 401 is for a request without valid credentials (it asks the client to authenticate); 403 means the caller is known but not allowed. Some APIs return 404 instead to avoid revealing that the resource exists."
+      },
+      "truth": "b"
+    },
+    {
+      "id": "Q05",
+      "source": "decide/questions.json Q05 pair",
+      "state": {
+        "task": "A job queue retries with delays of 1s, 2s, 4s … doubling and capped at 5 minutes. After the 10th failure, how long until the 11th attempt?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "512 seconds, about 8.5 minutes, since the delay doubles each time.",
+        "b": "5 minutes: the uncapped delay would be 512 s (2^9), which the cap brings down to 300 s."
+      },
+      "truth": "b"
+    },
+    {
+      "id": "Q06",
+      "source": "decide/questions.json Q06 pair",
+      "state": {
+        "task": "We are a five-person team running one Node API on Postgres. Should we add Redis for caching now, or wait?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "Yes, add Redis now; every serious API uses a cache and it will be harder later.",
+        "b": "Probably wait. Measure first: most small APIs get further with indexes, query fixes and a small in-process cache. Add Redis when you run several instances that must share a cache, need rate limiting or a queue, or a measured hot path still misses its target, and plan for another service to operate."
+      },
+      "truth": "b"
+    },
+    {
+      "id": "Q07",
+      "source": "decide/questions.json Q07 pair",
+      "state": {
+        "task": "Should a two-person startup's landing page lead with price or with the outcome the product delivers?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "Lead with the outcome for a specific audience, then make the price easy to find; if you are much cheaper than the alternative, the price can be the headline. Run both versions for a week.",
+        "b": "Lead with the outcome. Price should be hidden until the demo so it doesn't scare people off."
+      },
+      "truth": "a"
+    },
+    {
+      "id": "Q08",
+      "source": "decide/questions.json Q08 pair",
+      "state": {
+        "task": "Our monorepo CI takes 25 minutes. Is it worth a week to split the tests by affected package?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "Likely, but check the arithmetic: if most PRs touch one or two packages, affected-only runs could cut CI to a few minutes; at 30 PRs a week that returns the week within a month or two. Try caching and sharding first, which may get most of it for a day's work.",
+        "b": "Yes, a 25-minute CI is always too slow; split it."
+      },
+      "truth": "a"
+    },
+    {
+      "id": "Q09",
+      "source": "decide/questions.json Q09 pair",
+      "state": {
+        "task": "Should customer-support replies for refunds be fully automated with an LLM?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "Yes: LLMs are accurate enough now, and it saves the support team hours a day.",
+        "b": "Automate the drafting and triage, not the decision: refunds move money, so keep a person or a strict policy check on every one, and audit a sample. Low-value cases that the policy decides unambiguously can go end to end once the error rate is measured."
+      },
+      "truth": "b"
+    },
+    {
+      "id": "Q10",
+      "source": "decide/questions.json Q10 pair",
+      "state": {
+        "task": "Is it better to write the next feature's design doc before or after a one-day spike?",
+        "rubric": "- Correct: every claim is true and the numbers check out\n- Answers the question that was asked, with a clear recommendation or result\n- Names the assumptions and the one or two things that would change the answer\n- Concise: no padding, no hedging that hides the answer",
+        "a": "Always write the design doc first; spikes lead to throwaway code.",
+        "b": "It depends on the risk. If you do not know whether it can work, spike for a day and write the doc from what you learned; if the uncertainty is what to build or who agrees, write a one-page doc first. Keep both short."
+      },
+      "truth": "b"
+    }
+  ]
+}

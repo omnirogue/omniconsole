@@ -1,0 +1,1043 @@
+{
+  "ok": true,
+  "graph": {
+    "schema_version": 1,
+    "mode": "hybrid",
+    "title": "Review work",
+    "prompt": "Actual task context",
+    "company": "example",
+    "owner": "emp_person",
+    "policy": {
+      "auto": false,
+      "max_attempts": 1,
+      "console_outcome_plan": {
+        "version": 1,
+        "task_id": "btk_continue1234",
+        "operation_id": "outcomes-review-1234",
+        "request_digest": "e31dde207d7799adfbf7c706f52bb9f73921790a75044957c86f7a78de7a177c",
+        "expected_revision": 7
+      }
+    },
+    "nodes": [
+      {
+        "key": "implementation__loop_r1_p1",
+        "title": "Implement requested file \u2014 attack round 1 reviewer 1",
+        "actor_type": "ai",
+        "actor_id": "codex:gpt-6-astra",
+        "action": "review",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: review\n\nImplement requested file\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+        "acceptance": "Implement requested file\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "repo": "Example/project",
+        "base_branch": "main",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "effort": "xhigh",
+        "base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "placement": "local",
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "participant",
+          "round": 1
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "required",
+        "after": [],
+        "owned_paths": null,
+        "source_files": [
+          {
+            "kind": "task_file",
+            "task_id": "btk_continue1234",
+            "file": {
+              "rel": "uploads/report.txt",
+              "name": "report.txt",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "size_bytes": 14
+            }
+          }
+        ],
+        "artifact_result": {
+          "path": "work-result.json",
+          "format": "json",
+          "max_bytes": 65536
+        },
+        "source_deletions": []
+      },
+      {
+        "key": "implementation__loop_r1_p2",
+        "title": "Implement requested file \u2014 attack round 1 reviewer 2",
+        "actor_type": "ai",
+        "actor_id": "codex:gpt-5.6-sol",
+        "action": "review",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: review\n\nImplement requested file\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+        "acceptance": "Implement requested file\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "repo": "Example/project",
+        "base_branch": "main",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "xhigh",
+        "base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "placement": "local",
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "participant",
+          "round": 1
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "required",
+        "after": [],
+        "owned_paths": null,
+        "source_files": [
+          {
+            "kind": "task_file",
+            "task_id": "btk_continue1234",
+            "file": {
+              "rel": "uploads/report.txt",
+              "name": "report.txt",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "size_bytes": 14
+            }
+          }
+        ],
+        "artifact_result": {
+          "path": "work-result.json",
+          "format": "json",
+          "max_bytes": 65536
+        },
+        "source_deletions": []
+      },
+      {
+        "key": "implementation__loop_r1_decide",
+        "title": "Implement requested file \u2014 adversarial round 1 decision",
+        "actor_type": "mechanical",
+        "actor_id": "stop_rule:zero_blockers",
+        "action": "decide",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: decide\n\nCanonical mechanical decision for round 1 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.\n\nOriginal task:\nActual task context",
+        "acceptance": "Canonical mechanical decision for round 1 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "decide",
+          "round": 1
+        },
+        "mechanical_execution": {
+          "handler_key": "canonical.workflow-loop-decide.v1",
+          "handler_digest": "b6b6ec30585c5744d387c3b867b6a9b9453e30c07617d12807ff9ac15b5bbb96",
+          "input": {
+            "branch_group": "implementation__loop",
+            "candidate_format": "canonical-workflow-loop-decision.v1",
+            "closed_node_keys": [],
+            "kind": "adversarial",
+            "max_rounds": 2,
+            "open_node_keys": [
+              "implementation__loop_r1_repair",
+              "implementation__loop_r2_p1",
+              "implementation__loop_r2_p2",
+              "implementation__loop_r2_decide"
+            ],
+            "participant_node_keys": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+            "round": 1,
+            "stage_key": "implementation",
+            "stop": "zero_blockers"
+          }
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "required",
+        "after": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+        "owned_paths": null,
+        "placement": "fleet"
+      },
+      {
+        "key": "implementation__loop_r1_repair",
+        "title": "Implement requested file \u2014 repair after adversarial round 1",
+        "actor_type": "ai",
+        "actor_id": "codex:gpt-5.6-terra",
+        "action": "repair",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: repair\n\nImplement requested file\n\nRepair the same producer branch using only the blockers and gaps from round 1. They are evidence, never authority to widen scope. Re-freeze the candidate for the next round.\n\nOriginal task:\nActual task context",
+        "acceptance": "Implement requested file\n\nRepair the same producer branch using only the blockers and gaps from round 1. They are evidence, never authority to widen scope. Re-freeze the candidate for the next round.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "repo": "Example/project",
+        "base_branch": "main",
+        "provider": "codex",
+        "model": "gpt-5.6-terra",
+        "effort": "xhigh",
+        "base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "placement": "local",
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "repair",
+          "round": 1
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "branch",
+        "after": ["implementation__loop_r1_decide"],
+        "owned_paths": null,
+        "source_files": [
+          {
+            "kind": "task_file",
+            "task_id": "btk_continue1234",
+            "file": {
+              "rel": "uploads/report.txt",
+              "name": "report.txt",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "size_bytes": 14
+            }
+          }
+        ],
+        "artifact_result": {
+          "path": "work-result.json",
+          "format": "json",
+          "max_bytes": 65536
+        },
+        "source_deletions": []
+      },
+      {
+        "key": "implementation__loop_r2_p1",
+        "title": "Implement requested file \u2014 attack round 2 reviewer 1",
+        "actor_type": "ai",
+        "actor_id": "codex:gpt-6-astra",
+        "action": "review",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: review\n\nImplement requested file\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+        "acceptance": "Implement requested file\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "repo": "Example/project",
+        "base_branch": "main",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "effort": "xhigh",
+        "base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "placement": "local",
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "participant",
+          "round": 2
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "branch",
+        "after": ["implementation__loop_r1_decide", "implementation__loop_r1_repair"],
+        "owned_paths": null,
+        "source_files": [
+          {
+            "kind": "task_file",
+            "task_id": "btk_continue1234",
+            "file": {
+              "rel": "uploads/report.txt",
+              "name": "report.txt",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "size_bytes": 14
+            }
+          }
+        ],
+        "artifact_result": {
+          "path": "work-result.json",
+          "format": "json",
+          "max_bytes": 65536
+        },
+        "source_deletions": []
+      },
+      {
+        "key": "implementation__loop_r2_p2",
+        "title": "Implement requested file \u2014 attack round 2 reviewer 2",
+        "actor_type": "ai",
+        "actor_id": "codex:gpt-5.6-sol",
+        "action": "review",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: review\n\nImplement requested file\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+        "acceptance": "Implement requested file\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "repo": "Example/project",
+        "base_branch": "main",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "effort": "xhigh",
+        "base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "placement": "local",
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "participant",
+          "round": 2
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "branch",
+        "after": ["implementation__loop_r1_decide", "implementation__loop_r1_repair"],
+        "owned_paths": null,
+        "source_files": [
+          {
+            "kind": "task_file",
+            "task_id": "btk_continue1234",
+            "file": {
+              "rel": "uploads/report.txt",
+              "name": "report.txt",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "size_bytes": 14
+            }
+          }
+        ],
+        "artifact_result": {
+          "path": "work-result.json",
+          "format": "json",
+          "max_bytes": 65536
+        },
+        "source_deletions": []
+      },
+      {
+        "key": "implementation__loop_r2_decide",
+        "title": "Implement requested file \u2014 adversarial round 2 decision",
+        "actor_type": "mechanical",
+        "actor_id": "stop_rule:zero_blockers",
+        "action": "decide",
+        "department": "dev",
+        "agent": "dev",
+        "brief": "Action: decide\n\nCanonical mechanical decision for round 2 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.\n\nOriginal task:\nActual task context",
+        "acceptance": "Canonical mechanical decision for round 2 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.",
+        "acceptance_commands": [],
+        "timing": "now",
+        "timeout_minutes": 120,
+        "loop_stage": {
+          "stage_key": "implementation",
+          "branch_group": "implementation__loop",
+          "producer_key": "prior",
+          "role": "decide",
+          "round": 2
+        },
+        "mechanical_execution": {
+          "handler_key": "canonical.workflow-loop-decide.v1",
+          "handler_digest": "b6b6ec30585c5744d387c3b867b6a9b9453e30c07617d12807ff9ac15b5bbb96",
+          "input": {
+            "branch_group": "implementation__loop",
+            "candidate_format": "canonical-workflow-loop-decision.v1",
+            "closed_node_keys": [],
+            "kind": "adversarial",
+            "max_rounds": 2,
+            "open_node_keys": [],
+            "participant_node_keys": ["implementation__loop_r2_p1", "implementation__loop_r2_p2"],
+            "round": 2,
+            "stage_key": "implementation",
+            "stop": "zero_blockers"
+          }
+        },
+        "external_predecessor": {
+          "schema_version": 1,
+          "stage_key": "implementation",
+          "job_id": "job_prior1234",
+          "receipt_event_id": 42,
+          "fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mode": "review-source",
+          "producer_key": "prior",
+          "root_task_id": "btk_continue1234",
+          "project_id": "project_1",
+          "owner_employee_id": "emp_person",
+          "company": "example",
+          "task_id": "btk_child1234",
+          "result_event_id": 41,
+          "source_receipt_id": "receipt_1",
+          "claim": {
+            "attempt": 1,
+            "claimed_at": "2026-09-13T12:00:00+00:00",
+            "host": "ide_local"
+          },
+          "execution_binding": {
+            "task_id": "btk_child1234",
+            "attempt": 1
+          },
+          "attempt_id": "attempt_1",
+          "session_id": "session_1",
+          "canonical_workflow": {
+            "workflow_id": "wf_prior",
+            "revision_id": "wr_prior",
+            "graph_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          },
+          "verification_report_id": "vr_1",
+          "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "evidence_id": "ev_1",
+          "producer": {
+            "provider": "codex",
+            "model": "gpt-5.6-terra"
+          },
+          "candidate": {
+            "repo": "Example/project",
+            "base_branch": "main",
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "candidate_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "branch": "feature/result",
+            "pr_url": "https://github.com/Example/project/pull/1"
+          }
+        },
+        "completion_role": "branch",
+        "after": [
+          "implementation__loop_r1_decide",
+          "implementation__loop_r2_p1",
+          "implementation__loop_r2_p2"
+        ],
+        "owned_paths": null,
+        "placement": "fleet"
+      }
+    ],
+    "columns": [
+      ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+      ["implementation__loop_r1_decide"],
+      ["implementation__loop_r1_repair"],
+      ["implementation__loop_r2_p1", "implementation__loop_r2_p2"],
+      ["implementation__loop_r2_decide"]
+    ],
+    "edges": [
+      {
+        "edge_key": "implementation__loop_r1_p1_to_implementation__loop_r1_decide",
+        "from_node_key": "implementation__loop_r1_p1",
+        "to_node_key": "implementation__loop_r1_decide",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      },
+      {
+        "edge_key": "implementation__loop_r1_p2_to_implementation__loop_r1_decide",
+        "from_node_key": "implementation__loop_r1_p2",
+        "to_node_key": "implementation__loop_r1_decide",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      },
+      {
+        "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r1_repair",
+        "from_node_key": "implementation__loop_r1_decide",
+        "to_node_key": "implementation__loop_r1_repair",
+        "edge_kind": "branch",
+        "condition_kind": "selected",
+        "branch_group": "implementation__loop",
+        "condition": {
+          "equals": "open"
+        }
+      },
+      {
+        "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_p1",
+        "from_node_key": "implementation__loop_r1_decide",
+        "to_node_key": "implementation__loop_r2_p1",
+        "edge_kind": "branch",
+        "condition_kind": "selected",
+        "branch_group": "implementation__loop",
+        "condition": {
+          "equals": "open"
+        }
+      },
+      {
+        "edge_key": "implementation__loop_r1_repair_to_implementation__loop_r2_p1",
+        "from_node_key": "implementation__loop_r1_repair",
+        "to_node_key": "implementation__loop_r2_p1",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      },
+      {
+        "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_p2",
+        "from_node_key": "implementation__loop_r1_decide",
+        "to_node_key": "implementation__loop_r2_p2",
+        "edge_kind": "branch",
+        "condition_kind": "selected",
+        "branch_group": "implementation__loop",
+        "condition": {
+          "equals": "open"
+        }
+      },
+      {
+        "edge_key": "implementation__loop_r1_repair_to_implementation__loop_r2_p2",
+        "from_node_key": "implementation__loop_r1_repair",
+        "to_node_key": "implementation__loop_r2_p2",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      },
+      {
+        "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_decide",
+        "from_node_key": "implementation__loop_r1_decide",
+        "to_node_key": "implementation__loop_r2_decide",
+        "edge_kind": "branch",
+        "condition_kind": "selected",
+        "branch_group": "implementation__loop",
+        "condition": {
+          "equals": "open"
+        }
+      },
+      {
+        "edge_key": "implementation__loop_r2_p1_to_implementation__loop_r2_decide",
+        "from_node_key": "implementation__loop_r2_p1",
+        "to_node_key": "implementation__loop_r2_decide",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      },
+      {
+        "edge_key": "implementation__loop_r2_p2_to_implementation__loop_r2_decide",
+        "from_node_key": "implementation__loop_r2_p2",
+        "to_node_key": "implementation__loop_r2_decide",
+        "edge_kind": "dependency",
+        "condition_kind": "verified",
+        "branch_group": null,
+        "condition": {}
+      }
+    ],
+    "dispatch_id": "wf_console_graph_c4cb2e4132df7b4b8f1e2e7b72ee009d",
+    "digest": "6bf988ff6062ffb1cd2c08d2dd35021fe4ca643f24a1ca80ade76ae123ef6e64"
+  },
+  "digest": "6bf988ff6062ffb1cd2c08d2dd35021fe4ca643f24a1ca80ade76ae123ef6e64",
+  "workflow_id": "wf_console_graph_c4cb2e4132df7b4b8f1e2e7b72ee009d",
+  "admission": {
+    "filing_root_task_id": "btk_continue1234",
+    "filing_root_expected_revision": 7,
+    "org_unit_id": "org_example",
+    "expected_authority_epoch": 1,
+    "objective": {
+      "goal_id": "cgl_actual",
+      "title": "Review work \u2014 staged continuation",
+      "desired_result": "Complete the frozen continuation stages; the original task retains its full acceptance.",
+      "acceptance_policy": {
+        "required": ["all_selected_nodes_verified"]
+      },
+      "verification_policy": {
+        "schema_version": 1,
+        "independent": true,
+        "require_current_contract_generation": true,
+        "require_exact_deployed_sha": true,
+        "assignments": {
+          "machine": {
+            "assignment_id": "verification-assignment:console:machine:v1",
+            "policy_ref": "objective:console:verification:machine:v1",
+            "executor_kind": "llm",
+            "provider": "grok",
+            "model": "grok-4.6",
+            "project_dir": "/workspace/Example/project",
+            "verifier_contract_template": {
+              "schema_version": 1,
+              "contract_version": "verifier-contract-template.v1",
+              "template_id": "verifier-template:machine:v1",
+              "task_contract": {
+                "objective": "Independently verify the frozen candidate against its Work Contract",
+                "acceptance_criteria": [
+                  {
+                    "id": "dod-verdict",
+                    "condition": "Return a supported verdict",
+                    "evidence_required": true
+                  }
+                ],
+                "read_set": ["/workspace/Example/project"],
+                "write_set": [],
+                "risk_class": "R2",
+                "budgets": {
+                  "max_tokens": 20000,
+                  "max_cost_usd": 10,
+                  "max_wall_seconds": 1800,
+                  "max_tool_calls": 100
+                },
+                "task_id": null,
+                "gates": [
+                  {
+                    "command": "verify-frozen-candidate",
+                    "timeout_s": 1800,
+                    "expected_exit": 0,
+                    "blocking": true
+                  }
+                ],
+                "allowed_tools": ["read", "test"],
+                "allowed_actions": ["inspect", "report", "verify"],
+                "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                "delegation": {
+                  "allow_subagents": false,
+                  "max_depth": 0,
+                  "max_children": 0,
+                  "allowed_providers": [],
+                  "allowed_models": [],
+                  "require_child_contract": true,
+                  "require_independent_verification": true
+                },
+                "requires_independent_verification": true,
+                "metadata": {
+                  "durable_workflow": {
+                    "executor_adapter": "foreman",
+                    "session_continuity": {
+                      "mode": "fresh_context"
+                    },
+                    "foreman_launch": {
+                      "repo": "Example/project",
+                      "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "provider": "grok",
+                      "model": "grok-4.6",
+                      "effort": null
+                    }
+                  }
+                }
+              },
+              "independence": {
+                "no_delegation": true,
+                "no_self_verification": true,
+                "producer_session_separation": true
+              },
+              "template_digest": "7b14a35b6b169e853a66bc40d0f0a63755e4825f7de7c47a49cfac53c1e06192"
+            }
+          },
+          "human": {
+            "assignment_id": "verification-assignment:console:human:v1",
+            "policy_ref": "objective:console:verification:human:v1",
+            "executor_kind": "mechanical",
+            "provider": "canonical",
+            "model": null,
+            "project_dir": "/workspace/Example/project",
+            "verifier_contract_template": {
+              "schema_version": 1,
+              "contract_version": "verifier-contract-template.v1",
+              "template_id": "verifier-template:human:v1",
+              "task_contract": {
+                "objective": "Independently verify the frozen candidate against its Work Contract",
+                "acceptance_criteria": [
+                  {
+                    "id": "dod-verdict",
+                    "condition": "Return a supported verdict",
+                    "evidence_required": true
+                  }
+                ],
+                "read_set": ["/workspace/Example/project"],
+                "write_set": [],
+                "risk_class": "R2",
+                "budgets": {
+                  "max_tokens": 20000,
+                  "max_cost_usd": 10,
+                  "max_wall_seconds": 1800,
+                  "max_tool_calls": 100
+                },
+                "task_id": null,
+                "gates": [
+                  {
+                    "command": "verify-frozen-candidate",
+                    "timeout_s": 1800,
+                    "expected_exit": 0,
+                    "blocking": true
+                  }
+                ],
+                "allowed_tools": ["read", "test"],
+                "allowed_actions": ["inspect", "report", "verify"],
+                "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                "delegation": {
+                  "allow_subagents": false,
+                  "max_depth": 0,
+                  "max_children": 0,
+                  "allowed_providers": [],
+                  "allowed_models": [],
+                  "require_child_contract": true,
+                  "require_independent_verification": true
+                },
+                "requires_independent_verification": true,
+                "metadata": {
+                  "durable_workflow": {
+                    "mechanical_verification": {
+                      "schema_version": 1,
+                      "handler_key": "canonical.verify.human-decision-authenticity.v1",
+                      "handler_digest": "39ae478b085b39ea10b88f64f94646a2601d57eeb0e475f34a8fd3827ba4f32c",
+                      "input": {
+                        "candidate_format": "canonical-human-decision.v1",
+                        "branch_resolution_map": []
+                      }
+                    }
+                  }
+                }
+              },
+              "independence": {
+                "no_delegation": true,
+                "no_self_verification": true,
+                "producer_session_separation": true
+              },
+              "template_digest": "f2f6c7c0e9c7b2f469bd5659d33e48ded2a88cc42f539516612ee625abc34bdb"
+            }
+          },
+          "mechanical": {
+            "assignment_id": "verification-assignment:console:loop:v1",
+            "policy_ref": "objective:console:verification:loop:v1",
+            "executor_kind": "mechanical",
+            "provider": "canonical",
+            "model": null,
+            "project_dir": "/workspace/Example/project",
+            "verifier_contract_template": {
+              "schema_version": 1,
+              "contract_version": "verifier-contract-template.v1",
+              "template_id": "verifier-template:loop:v1",
+              "task_contract": {
+                "objective": "Independently verify the frozen candidate against its Work Contract",
+                "acceptance_criteria": [
+                  {
+                    "id": "dod-verdict",
+                    "condition": "Return a supported verdict",
+                    "evidence_required": true
+                  }
+                ],
+                "read_set": ["/workspace/Example/project"],
+                "write_set": [],
+                "risk_class": "R2",
+                "budgets": {
+                  "max_tokens": 20000,
+                  "max_cost_usd": 10,
+                  "max_wall_seconds": 1800,
+                  "max_tool_calls": 100
+                },
+                "task_id": null,
+                "gates": [
+                  {
+                    "command": "verify-frozen-candidate",
+                    "timeout_s": 1800,
+                    "expected_exit": 0,
+                    "blocking": true
+                  }
+                ],
+                "allowed_tools": ["read", "test"],
+                "allowed_actions": ["inspect", "report", "verify"],
+                "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                "delegation": {
+                  "allow_subagents": false,
+                  "max_depth": 0,
+                  "max_children": 0,
+                  "allowed_providers": [],
+                  "allowed_models": [],
+                  "require_child_contract": true,
+                  "require_independent_verification": true
+                },
+                "requires_independent_verification": true,
+                "metadata": {
+                  "durable_workflow": {
+                    "mechanical_verification": {
+                      "schema_version": 1,
+                      "handler_key": "canonical.verify.workflow-loop-decision.v1",
+                      "handler_digest": "71c3959ce34cada7f90cd28cc7f989c8863b997d3178ac3fe43bfacf8a46a847",
+                      "input": {
+                        "candidate_format": "canonical-workflow-loop-decision.v1",
+                        "branch_resolution_map": []
+                      }
+                    }
+                  }
+                }
+              },
+              "independence": {
+                "no_delegation": true,
+                "no_self_verification": true,
+                "producer_session_separation": true
+              },
+              "template_digest": "de24c10052f6e6c67da657fd8664be432efaa3a88ea27feb586032504b5c8cdd"
+            }
+          }
+        }
+      }
+    }
+  }
+}

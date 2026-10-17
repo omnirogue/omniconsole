@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "frozenAt": "2026-10-03",
+  "note": "Frozen: to change a task, its spec or its acceptance tests, add a new version beside this one so earlier reports stay comparable.",
+  "tasks": [
+    {
+      "id": "slug",
+      "objective": "Implement slugify(title, options) in src/slug.mjs exactly as SPEC.md describes.",
+      "target": "src/slug.mjs",
+      "publicTest": "test/slug.check.mjs",
+      "acceptanceTest": "slug.check.mjs"
+    },
+    {
+      "id": "host-guard",
+      "objective": "Implement authorizeWorkerStart(request, policy) in src/host-guard.mjs exactly as SPEC.md describes: the permission guard that decides whether a worker may start on a remote host.",
+      "target": "src/host-guard.mjs",
+      "publicTest": "test/host-guard.check.mjs",
+      "acceptanceTest": "host-guard.check.mjs"
+    },
+    {
+      "id": "usage-rollup",
+      "objective": "Implement rollupUsage(attempts) in src/usage-rollup.mjs exactly as SPEC.md describes.",
+      "target": "src/usage-rollup.mjs",
+      "publicTest": "test/usage-rollup.check.mjs",
+      "acceptanceTest": "usage-rollup.check.mjs"
+    }
+  ]
+}

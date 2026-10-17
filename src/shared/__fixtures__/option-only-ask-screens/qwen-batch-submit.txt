@@ -1,0 +1,45 @@
+  ◆︎ Pacific                                                                                                                                                    │
+    Red, Blue                                                                                                                                                  │
+                                                                                                                                                               │
+  > Use ask_user_question once with TWO questions: (1) single choice 'Which ocean?' options Atlantic, Pacific, Indian; (2) multi-select 'Which colors?' options│
+     Red, Green, Blue. Then reply with just my answers.                                                                                                        │
+  ✓ AskUserQuestion Ask user 2 questions                                                                                                                       │
+    User has provided the following answers:                                                                                                                   │
+                                                                                                                                                               │
+    **Ocean**: Indian                                                                                                                                          │
+    **Colors**: Green, Blue                                                                                                                                    │
+                                                                                                                                                               │
+  ◆︎ Indian                                                                                                                                                     │
+    Green, Blue                                                                                                                                                │
+                                                                                                                                                               │
+  > Use ask_user_question with ONE single-choice question 'Which fruit?' options Apple, Banana, Cherry.                                                        │
+  - AskUserQuestion Ask user 1 question                                                                                                                        │
+                                                                                                                                                               │
+  > Use ask_user_question once with TWO single-choice questions: 'Which fruit?' Apple/Banana/Cherry and 'Which ocean?' Atlantic/Pacific/Indian.                │
+  - AskUserQuestion Ask user 2 questions                                                                                                                       │
+                                                                                                                                                               │
+  > /approval-mode default                                                                                                                                     │
+  ●︎ Approval mode set to "Ask permissions"                                                                                                                     │
+                                                                                                                                                               │
+  > Run the shell command: touch approval-probe.txt                                                                                                            │
+  - Shell touch approval-probe.txt (Create an empty file named approval-probe.txt)                                                                             │
+                                                                                                                                                               █
+  > Use ask_user_question once with TWO single-choice questions: 'Which fruit?' Apple/Banana/Cherry and 'Which ocean?' Atlantic/Pacific/Indian.                █
+  ? AskUserQuestion Ask user 2 questions ←                                                                                                                     █
+                                                                                                                                                               █
+     Fruit ✓   Ocean ✓ ▸ Submit                                                                                                                                █
+                                                                                                                                                               █
+   Your answers:                                                                                                                                               █
+     Fruit: Banana                                                                                                                                             █
+     Ocean: Atlantic                                                                                                                                           █
+                                                                                                                                                               █
+                                                                                                                                                               █
+   Ready to submit your answers?                                                                                                                               █
+                                                                                                                                                               █
+   ❯ 1. Submit answers                                                                                                                                         █
+     2. Cancel                                                                                                                                                 █
+                                                                                                                                                               █
+   ↑/↓: Navigate | ←/→: Switch tabs | Enter: Select                                                                                                            █
+                                                                                                                                                               █
+
+  ⠏ Waiting for user confirmation...

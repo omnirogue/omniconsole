@@ -1,0 +1,860 @@
+{
+  "fixture_version": 1,
+  "description": "Canonical validation vectors. Validity is contract shape only, never authorization, session readiness, delivery, or an implementation claim about a running deployment.",
+  "cases": [
+    {
+      "name": "hub_explicit_inbox_only",
+      "valid": true,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "omniconsole_human_rooms_only",
+      "valid": true,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "cursor_poll",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "known_schema_unknown_capabilities",
+      "valid": true,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "unknown",
+            "feature_enabled": null,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "unknown",
+            "feature_enabled": null,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "unknown",
+            "feature_enabled": null,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "implemented_channel_disabled_by_configuration",
+      "valid": true,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": false,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "future_adapter_capabilities_shape_only_not_deployment_evidence",
+      "valid": true,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "native_prompt",
+            "lease_ack": true,
+            "model_ack": true,
+            "reply_correlation": true,
+            "task_incorporation": true
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "managed_resume",
+            "wake_mode": "managed_resume",
+            "lease_ack": true,
+            "model_ack": true,
+            "reply_correlation": true,
+            "task_incorporation": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_version",
+      "valid": false,
+      "input": {
+        "schema_version": 2,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "string_version",
+      "valid": false,
+      "input": {
+        "schema_version": "1",
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_version",
+      "valid": false,
+      "input": {
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "wrong_scope",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "session_readiness",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_channel",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate_channel",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_channel_kind",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "slack",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_receive_mode",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "automatic",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_wake_mode",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "tool_call",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "missing_receipt_field",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "string_flag",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": "true",
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "unsupported_channel_claims_model_ack",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": true,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_channel_claims_receive",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "unknown",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "extra_identity_field",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false,
+            "endpoint_id": "fixture-no-real-identity"
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "extra_root_field",
+      "valid": false,
+      "input": {
+        "schema_version": 1,
+        "scope": "deployment_capabilities",
+        "channels": [
+          {
+            "kind": "human_chat",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          },
+          {
+            "kind": "agent_exchange",
+            "implementation": "implemented",
+            "feature_enabled": true,
+            "receive_mode": "explicit_pull",
+            "wake_mode": "none",
+            "lease_ack": true,
+            "model_ack": false,
+            "reply_correlation": true,
+            "task_incorporation": false
+          },
+          {
+            "kind": "managed_job",
+            "implementation": "not_implemented",
+            "feature_enabled": false,
+            "receive_mode": "none",
+            "wake_mode": "none",
+            "lease_ack": false,
+            "model_ack": false,
+            "reply_correlation": false,
+            "task_incorporation": false
+          }
+        ],
+        "runtime_ready": true
+      }
+    },
+    {
+      "name": "missing_manifest",
+      "valid": false,
+      "input": null
+    }
+  ]
+}

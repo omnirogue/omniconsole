@@ -1,0 +1,86 @@
+{
+  "version": 4,
+  "frozenAt": "2026-09-21",
+  "status": "pre-registered Discover v4; six source packets disjoint from v1-v3, frozen before any v4 output",
+  "scope": "Synthetic source and explicit contracts only; no external facts or repository access permitted",
+  "roster": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+  "comparators": ["claude-sonnet-5 low effort", "claude-sonnet-5 high effort"],
+  "analysisPlan": {
+    "primary": "For every case and arm, use firstOutcome only. Match substantive confirmed findings to seeded independent root causes; report TP, FP, FN, distinct-root precision/recall/F1, and duplicate confirmed entries separately. A failed or empty arm has zero utility. A contested or insufficient-evidence workflow finding is not a confirmed TP.",
+    "resilience": "The persisted ceiling is three attempts per logical call. Permit no more than two explicit repairs after verifying a failed terminal attempt. Keep first failure in the primary denominator and report final outcome separately.",
+    "comparability": "Four seeded defects total, no more than two in a case; a baseline's four-finding schema cap cannot bind seeded recall. Exclude workflow-only ranking from paired score. High-effort Claude is a strong baseline but is not compute-matched to multi-model calls.",
+    "blinding": "Human ratings require model-masked randomized arm packets and two independent raters; preliminary mechanical seeded-truth scoring is not independent human adjudication.",
+    "controls": "Retain every case and failed arm, latency, native receipts, available usage, and repairs. Do not tune code or prompts during this frozen set. Audit tool events/model receipts before claiming frozen-evidence isolation."
+  },
+  "cases": [
+    {
+      "id": "discover-v4-01",
+      "kind": "positive-taxable-discount",
+      "prompt": "Inspect the supplied checkout total for a concrete monetary defect. Use the exact contract and example; no external files exist.",
+      "evidence": [
+        {"ref": "src/checkout.ts:1-9", "text": "function total(subtotal, discount, taxRate) { const tax = Math.round(subtotal * taxRate * 100) / 100; return subtotal - discount + tax; }"},
+        {"ref": "contract:checkout", "text": "discount is a currency amount applied to eligible goods before sales tax. All goods in subtotal are eligible; tax applies to the discounted goods amount. Example: subtotal 100.00, discount 20.00, taxRate 0.10; the correct total is 88.00. The inputs are validated nonnegative numbers and discount never exceeds subtotal."}
+      ],
+      "groundTruth": [{"root": "sales tax is calculated on pre-discount subtotal", "severity": "medium", "reference": "src/checkout.ts:1-9"}],
+      "adjudication": "The function returns 90.00 for the example instead of 88.00 because it taxes 100 rather than 80. Confirm one monetary correctness root with the 2.00 overcharge, not a speculative input-validation issue."
+    },
+    {
+      "id": "discover-v4-02",
+      "kind": "positive-pagination-tie-loss",
+      "prompt": "Inspect this activity pagination route for a concrete missing-row defect under the supplied ordering contract.",
+      "evidence": [
+        {"ref": "src/activity.ts:1-10", "text": "async function page(cursor) { return db.activity.findMany({ where: cursor ? { createdAt: { lt: cursor.createdAt } } : {}, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], take: 20 }); }"},
+        {"ref": "contract:activity", "text": "createdAt has only one-second precision, so multiple distinct rows can have the same timestamp. The caller passes the last row of the prior page as cursor. For a timestamp shared by 25 rows, the first 20 fill page one; the remaining five must appear on page two. IDs are unique and immutable. No later query restores omitted rows."}
+      ],
+      "groundTruth": [{"root": "timestamp-only cursor excludes remaining rows at a tied timestamp", "severity": "medium", "reference": "src/activity.ts:1-10"}],
+      "adjudication": "The strict createdAt < cursor timestamp excludes the five tied rows despite the id tie-breaker in ORDER BY. Confirm missing rows and recommend composite timestamp/id cursor predicate. Do not invent duplicate rows or unstable IDs."
+    },
+    {
+      "id": "discover-v4-03",
+      "kind": "positive-two-distinct-seat-constraints",
+      "prompt": "Inspect this team-seat grant for concrete supported-path defects. Keep independent membership and quota causes separate.",
+      "evidence": [
+        {"ref": "src/seats.ts:1-10", "text": "async function grantSeat(req) { if (req.user.teamId !== req.params.teamId) return reply(403); await db.seats.create({ teamId: req.params.teamId, userId: req.body.userId }); return reply(201); }"},
+        {"ref": "contract:seats", "text": "A team admin may grant seats only to users already in that team, and no team may hold more than 50 active seats. The signed-in caller is a team admin. req.body.userId is caller-controlled and may identify a user from another team; a team can already have 50 active seats. db.seats.create enforces neither membership nor quota, and no other checks run on this path."}
+      ],
+      "groundTruth": [
+        {"root": "seat grant accepts a user outside the target team", "severity": "high", "reference": "src/seats.ts:1-10"},
+        {"root": "seat grant omits the 50-active-seat quota check", "severity": "medium", "reference": "src/seats.ts:1-10"}
+      ],
+      "adjudication": "The caller's team check does not validate target-user membership and does not enforce the independent active-seat cap. Confirm both causes separately, with outside-user and 51st-seat triggers."
+    },
+    {
+      "id": "discover-v4-04",
+      "kind": "guarded-csrf-decoy",
+      "prompt": "Inspect this state-changing route for a concrete cross-site request defect under the stated request and cookie contract.",
+      "evidence": [
+        {"ref": "src/preferences.ts:1-8", "text": "async function updatePreference(req) { if (!verifyCsrf(req.session, req.headers['x-csrf-token'])) return reply(403); await db.preferences.set(req.user.id, req.body.theme); return reply(204); }"},
+        {"ref": "contract:csrf", "text": "verifyCsrf compares a cryptographically random per-session token in constant time and rejects absent/invalid tokens. The application does not enable permissive cross-origin credentialed requests; browsers cannot read the token cross-origin. req.body.theme is validated as light or dark before this route. The signed-in user may change their own theme."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The supplied CSRF guard and same-user update block the stated cross-site attack. No confirmed finding; do not invent token leakage or a missing validator."
+    },
+    {
+      "id": "discover-v4-05",
+      "kind": "unknown-format-contract",
+      "prompt": "Inspect this formatting helper for a demonstrated user-visible defect, without assuming callers or presentation requirements.",
+      "evidence": [
+        {"ref": "src/format.ts:1-4", "text": "export function formatDuration(seconds) { return Math.floor(seconds / 60) + 'm'; }"},
+        {"ref": "contract:format", "text": "The packet does not say whether callers need minute precision, whether negative or fractional input is allowed, or whether this is displayed to users. Caller validation and product rounding requirements are unknown."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The helper may be correct for whole-minute display. Do not confirm a rounding, negative-input or customer-visible defect without the missing caller/display contract."
+    },
+    {
+      "id": "discover-v4-06",
+      "kind": "clean-atomic-counter-control",
+      "prompt": "Inspect this request quota counter for a concrete double-admission defect using only the stated atomicity contract.",
+      "evidence": [
+        {"ref": "src/quota.ts:1-9", "text": "async function take(key, limit) { return redis.eval('local n=redis.call(\"INCR\",KEYS[1]); if n==1 then redis.call(\"EXPIRE\",KEYS[1],60) end; return n<=tonumber(ARGV[1])', [key], [limit]); }"},
+        {"ref": "contract:quota", "text": "Redis evaluates this script atomically. limit is a positive integer; all concurrent requests for one caller use the same key. The desired policy is at most limit admitted requests during this key's 60-second lifetime. A count beyond limit returns false; the key expires after 60 seconds."}
+      ],
+      "groundTruth": [],
+      "adjudication": "Atomic script execution makes INCR and admission decision serial for a key, so it cannot admit more than limit requests. No supported double-admission defect."
+    }
+  ]
+}

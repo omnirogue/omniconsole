@@ -1,0 +1,28 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": [
+    "../electron.vite.config.*",
+    "./build-plugins/**/*",
+    "./scripts/vitest-host-ports-setup.ts",
+    "./scripts/workflows/probe-audit-pipeline.ts",
+    "./scripts/workflows/fixtures/audit-pipeline-fixture.ts",
+    "./scripts/workflows/benchmark/audit-quality-*.ts",
+    "./scripts/workflows/benchmark/run-audit-quality.ts",
+    "./scripts/workflows/diagnostic-council-launch.ts",
+    "./scripts/workflows/benchmark/benchmark-report.ts",
+    "./scripts/workflows/benchmark/benchmark-rounds.ts",
+    "./scripts/workflows/benchmark/decide-score.ts",
+    "./scripts/workflows/benchmark/discover-score.ts",
+    "./scripts/workflows/benchmark/noul-gates.ts",
+    "../src/main/**/*",
+    "../src/renderer/src/lib/skill-freshness-display-status.ts",
+    "../src/preload/**/*",
+    "../src/shared/**/*",
+    "../src/relay/**/*",
+    "../src/types/**/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "types": ["electron-vite/node"]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "discover": {
+    "brief": ["claude:claude-opus-5-5"],
+    "scout": ["claude:claude-haiku-5-5"],
+    "find": ["claude:claude-haiku-5-5", "claude:claude-haiku-5-5", "claude:claude-haiku-5-5"],
+    "verify": ["codex:gpt-5.6-sol", "grok:grok-4.6-build", "claude:claude-opus-5-5"],
+    "report": ["claude:claude-opus-5-5"]
+  },
+  "quick-discover": {
+    "find": ["claude:claude-opus-5-5"]
+  }
+}

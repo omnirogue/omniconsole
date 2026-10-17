@@ -1,0 +1,162 @@
+{
+  "set": "discover-set-aside",
+  "version": 1,
+  "frozenAt": "2026-09-24",
+  "status": "skeleton",
+  "reviewedBy": null,
+  "labels": "key",
+  "contract": "discover-set-aside@1",
+  "source": "discover-seeded/answer-key.json (discover-seeded-storefront v2): seeded bugs are yes (real, keep), decoys are no. The key has no non-findings, and no real-run findings are labelled yet. The rubric is GRAPH_DEFAULT_SCREEN_RUBRIC and the task is discover-seeded/prompt.md. Too small to calibrate: measured at most.",
+  "items": [
+    {
+      "id": "B01",
+      "source": "answer key B01: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Concurrent reserve() oversells stock\nSeverity: high\nLocation: src/inventory.ts:54-76\n\nreserve() reads stock, awaits, then writes an absolute value without the SKU lock that restock/release take, so concurrent reservations oversell the last units (lost update)."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B02",
+      "source": "answer key B02: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: reserve() accepts a negative quantity\nSeverity: high\nLocation: src/inventory.ts:54-57\n\nreserve() only checks that quantity is an integer; a negative quantity passes the stock check and increases available stock (restock rejects <= 0, reserve does not)."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B03",
+      "source": "answer key B03: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: place() does not await inventory.reserve()\nSeverity: high\nLocation: src/orders.ts:53-58\n\nplace() calls inventory.reserve() without await: out-of-stock never reaches the catch, the order is marked reserved regardless, and the rejection is unhandled."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B04",
+      "source": "answer key B04: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: listForCustomer() drops the last order of every page\nSeverity: medium\nLocation: src/orders.ts:117-120\n\nlistForCustomer() slices to start + pageSize - 1 (slice's end is already exclusive), so every page silently drops its last order."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B05",
+      "source": "answer key B05: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Price cache key ignores the currency\nSeverity: high\nLocation: src/price-cache.ts:28-34\n\nThe cache key is only the SKU, not the currency: a EUR checkout after a USD one is served the USD quote (wrong price and currency)."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B06",
+      "source": "answer key B06: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Quote expiry adds seconds to a millisecond clock\nSeverity: medium\nLocation: src/price-cache.ts:49-54\n\nexpiresAt adds ttlSeconds to a millisecond clock, so quotes expire after 300 ms instead of 5 minutes and the cache barely caches (and always takes the soft-refresh path)."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B07",
+      "source": "answer key B07: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Failed capture still records a captured payment\nSeverity: critical\nLocation: src/payments.ts:41-75\n\nWhen every capture attempt throws, the errors are only logged and result stays undefined; the code falls through and records a captured payment under a fresh id, so the order is marked paid without being charged."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B08",
+      "source": "answer key B08: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: refund() ignores what was already refunded\nSeverity: high\nLocation: src/payments.ts:86-89\n\nrefund() compares the request with capturedCents instead of what is left (capturedCents - refundedCents), so repeated partial refunds can refund more than was captured."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B09",
+      "source": "answer key B09: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Job queue exceeds its concurrency limit\nSeverity: medium\nLocation: src/job-queue.ts:67-87\n\npump() checks active < concurrency but run() only increments active after awaiting the journal write, so one pump starts every due job at once and exceeds the concurrency limit."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B10",
+      "source": "answer key B10: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: A throwing outcome handler stalls the job queue\nSeverity: high\nLocation: src/job-queue.ts:88-104\n\nIf journal.delete/put or onDead throws inside the outcome handlers, active is never decremented and pump never runs again (no finally); the voided promise rejects unhandled and the queue permanently loses a slot."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B11",
+      "source": "answer key B11: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: limit query parameter is not validated\nSeverity: medium\nLocation: src/http-handlers.ts:60-63\n\nThe limit query parameter is passed to listForCustomer unchecked: limit=1000000 returns everything, limit=0 or negative gives wrong pages, and a non-number gives NaN and an empty page."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "B12",
+      "source": "answer key B12: its description is the finding; the title is a short restatement",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: RateLimiter keeps every client key forever\nSeverity: low\nLocation: src/http-handlers.ts:18-37\n\nRateLimiter never removes keys: every distinct client IP keeps an entry (even an empty list) forever, so memory grows without bound."
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "D01",
+      "source": "answer key D01 (decoy): the claim a finder would make, written from the key; the label is the key's",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Off-by-one loop bound in allocate()\nSeverity: medium\nLocation: src/money.ts:58-62\n\nallocate() loops with `index <= parts - 1`; the inclusive bound looks off by one, so the shares may be split over the wrong number of parts."
+      },
+      "truth": "no"
+    },
+    {
+      "id": "D02",
+      "source": "answer key D02 (decoy): the claim a finder would make, written from the key; the label is the key's",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Floating promise in the price refresh\nSeverity: medium\nLocation: src/price-cache.ts:37-41\n\n`void this.refresh(...)` discards the promise, so a refresh that fails becomes an unhandled rejection."
+      },
+      "truth": "no"
+    },
+    {
+      "id": "D03",
+      "source": "answer key D03 (decoy): the claim a finder would make, written from the key; the label is the key's",
+      "state": {
+        "task": "Find defects in this storefront service (everything under src/): bugs that make it charge,\nreserve, refund, price, page or schedule work wrongly, lose or leak resources, or accept input it\nshould refuse. For each, give path:line, the trigger, the wrong result it leads to, and the fix.\nStyle, naming and missing tests are out of scope.",
+        "rubric": "- Does the result point at a specific place or source (path:line for code)?\n- Does it show concrete evidence for its claim: quoted code, data or facts?\n- Does it explain a specific mechanism or scenario rather than a vague concern?\n- Would acting on it materially advance the goal?\n- Is it a real result rather than a vague, speculative, duplicate or style-only remark?",
+        "text": "Title: Loose equality on the reservation check\nSeverity: low\nLocation: src/inventory.ts:104-109\n\n`reservation == null` uses loose equality instead of `===`, which can let an unexpected value through."
+      },
+      "truth": "no"
+    }
+  ]
+}

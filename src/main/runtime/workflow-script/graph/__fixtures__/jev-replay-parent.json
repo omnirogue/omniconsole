@@ -1,0 +1,1103 @@
+{
+  "parentCommit": "2a0de49389f75257e6087beaae47d21c05aa474e",
+  "scenarios": [
+    {
+      "name": "ballot-rubric",
+      "call": {
+        "id": "judge/jev",
+        "stepId": "judge",
+        "jev": {
+          "method": "rubric",
+          "task": "Name a bakery",
+          "instruction": "Judge names:\n- Memorable\n- Says bakery",
+          "candidates": [
+            {
+              "label": "Response A",
+              "markdown": "Crumb and Co"
+            },
+            {
+              "label": "Response B",
+              "markdown": "The Rolling Pin"
+            },
+            {
+              "label": "Response C",
+              "markdown": "Knead to Know"
+            }
+          ]
+        }
+      },
+      "exchanges": [
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response": "Crumb and Co"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Memorable",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Says bakery",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              },
+              "c1": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              },
+              "c2": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response": "The Rolling Pin"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Memorable",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Says bakery",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              },
+              "c1": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              },
+              "c2": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response": "Knead to Know"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Memorable",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Says bakery",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              },
+              "c1": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              },
+              "c2": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "value": {
+          "markdown": "JEV rubric scores (jev-1.13.0), overall then per criterion:\n- Response A: 3.00 of 4 · Memorable 3.0 · Says bakery 3.0\n- Response B: 2.00 of 4 · Memorable 2.0 · Says bakery 2.0\n- Response C: 1.00 of 4 · Memorable 1.0 · Says bakery 1.0\n\nCriterion leaders (for a synthesis, take each part from its leader):\n- Memorable: Response A (3.00)\n- Says bakery: Response A (3.00)\n\nFINAL RANKING:\n1. Response A\n2. Response B\n3. Response C"
+        }
+      },
+      "record": {
+        "digest": "daf1579d4c68fa7cbce442b2bfe152b9ad0914265a449c3f133173cf77e82427",
+        "outcome": {
+          "value": {
+            "markdown": "JEV rubric scores (jev-1.13.0), overall then per criterion:\n- Response A: 3.00 of 4 · Memorable 3.0 · Says bakery 3.0\n- Response B: 2.00 of 4 · Memorable 2.0 · Says bakery 2.0\n- Response C: 1.00 of 4 · Memorable 1.0 · Says bakery 1.0\n\nCriterion leaders (for a synthesis, take each part from its leader):\n- Memorable: Response A (3.00)\n- Says bakery: Response A (3.00)\n\nFINAL RANKING:\n1. Response A\n2. Response B\n3. Response C"
+          }
+        },
+        "at": 0
+      }
+    },
+    {
+      "name": "ballot-pairwise",
+      "call": {
+        "id": "judge/jev-2",
+        "stepId": "judge",
+        "jev": {
+          "method": "pairwise",
+          "task": "Name a bakery",
+          "instruction": "Judge names:\n- Memorable\n- Says bakery",
+          "candidates": [
+            {
+              "label": "Response A",
+              "markdown": "Crumb and Co"
+            },
+            {
+              "label": "Response B",
+              "markdown": "The Rolling Pin"
+            },
+            {
+              "label": "Response C",
+              "markdown": "Knead to Know"
+            }
+          ],
+          "incumbent": "Response A"
+        }
+      },
+      "exchanges": [
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "Crumb and Co",
+              "response_2": "The Rolling Pin"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_2",
+                "probabilities": {
+                  "response_1": 0.3,
+                  "response_2": 0.7
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "Crumb and Co",
+              "response_2": "Knead to Know"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_2",
+                "probabilities": {
+                  "response_1": 0.3,
+                  "response_2": 0.7
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "The Rolling Pin",
+              "response_2": "Crumb and Co"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_1",
+                "probabilities": {
+                  "response_1": 0.7,
+                  "response_2": 0.30000000000000004
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "The Rolling Pin",
+              "response_2": "Knead to Know"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_1",
+                "probabilities": {
+                  "response_1": 0.7,
+                  "response_2": 0.30000000000000004
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "Knead to Know",
+              "response_2": "Crumb and Co"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_1",
+                "probabilities": {
+                  "response_1": 0.7,
+                  "response_2": 0.30000000000000004
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Name a bakery",
+              "rubric": "Judge names:\n- Memorable\n- Says bakery",
+              "response_1": "Knead to Know",
+              "response_2": "The Rolling Pin"
+            },
+            "questions": {
+              "better": {
+                "type": "choice",
+                "instructions": "Which response better does what the task asks, judged by the rubric? Ignore which one is shown first.",
+                "criteria": {
+                  "response_1": "Response 1 is better",
+                  "response_2": "Response 2 is better"
+                }
+              },
+              "driver": {
+                "type": "choice",
+                "instructions": "Which rubric criterion most strongly explains that preference?",
+                "criteria": {
+                  "c1": "Memorable",
+                  "c2": "Says bakery"
+                }
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "better": {
+                "type": "choice",
+                "choice": "response_2",
+                "probabilities": {
+                  "response_1": 0.3,
+                  "response_2": 0.7
+                },
+                "confidence": 0.8
+              },
+              "driver": {
+                "type": "choice",
+                "choice": "c1",
+                "probabilities": {
+                  "c1": 1,
+                  "c2": 0
+                },
+                "confidence": 0.8
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "value": {
+          "markdown": "JEV pairwise comparisons (jev-1.13.0, 6 judged in both orders):\n- Response A: won 30% of its comparisons\n- Response B: won 70% of its comparisons\n- Response C: won 50% of its comparisons\n\nThe comparisons most often turned on: Memorable (6).\nJEV was not sure: it preferred the top answer over the next with probability 0.70, inside 0.2–0.8.\n\nFINAL RANKING:\n1. Response B\n2. Response C\n3. Response A",
+          "unsure": true
+        }
+      },
+      "record": {
+        "digest": "08d75f3b8d3495066a135909129931ac5191470d3005615965fdc67cd39c4ce6",
+        "outcome": {
+          "value": {
+            "markdown": "JEV pairwise comparisons (jev-1.13.0, 6 judged in both orders):\n- Response A: won 30% of its comparisons\n- Response B: won 70% of its comparisons\n- Response C: won 50% of its comparisons\n\nThe comparisons most often turned on: Memorable (6).\nJEV was not sure: it preferred the top answer over the next with probability 0.70, inside 0.2–0.8.\n\nFINAL RANKING:\n1. Response B\n2. Response C\n3. Response A",
+            "unsure": true
+          }
+        },
+        "at": 0
+      }
+    },
+    {
+      "name": "screen",
+      "call": {
+        "id": "verify/screen",
+        "stepId": "verify",
+        "screen": {
+          "task": "Find defects",
+          "rubric": "- Real defect\n- Has evidence",
+          "candidates": [
+            {
+              "id": "Response A",
+              "text": "Crumb and Co"
+            },
+            {
+              "id": "Response B",
+              "text": "The Rolling Pin"
+            },
+            {
+              "id": "Response C",
+              "text": "Knead to Know"
+            }
+          ]
+        }
+      },
+      "exchanges": [
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Find defects",
+              "rubric": "- Real defect\n- Has evidence",
+              "response": "Crumb and Co"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Real defect",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Has evidence",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              },
+              "c1": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              },
+              "c2": {
+                "type": "score",
+                "score": 3,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.6
+                },
+                "confidence": 0.9
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Find defects",
+              "rubric": "- Real defect\n- Has evidence",
+              "response": "The Rolling Pin"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Real defect",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Has evidence",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              },
+              "c1": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              },
+              "c2": {
+                "type": "score",
+                "score": 2,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.1,
+                  "1": 0.1,
+                  "2": 0.6,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.7
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        },
+        {
+          "request": {
+            "capability": "workflow.judge",
+            "model": "jev-1.13.0",
+            "state": {
+              "task": "Find defects",
+              "rubric": "- Real defect\n- Has evidence",
+              "response": "Knead to Know"
+            },
+            "questions": {
+              "quality": {
+                "type": "score",
+                "instructions": "How well does the response do what the task asks, judged by the rubric?",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c1": {
+                "type": "score",
+                "instructions": "Real defect",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              },
+              "c2": {
+                "type": "score",
+                "instructions": "Has evidence",
+                "criteria": ["Fails the task", "Weak", "Adequate", "Strong", "Excellent"]
+              }
+            }
+          },
+          "result": {
+            "provider": "typesafe",
+            "model": "jev-1.13.0",
+            "answers": {
+              "quality": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              },
+              "c1": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              },
+              "c2": {
+                "type": "score",
+                "score": 1,
+                "legend": {
+                  "0": "Fails the task",
+                  "1": "Weak",
+                  "2": "Adequate",
+                  "3": "Strong",
+                  "4": "Excellent"
+                },
+                "probabilities": {
+                  "0": 0.6,
+                  "1": 0.1,
+                  "2": 0.1,
+                  "3": 0.1,
+                  "4": 0.1
+                },
+                "confidence": 0.5
+              }
+            },
+            "usage": {
+              "inputTokens": 100,
+              "outputTokens": 3
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "value": {
+          "markdown": "JEV scored 3 of 3 options (0–4, jev-1.13.0).\n\nHighest scores:\n1. Crumb and Co (3.0)\n2. The Rolling Pin (2.0)\n3. Knead to Know (1.0)",
+          "scores": {
+            "Response A": 3,
+            "Response B": 2,
+            "Response C": 1
+          },
+          "criteria": [
+            {
+              "id": "c1",
+              "label": "Real defect",
+              "scores": {
+                "Response A": 3,
+                "Response B": 2,
+                "Response C": 1
+              }
+            },
+            {
+              "id": "c2",
+              "label": "Has evidence",
+              "scores": {
+                "Response A": 3,
+                "Response B": 2,
+                "Response C": 1
+              }
+            }
+          ],
+          "unscored": []
+        }
+      },
+      "record": {
+        "digest": "4ff1866947ad4edbae08361b97b983d551c0d13918d24792e573d2e982da4fda",
+        "outcome": {
+          "value": {
+            "markdown": "JEV scored 3 of 3 options (0–4, jev-1.13.0).\n\nHighest scores:\n1. Crumb and Co (3.0)\n2. The Rolling Pin (2.0)\n3. Knead to Know (1.0)",
+            "scores": {
+              "Response A": 3,
+              "Response B": 2,
+              "Response C": 1
+            },
+            "criteria": [
+              {
+                "id": "c1",
+                "label": "Real defect",
+                "scores": {
+                  "Response A": 3,
+                  "Response B": 2,
+                  "Response C": 1
+                }
+              },
+              {
+                "id": "c2",
+                "label": "Has evidence",
+                "scores": {
+                  "Response A": 3,
+                  "Response B": 2,
+                  "Response C": 1
+                }
+              }
+            ],
+            "unscored": []
+          }
+        },
+        "at": 0
+      }
+    }
+  ]
+}

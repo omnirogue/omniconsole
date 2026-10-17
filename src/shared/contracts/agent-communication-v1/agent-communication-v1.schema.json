@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:omni:agent-communication:capabilities:v1",
+  "title": "Agent communication deployment capabilities v1",
+  "description": "Additive public capability metadata only. It establishes no authenticated actor, tenant access, session enrollment, native readiness, delivery or completed work.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scope", "channels"],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "scope": {
+      "const": "deployment_capabilities"
+    },
+    "channels": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/channel"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "const": "human_chat"
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "const": "agent_exchange"
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "const": "managed_job"
+              }
+            }
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "implementation",
+        "feature_enabled",
+        "receive_mode",
+        "wake_mode",
+        "lease_ack",
+        "model_ack",
+        "reply_correlation",
+        "task_incorporation"
+      ],
+      "properties": {
+        "kind": {
+          "enum": ["human_chat", "agent_exchange", "managed_job"]
+        },
+        "implementation": {
+          "enum": ["implemented", "not_implemented", "unknown"],
+          "description": "Code implements this channel contract; not a runtime health or successful delivery assertion."
+        },
+        "feature_enabled": {
+          "type": ["boolean", "null"],
+          "description": "Operator feature configuration only. null means unobserved/not applicable. true does not establish credentials, entitlement, endpoint binding or readiness."
+        },
+        "receive_mode": {
+          "enum": ["none", "explicit_pull", "cursor_poll", "managed_resume"],
+          "description": "Implemented receiver interface. Model acknowledgment is declared separately."
+        },
+        "wake_mode": {
+          "enum": ["none", "native_prompt", "managed_resume"],
+          "description": "Implemented automatic turn/run activation adapter. A manual tool call or merely stored message does not establish native_prompt."
+        },
+        "lease_ack": {
+          "type": "boolean",
+          "description": "An explicit recipient receipt settles a leased envelope. Does not establish that a model received or understood it."
+        },
+        "model_ack": {
+          "type": "boolean",
+          "description": "Structured model-owned acknowledgment is implemented and distinguishable from transport/renderer acknowledgment. Does not attest any individual message."
+        },
+        "reply_correlation": {
+          "type": "boolean",
+          "description": "Reply identity and destination are bound to the original request/origin."
+        },
+        "task_incorporation": {
+          "type": "boolean",
+          "description": "Correlated original-task/run result-incorporation evidence is required and validated. A resolved flag or stored checksum comparison alone is insufficient."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "implementation": {
+                "enum": ["not_implemented", "unknown"]
+              }
+            },
+            "required": ["implementation"]
+          },
+          "then": {
+            "properties": {
+              "receive_mode": {
+                "const": "none"
+              },
+              "wake_mode": {
+                "const": "none"
+              },
+              "lease_ack": {
+                "const": false
+              },
+              "model_ack": {
+                "const": false
+              },
+              "reply_correlation": {
+                "const": false
+              },
+              "task_incorporation": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

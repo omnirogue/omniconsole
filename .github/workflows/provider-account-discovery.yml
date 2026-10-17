@@ -1,0 +1,33 @@
+name: Provider account discovery
+
+on:
+  pull_request:
+    paths:
+      - 'src/main/provider-login*'
+      - 'src/main/rate-limits/*discover*'
+      - 'src/main/rate-limits/existing-account-directories*'
+      - 'src/main/claude-accounts/**'
+      - 'src/main/codex-accounts/**'
+      - 'src/main/runtime/rpc/methods/provider-login*'
+      - 'src/renderer/src/components/settings/ProviderLoginDialog*'
+      - '.github/workflows/provider-account-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/setup@v2
+        with:
+          install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify native Windows profile and login handling
+        run: pnpm test src/main/provider-login-sessions.test.ts src/main/provider-login-processes.test.ts src/main/rate-limits/provider-account-discovery.test.ts src/main/rate-limits/discovered-profile-credentials.test.ts src/main/rate-limits/existing-account-directories.test.ts src/main/codex-accounts/service-add-account-from-home.test.ts

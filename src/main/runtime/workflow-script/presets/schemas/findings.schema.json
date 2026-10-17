@@ -1,0 +1,79 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "issueKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "trigger": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "impact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              },
+              "required": ["ref", "description"]
+            },
+            "minItems": 1,
+            "maxItems": 15
+          }
+        },
+        "required": ["issueKey", "title", "location", "trigger", "impact", "severity", "evidence"]
+      },
+      "minItems": 0,
+      "maxItems": 4
+    },
+    "omittedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "omissionReason": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": ["findings", "omittedCount", "omissionReason"]
+}

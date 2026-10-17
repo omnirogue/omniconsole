@@ -1,0 +1,45 @@
+   └─ ● Clarify("2 questions")                                                                                                                                 │
+                                                                                                                                                               │
+ ───                                                                                                                                                           │
+                                                                                                                                                               │
+ ❯ Which ocean? → Indian                                                                                                                                       │
+   Which colors? → Green                                                                                                                                       │
+                                                                                                                                                               │
+ └─ ▾ Tool calls (1)  ~2 tokens                                                                                                                                │
+   └─ ● Clarify (5.5s)                                                                                                                                         │
+                                                                                                                                                               │
+ ┊  Indian, Green                                                                                                                                              │
+                                                                                                                                                               │
+ ───                                                                                                                                                           │
+                                                                                                                                                               │
+ ❯ Call your clarify tool with question 'Which fruit?' and choices Apple, Banana, Cherry.                                                                      │
+                                                                                                                                                               │
+ ·  ask (1 questions)                                                                                                                                          │
+      · Which fruit? (no answer)                                                                                                                               │
+      (cancelled)                                                                                                                                              │
+                                                                                                                                                               │
+ └─ ▾ Tool calls (1)  ~2 tokens                                                                                                                                │
+   └─ ● Clarify (2.2s)                                                                                                                                         │
+                                                                                                                                                               ┃
+ ┊  No fruit selected.                                                                                                                                         ┃
+                                                                                                                                                               ┃
+ ───                                                                                                                                                           ┃
+                                                                                                                                                               ┃
+ ❯ Call clarify ONCE using its questions array with two items: {question:'Which fruit?', choices:[Apple,Banana,Cherry]} and {question:'Which ocean?',          ┃
+   choices:[Atlantic,Pacific,Indian]}.                                                                                                                         ┃
+                                                                                                                                                               ┃
+ └─ ▾ Tool calls (1)                                                                                                                                           ┃
+   └─ ● ⣿ Clarify (2.0s)                                                                                                                                       ┃
+
+ ask 2 questions
+ ▸ Which fruit?
+   ▸ 1. Apple (Recommended)
+     2. Banana
+     3. Cherry
+     4. Other (type your answer)
+ · Which ocean?
+ 0/2 answered · ↑/↓ select · Enter lock answer · Tab/Shift+Tab switch question · Esc/Ctrl+C cancel
+
+
+
+ ─ (°ロ°) computing…     · 4s │ qwen3 coder │ 15.4k/262.1k │ [█░░░░░░░░░] 6% │ 1h 5m │ ◎ 47% │ ◷ 3.2s │ ↑ 10 t/s │ voice off           ─  Clarify fruit choice

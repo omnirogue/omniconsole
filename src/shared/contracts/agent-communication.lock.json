@@ -1,0 +1,18 @@
+{
+  "contract": "agent-communication",
+  "version": 1,
+  "canonical_repository": "omnirogue/omniconsole",
+  "tag": null,
+  "commit": "199fdec38ea4af44dd18a2753dcead735f4f8f41",
+  "directory": "contracts",
+  "origin": {
+    "repository": "omnirogue/omniconsole",
+    "commit": "1e9a3e0f9aff42809b03ebbba14aa20dcaa8c735",
+    "directory": "docs/contracts"
+  },
+  "files": {
+    "agent-communication-v1.schema.json": "e56d17cc196840ba3e4a8657d6cbc13ec49b93d469c65ff99fbf5c01c7b960bc",
+    "agent-communication-v1.fixtures.json": "35a2383965b819b57de62b0da7e8ae6a4633ec965463bdd4a9bd4937837d3cbe",
+    "agent-communication-v1.md": "fc1094891eec3c5621fbb9fcf7d4e73c6ea3a48f59a6008912991251e895f457"
+  }
+}

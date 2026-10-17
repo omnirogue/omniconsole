@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reuse Research"
+  short_description: "Find existing code before adding another system"
+  default_prompt: "Use $omni-reuse-research to find the smallest reusable implementation for this feature."

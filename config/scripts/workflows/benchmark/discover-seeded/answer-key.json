@@ -1,0 +1,222 @@
+{
+  "set": "discover-seeded-storefront",
+  "version": 2,
+  "frozenAt": "2026-09-23",
+  "workspace": "fixture",
+  "entries": [
+    {
+      "id": "B01",
+      "kind": "bug",
+      "file": "src/inventory.ts",
+      "lines": [54, 76],
+      "anchor": "await this.db.stock.put(sku, {",
+      "severity": "high",
+      "description": "reserve() reads stock, awaits, then writes an absolute value without the SKU lock that restock/release take, so concurrent reservations oversell the last units (lost update).",
+      "evidence": [
+        "race",
+        "concurren",
+        "lost update",
+        "oversell",
+        "oversold",
+        "lock",
+        "simultaneous",
+        "interleav",
+        "at the same time"
+      ]
+    },
+    {
+      "id": "B02",
+      "kind": "bug",
+      "file": "src/inventory.ts",
+      "lines": [54, 57],
+      "anchor": "if (!Number.isInteger(quantity)) {",
+      "severity": "high",
+      "description": "reserve() only checks that quantity is an integer; a negative quantity passes the stock check and increases available stock (restock rejects <= 0, reserve does not).",
+      "evidence": ["negative", "below zero", "< 0", "<= 0", "non-positive", "nonpositive"]
+    },
+    {
+      "id": "B03",
+      "kind": "bug",
+      "file": "src/orders.ts",
+      "lines": [53, 58],
+      "anchor": "this.inventory.reserve(line.sku, line.quantity, order.id)",
+      "severity": "high",
+      "description": "place() calls inventory.reserve() without await: out-of-stock never reaches the catch, the order is marked reserved regardless, and the rejection is unhandled.",
+      "evidence": ["await", "floating", "unhandled", "fire-and-forget", "fire and forget"]
+    },
+    {
+      "id": "B04",
+      "kind": "bug",
+      "file": "src/orders.ts",
+      "lines": [117, 120],
+      "anchor": "all.slice(start, start + pageSize - 1)",
+      "severity": "medium",
+      "description": "listForCustomer() slices to start + pageSize - 1 (slice's end is already exclusive), so every page silently drops its last order.",
+      "evidence": [
+        "off-by-one",
+        "off by one",
+        "pagesize - 1",
+        "drops the last",
+        "skips the last",
+        "missing the last",
+        "one fewer",
+        "one short",
+        "exclusive"
+      ]
+    },
+    {
+      "id": "B05",
+      "kind": "bug",
+      "file": "src/price-cache.ts",
+      "lines": [28, 34],
+      "anchor": "const key = this.cacheKey(sku)",
+      "severity": "high",
+      "description": "The cache key is only the SKU, not the currency: a EUR checkout after a USD one is served the USD quote (wrong price and currency).",
+      "evidence": ["currency", "currencies", "eur", "gbp"]
+    },
+    {
+      "id": "B06",
+      "kind": "bug",
+      "file": "src/price-cache.ts",
+      "lines": [49, 54],
+      "anchor": "expiresAt: this.now() + this.ttlSeconds",
+      "severity": "medium",
+      "description": "expiresAt adds ttlSeconds to a millisecond clock, so quotes expire after 300 ms instead of 5 minutes and the cache barely caches (and always takes the soft-refresh path).",
+      "evidence": ["millisecond", "seconds", "ttlseconds", "unit"]
+    },
+    {
+      "id": "B07",
+      "kind": "bug",
+      "file": "src/payments.ts",
+      "lines": [41, 75],
+      "anchor": "id: result?.id ?? newId('pay')",
+      "severity": "critical",
+      "description": "When every capture attempt throws, the errors are only logged and result stays undefined; the code falls through and records a captured payment under a fresh id, so the order is marked paid without being charged.",
+      "evidence": [
+        "swallow",
+        "retries",
+        "retry",
+        "undefined",
+        "unpaid",
+        "not charged",
+        "never charged",
+        "without charg",
+        "fall through",
+        "falls through",
+        "exhaust",
+        "all attempts",
+        "every attempt"
+      ]
+    },
+    {
+      "id": "B08",
+      "kind": "bug",
+      "file": "src/payments.ts",
+      "lines": [86, 89],
+      "anchor": "if (cents > payment.capturedCents) {",
+      "severity": "high",
+      "description": "refund() compares the request with capturedCents instead of what is left (capturedCents - refundedCents), so repeated partial refunds can refund more than was captured.",
+      "evidence": [
+        "refundedcents",
+        "already refunded",
+        "remaining",
+        "left to refund",
+        "over-refund",
+        "more than captured",
+        "more than was captured",
+        "exceed",
+        "cumulative",
+        "previous refund"
+      ]
+    },
+    {
+      "id": "B09",
+      "kind": "bug",
+      "file": "src/job-queue.ts",
+      "lines": [67, 87],
+      "anchor": "void this.run(job!)",
+      "severity": "medium",
+      "description": "pump() checks active < concurrency but run() only increments active after awaiting the journal write, so one pump starts every due job at once and exceeds the concurrency limit.",
+      "evidence": ["concurrency", "in parallel", "parallel", "exceed", "too many", "increment"]
+    },
+    {
+      "id": "B10",
+      "kind": "bug",
+      "file": "src/job-queue.ts",
+      "lines": [88, 104],
+      "anchor": "this.active -= 1",
+      "severity": "high",
+      "description": "If journal.delete/put or onDead throws inside the outcome handlers, active is never decremented and pump never runs again (no finally); the voided promise rejects unhandled and the queue permanently loses a slot.",
+      "evidence": [
+        "finally",
+        "never decrement",
+        "not decremented",
+        "never runs again",
+        "stall",
+        "stuck",
+        "slot",
+        "leak"
+      ]
+    },
+    {
+      "id": "B11",
+      "kind": "bug",
+      "file": "src/http-handlers.ts",
+      "lines": [60, 63],
+      "anchor": "const pageSize = Number.parseInt(request.query.limit ?? '20', 10)",
+      "severity": "medium",
+      "description": "The limit query parameter is passed to listForCustomer unchecked: limit=1000000 returns everything, limit=0 or negative gives wrong pages, and a non-number gives NaN and an empty page.",
+      "evidence": ["limit", "pagesize", "page size", "nan", "unbounded", "validat", "clamp"]
+    },
+    {
+      "id": "B12",
+      "kind": "bug",
+      "file": "src/http-handlers.ts",
+      "lines": [18, 37],
+      "anchor": "private readonly hits = new Map<string, number[]>()",
+      "severity": "low",
+      "description": "RateLimiter never removes keys: every distinct client IP keeps an entry (even an empty list) forever, so memory grows without bound.",
+      "evidence": [
+        "memory",
+        "leak",
+        "evict",
+        "unbounded",
+        "grow",
+        "never removed",
+        "never deleted",
+        "prune"
+      ]
+    },
+    {
+      "id": "D01",
+      "kind": "decoy",
+      "file": "src/money.ts",
+      "lines": [58, 62],
+      "anchor": "for (let index = 0; index <= parts - 1; index++) {",
+      "severity": "none",
+      "description": "allocate() loops with index <= parts - 1, which is the same as index < parts; the shares are correct.",
+      "evidence": ["off-by-one", "off by one", "<=", "parts - 1", "extra iteration", "one too many"]
+    },
+    {
+      "id": "D02",
+      "kind": "decoy",
+      "file": "src/price-cache.ts",
+      "lines": [37, 41],
+      "anchor": "void this.refresh(key, sku, currency)",
+      "severity": "none",
+      "description": "void this.refresh(...) is a deliberate background refresh; refresh() catches its own errors, so nothing is unhandled.",
+      "evidence": ["unhandled", "floating", "not awaited", "void", "fire-and-forget"]
+    },
+    {
+      "id": "D03",
+      "kind": "decoy",
+      "file": "src/inventory.ts",
+      "lines": [104, 109],
+      "anchor": "if (reservation == null) {",
+      "severity": "none",
+      "description": "reservation == null deliberately covers both null and undefined; it is not a loose-equality bug.",
+      "evidence": ["loose", "==", "strict equal", "==="]
+    }
+  ],
+  "matching": "A target is credited to an entry only when it names the entry's file, its lines overlap the entry's range (within 3 lines), and its title or detail contains at least one of the entry's evidence terms. Several entries qualifying equally is ambiguous; a file-and-evidence match without overlapping lines, or file-and-lines without evidence, is weak. Ambiguous and weak targets are listed for adjudication, never credited."
+}

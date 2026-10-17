@@ -1,0 +1,4 @@
+# Source files that already contained a NUL byte when check:text-sources was added (2026-09-15),
+# so git renders them as binary and hides their diffs from review. This list may only shrink.
+src/main/runtime/browser-client-download-transfers.ts
+src/relay/dispatcher.test.ts

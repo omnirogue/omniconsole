@@ -1,0 +1,87 @@
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger
+} from '@/components/ui/dropdown-menu'
+import { PanelBottomClose, PanelRightClose, SquareTerminal } from 'lucide-react'
+import { SessionGridIcon } from '../session-grid/SessionGridIcon'
+import { translate } from '@/i18n/i18n'
+import { TabWorkspaceLayoutMenuSection } from './TabWorkspaceLayoutMenuSection'
+import { requestActiveTerminalPaneSplit } from './request-active-terminal-pane-split'
+import { TAB_CONTEXT_SUBMENU_CONTENT_CLASS } from './tab-context-menu-sizing'
+import { cn } from '@/lib/utils'
+
+export function TerminalTabSplitMenuSection({
+  unifiedTabId,
+  groupId,
+  tabId,
+  isActive,
+  onActivate,
+  splitRightShortcut,
+  splitDownShortcut,
+  trailingSeparator = false
+}: {
+  unifiedTabId: string
+  groupId: string
+  tabId: string
+  isActive: boolean
+  onActivate: (tabId: string) => void
+  splitRightShortcut: string
+  splitDownShortcut: string
+  trailingSeparator?: boolean
+}): React.JSX.Element {
+  const splitActiveTerminalPane = (direction: 'vertical' | 'horizontal'): void => {
+    if (!isActive) {
+      onActivate(tabId)
+    }
+    requestActiveTerminalPaneSplit({ tabId, direction })
+  }
+
+  return (
+    <>
+      <TabWorkspaceLayoutMenuSection unifiedTabId={unifiedTabId} groupId={groupId} />
+      <DropdownMenuItem
+        onSelect={() =>
+          // Why lazy: the grid actions pull in the whole sidebar; the tab strip should not.
+          void import('@/lib/session-grid-actions').then((grid) =>
+            grid.showTerminalTabInGrid(tabId)
+          )
+        }
+      >
+        <SessionGridIcon className="size-3.5 shrink-0" />
+        {translate('sessionGrid.showInGrid', 'Show in Grid')}
+      </DropdownMenuItem>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger className="[&>svg:last-child]:size-3.5">
+          <SquareTerminal className="size-3.5 shrink-0" />
+          {translate(
+            'auto.components.tab.bar.TerminalTabSplitMenuSection.splitTerminal',
+            'Split terminal'
+          )}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuSubContent className={cn('min-w-[12rem]', TAB_CONTEXT_SUBMENU_CONTENT_CLASS)}>
+          <DropdownMenuItem onSelect={() => splitActiveTerminalPane('vertical')}>
+            <PanelRightClose className="size-3.5 shrink-0" />
+            {translate(
+              'auto.components.tab.bar.SortableTabContextMenu.splitTerminalRight',
+              'Split terminal right'
+            )}
+            <DropdownMenuShortcut>{splitRightShortcut}</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => splitActiveTerminalPane('horizontal')}>
+            <PanelBottomClose className="size-3.5 shrink-0" />
+            {translate(
+              'auto.components.tab.bar.SortableTabContextMenu.splitTerminalDown',
+              'Split terminal down'
+            )}
+            <DropdownMenuShortcut>{splitDownShortcut}</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuSubContent>
+      </DropdownMenuSub>
+      {trailingSeparator ? <DropdownMenuSeparator /> : null}
+    </>
+  )
+}

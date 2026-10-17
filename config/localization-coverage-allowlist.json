@@ -1,0 +1,709 @@
+[
+  {
+    "filePath": "src/renderer/src/components/automations/automations-page-fixtures.ts",
+    "kind": "object-property:title",
+    "text": "Nightly #1",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/automations/automations-page-fixtures.ts",
+    "kind": "object-property:label",
+    "text": "Hermes",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/sidebar/worktree-card-meta-row.tsx",
+    "kind": "jsx-attribute:label",
+    "text": "sidebar",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "语言",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "語言",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "언어",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "言語",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "Idioma",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/terminal-advanced-platform-search.ts",
+    "kind": "object-property:keywords",
+    "text": "Ghostty",
+    "dynamic": false,
+    "count": 2
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/terminal-advanced-platform-search.ts",
+    "kind": "object-property:keywords",
+    "text": "ghostty",
+    "dynamic": false,
+    "count": 2
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/terminal-pane-appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "Ghostty",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/terminal-pane-appearance-search.ts",
+    "kind": "object-property:keywords",
+    "text": "ghostty",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/calendar/CalendarEntryOptions.tsx",
+    "kind": "jsx-attribute:placeholder",
+    "text": "https://",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-access-v6/RbacAccessDrawer.tsx",
+    "kind": "object-property:error",
+    "text": "text-status-warning",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-attribute:label",
+    "text": "Recipient",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-attribute:label",
+    "text": "Requested action",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Creates a short-term company goal. No task or execution is started.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-attribute:label",
+    "text": "Desired outcome",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-attribute:label",
+    "text": "Note",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Saving…",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Saved.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Delivery is uncertain. Check the server before creating another outcome.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Retry same request",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Done",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Cancel",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Reply",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Post progress",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Mark done",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Approve versions",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Request changes",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Handoffs and outcomes",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Handoffs & outcomes",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Send handoff",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Send handoff",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "object-property:label",
+    "text": "Create outcome",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "New outcome",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Loading handoffs and outcomes…",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "No cards in this view.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Handoff",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "· Due",
+    "dynamic": true,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "· Version",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "· Unavailable",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Approved",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Changes requested",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Short term",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Long term",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "Unassigned",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-text",
+    "text": "Outcome details",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-comms-v6/TeamHandoffBoard.tsx",
+    "kind": "jsx-expression",
+    "text": "No additional details.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Your RBAC authority",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-text",
+    "text": "Your authority",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Role unavailable",
+    "dynamic": false,
+    "count": 2
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Awaiting vote",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Delegated to",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Delegation",
+    "dynamic": true,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-text",
+    "text": "Cast by",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Counts toward quorum",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Not counted toward quorum",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "1-to-1 decision",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "1-to-many decision",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Last known:",
+    "dynamic": true,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Reconnecting to decision updates.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-expression",
+    "text": "Decision updates are offline.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-text",
+    "text": "Votes and permissions may have changed.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Quorum progress",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-text",
+    "text": "Quorum does not determine the decision outcome.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-text",
+    "text": "Assign voters to begin tracking quorum.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-decisions-v6/DecisionQuorumTracker.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Voter attribution",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "answered ·",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "unanswered",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "See the Per-person answers tab.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "No answer options configured.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Response distribution:",
+    "dynamic": true,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Multiple selections allowed; percentages may total more than 100%.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "results",
+    "dynamic": true,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Survey results · submitted answers only",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-expression",
+    "text": "Updates unavailable",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Results may be out of date.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Retry",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Loading survey results…",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "No participants yet. Invite people to this survey to track completion.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Completion rate",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "of",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "submitted",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Survey completion",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "in progress ·",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "not started",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "No submitted responses yet.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Survey result views",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Response histograms",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Per-person answers",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Percentages are based on people who answered each question.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "This survey has no questions.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:aria-label",
+    "text": "Find a participant",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-attribute:placeholder",
+    "text": "Find a participant…",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "No participants match your search.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Individual survey responses",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Person",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-text",
+    "text": "Status",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-expression",
+    "text": "No answer",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/team-surveys-v6/TeamSurveyResultsPanel.tsx",
+    "kind": "jsx-expression",
+    "text": "Not submitted",
+    "dynamic": false,
+    "count": 1
+  }
+]

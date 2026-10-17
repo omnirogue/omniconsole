@@ -1,0 +1,23 @@
+{
+  "model": "laya-typed-decisions.f9ab0b228f0fc0f14d873dbc99038f135c2da1b2",
+  "modelRepository": "convaiinnovations/laya-typed-decisions",
+  "modelRevision": "f9ab0b228f0fc0f14d873dbc99038f135c2da1b2",
+  "sourceRevision": "42626c348753fbb17572a813127df2278a1ec527",
+  "modelFiles": {
+    "encoder/config.json": "5268d24ad3b77c8151de5dcb0762ba4391619aad9ab0bda33e36fb083cfeae6d",
+    "model.safetensors": "4fa56de72383a9d3efa9cfa78955733c81b9fc8067a587ca4beb82c78107a24e",
+    "rl_agent_config.json": "ebf0cd524d92342a6be5e48e9fca3d7c2babfb5a56ccd79d2171ef5d8c7f7be8",
+    "tokenizer/tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+    "tokenizer/tokenizer_config.json": "08d4cf3ac4dca381759441b85b91a6d40e688471dcd33d15d6649eb0a9a854d1"
+  },
+  "sourceFiles": {
+    "LICENSE": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+    "laya/__init__.py": "d08fc87cf61241f01265b965f769a38036cef759e6535e7cbf2d7c63a0ef59a3",
+    "laya/agent.py": "025522e4fd212d805703dfe1b93919c6cfae7a3c12dc72a984f88de02f2eb9c0",
+    "laya/common.py": "f948ee606abe2ed2463f830c051f1a60dccc1b9f5ca1fdc15635cfcbe0cff7b2",
+    "laya/email.py": "55138f6044f898bdefdbd8aaba08ce5b4d3e62083c61695edf06f46d71c48d2c",
+    "laya/lang.py": "38e5572f8ef946782b9fab0d01402fef293298ff326823985f48b0b1b39707fb",
+    "laya/presets.py": "2a3370f587cae29696bfa487edcc51caf47a211518733fdb192cf6d4eddbf1ea",
+    "laya/router.py": "c49c3daa338838bef895f92cdd58b9277b378221eb1c9016e9d35e3a7c6122c4"
+  }
+}

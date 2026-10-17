@@ -1,0 +1,4 @@
+[
+  { "name": "discover-default", "template": "discover" },
+  { "name": "discover-one-round", "template": "discover", "specFile": "discover-one-round.json" }
+]

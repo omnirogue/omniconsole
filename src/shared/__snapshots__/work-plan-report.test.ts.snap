@@ -1,0 +1,135 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`is a stable document 1`] = `
+"<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ship the launch page — plan</title>
+<style>:root { color-scheme: light dark; }
+body { font: 14px/1.5 ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 24px; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+h2 { font-size: 14px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; margin: 28px 0 8px; }
+.done-when { list-style: none; padding: 0; margin: 0; }
+.done-when li { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(128,128,128,.2); }
+.mark { width: 1.2em; }
+.satisfied .mark { color: #1f7a3d; }
+.receipt { font-family: ui-monospace, monospace; font-size: 11px; opacity: .65; word-break: break-all; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid rgba(128,128,128,.2); }
+th { font-weight: 600; font-size: 12px; opacity: .7; }
+.topology { max-width: 100%; height: auto; }
+.stage-title { font-size: 12px; font-weight: 600; fill: currentColor; }
+.stage-mark { fill: #1f5fa8; }
+.seat rect { fill: rgba(128,128,128,.12); stroke: rgba(128,128,128,.5); }
+.seat-actor { font-size: 12px; font-weight: 600; fill: currentColor; }
+.seat-model { font-size: 11px; fill: currentColor; opacity: .7; }
+.seat-done rect { stroke: #1f7a3d; }
+.seat-running rect { stroke: #1f5fa8; stroke-width: 2; }
+.seat-failed rect { stroke: #a02020; stroke-width: 2; }
+.seat-skipped rect { stroke-dasharray: 4 3; }
+.flow { stroke: rgba(128,128,128,.6); fill: none; }
+.flow-glyph { font-size: 12px; fill: currentColor; opacity: .6; }
+.mockup { border: 1px solid rgba(128,128,128,.4); width: 100%; height: 420px; }
+footer { margin-top: 32px; font-size: 12px; opacity: .6; }</style>
+</head>
+<body>
+<header>
+<h1>Ship the launch page</h1>
+<p>plan · running · 1/2 done when · revision 1 · plan v1</p>
+</header>
+<h2>Done when</h2><ul class="done-when"><li class="satisfied"><span class="mark">✓</span><span>the plan document exists and matches work-plan-v1<div class="receipt">sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:/workspace/launch/.omni/runs/chain-plan-report/plan-1/plan.json</div></span></li><li class=""><span class="mark">·</span><span>you approved the plan</span></li></ul>
+<h2>Topology</h2><svg class="topology" viewBox="0 0 1510 260" width="1510" height="260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plan topology">
+<title>Plan topology: 7 stages</title>
+<g class="stage">
+<title>research · 3 seats in parallel</title>
+<text class="stage-title" x="20" y="34">research ⑂3</text>
+</g>
+<g class="seat seat-done"><title>claude · claude-model
+state: done
+instruction: research the launch page</title><rect x="20" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="30" y="87">claude</text><text class="seat-model" x="30" y="104">claude-model</text></g>
+<g class="seat seat-done"><title>codex · codex-model
+state: done
+instruction: research the launch page</title><rect x="20" y="128" width="168" height="46" rx="6" /><text class="seat-actor" x="30" y="147">codex</text><text class="seat-model" x="30" y="164">codex-model</text></g>
+<g class="seat seat-done"><title>grok · grok-model
+state: done
+instruction: research the launch page</title><rect x="20" y="188" width="168" height="46" rx="6" /><text class="seat-actor" x="30" y="207">grok</text><text class="seat-model" x="30" y="224">grok-model</text></g>
+<path class="flow" d="M 188 91 L 230 91" />
+<text class="flow-glyph" x="200" y="85">→</text>
+<g class="stage">
+<title>synthesize · one seat</title>
+<text class="stage-title" x="230" y="34">◇ synthesize</text>
+</g>
+<g class="seat seat-done"><title>claude · claude-model
+state: done
+launched: 2025-06-15T15:07:40.000Z
+instruction: synthesize the launch page</title><rect x="230" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="240" y="87">claude</text><text class="seat-model" x="240" y="104">claude-model</text></g>
+<path class="flow" d="M 398 91 L 440 91" />
+<text class="flow-glyph" x="410" y="85">→</text>
+<g class="stage stage-current">
+<title>plan · 3 seats in parallel · running now</title>
+<text class="stage-title" x="440" y="34">📝 plan ⑂3</text>
+<rect class="stage-mark" x="440" y="44" width="168" height="4" />
+</g>
+<g class="seat seat-running"><title>claude · claude-model
+state: running
+instruction: plan the launch page</title><rect x="440" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="450" y="87">claude</text><text class="seat-model" x="450" y="104">claude-model</text></g>
+<g class="seat seat-running"><title>codex · codex-model
+state: running
+instruction: plan the launch page</title><rect x="440" y="128" width="168" height="46" rx="6" /><text class="seat-actor" x="450" y="147">codex</text><text class="seat-model" x="450" y="164">codex-model</text></g>
+<g class="seat seat-queued"><title>grok · grok-model
+state: queued
+instruction: plan the launch page</title><rect x="440" y="188" width="168" height="46" rx="6" /><text class="seat-actor" x="450" y="207">grok</text><text class="seat-model" x="450" y="224">grok-model</text></g>
+<path class="flow" d="M 608 91 L 650 91" />
+<text class="flow-glyph" x="620" y="85">→</text>
+<g class="stage">
+<title>judge · one seat</title>
+<text class="stage-title" x="650" y="34">⚖ judge</text>
+</g>
+<g class="seat seat-queued"><title>kimi · kimi-model
+state: queued
+verdict: judge over plan-1, plan-2, plan-3 · select-winner
+receipt: plan-judge:select-winner:1
+instruction: judge the launch page</title><rect x="650" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="660" y="87">kimi</text><text class="seat-model" x="660" y="104">kimi-model</text></g>
+<path class="flow" d="M 818 91 L 860 91" />
+<text class="flow-glyph" x="830" y="85">→</text>
+<g class="stage">
+<title>improve · one seat</title>
+<text class="stage-title" x="860" y="34">✨ improve</text>
+</g>
+<g class="seat seat-queued"><title>claude · claude-model
+state: queued
+instruction: improve the launch page</title><rect x="860" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="870" y="87">claude</text><text class="seat-model" x="870" y="104">claude-model</text></g>
+<path class="flow" d="M 1028 91 L 1070 91" />
+<text class="flow-glyph" x="1040" y="85">→</text>
+<g class="stage">
+<title>verify · one seat</title>
+<text class="stage-title" x="1070" y="34">✓ verify</text>
+</g>
+<g class="seat seat-queued"><title>codex · codex-model
+state: queued
+round 1 of 2
+verdict: verify over improve · gate
+instruction: verify the launch page</title><rect x="1070" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="1080" y="87">codex</text><text class="seat-model" x="1080" y="104">codex-model</text></g>
+<path class="flow" d="M 1238 91 L 1280 91" />
+<text class="flow-glyph" x="1250" y="85">→</text>
+<g class="stage">
+<title>your review · one seat</title>
+<text class="stage-title" x="1280" y="34">👤 your review</text>
+</g>
+<g class="seat seat-queued"><title>you
+state: queued
+instruction: Finish: my-review</title><rect x="1280" y="68" width="168" height="46" rx="6" /><text class="seat-actor" x="1290" y="87">you</text><text class="seat-model" x="1290" y="104">queued</text></g>
+</svg>
+<h2>Summary</h2><p>Write the offer, build one page, verify the price is stated once.</p>
+<h2>Assumptions</h2><ul><li>The price is final at $499.</li></ul>
+<h2>Steps</h2><table><thead><tr><th>#</th><th>Step</th><th>Owner</th><th>Files</th><th>After</th></tr></thead><tbody><tr><td>1</td><td><strong>Write the offer copy</strong><div>State the offer and the price in the hero.</div></td><td>claude</td><td><div class="receipt">index.html</div></td><td></td></tr><tr><td>2</td><td><strong>Build the page</strong><div>One static page, no framework.</div></td><td>codex</td><td><div class="receipt">index.html</div><div class="receipt">styles.css</div></td><td>1</td></tr></tbody></table>
+<h2>Risks</h2><ul><li>The price could change before launch.</li></ul>
+<h2>Open questions</h2><ul><li>Which domain does it ship on?</li></ul>
+<h2>Mockups</h2><figure><figcaption>Hero with price</figcaption><iframe class="mockup" sandbox="" referrerpolicy="no-referrer" src="hero.html" title="Hero with price"></iframe></figure>
+<h2>Provenance</h2><ul><li>the plan document exists and matches work-plan-v1<div class="receipt">sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:/workspace/launch/.omni/runs/chain-plan-report/plan-1/plan.json · 2025-06-15T15:06:42.000Z</div></li><li>verdict on plan-judge<div class="receipt">plan-judge:select-winner:1 · attempt attempt-plan-judge · 2025-06-15T15:06:41.000Z</div></li></ul>
+<footer>Launch page plan · about half a day · chain chain-plan-report · rendered 2025-06-15T15:06:43.000Z</footer>
+</body>
+</html>"
+`;

@@ -1,0 +1,1168 @@
+{
+  "preview": {
+    "ok": true,
+    "graph": {
+      "schema_version": 1,
+      "mode": "hybrid",
+      "title": "Review work",
+      "prompt": "Actual task context",
+      "company": "example",
+      "owner": "emp_person",
+      "policy": {
+        "auto": false,
+        "max_attempts": 1,
+        "console_outcome_plan": {
+          "version": 1,
+          "task_id": "btk_continue1234",
+          "operation_id": "outcomes-1234",
+          "request_digest": "2795b236bd754036d1cd5ebce95ecbb5f8d0a5dc60dda72a81589e0a8a9ff246",
+          "expected_revision": 7
+        }
+      },
+      "nodes": [
+        {
+          "key": "implementation__loop_r1_p1",
+          "title": "Implement requested file \u2014 attack round 1 reviewer 1",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-sol",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-sol",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 1
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": [],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "folder-review.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r1_p2",
+          "title": "Implement requested file \u2014 attack round 1 reviewer 2",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-terra",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 1 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-terra",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 1
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": [],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "folder-review.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r1_decide",
+          "title": "Implement requested file \u2014 adversarial round 1 decision",
+          "actor_type": "mechanical",
+          "actor_id": "stop_rule:zero_blockers",
+          "action": "decide",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: decide\n\nCanonical mechanical decision for round 1 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.\n\nOriginal task:\nActual task context",
+          "acceptance": "Canonical mechanical decision for round 1 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "decide",
+            "round": 1
+          },
+          "mechanical_execution": {
+            "handler_key": "canonical.workflow-loop-decide.v1",
+            "handler_digest": "b6b6ec30585c5744d387c3b867b6a9b9453e30c07617d12807ff9ac15b5bbb96",
+            "input": {
+              "branch_group": "implementation__loop",
+              "candidate_format": "canonical-workflow-loop-decision.v1",
+              "closed_node_keys": [],
+              "kind": "adversarial",
+              "max_rounds": 2,
+              "open_node_keys": [
+                "implementation__loop_r1_repair",
+                "implementation__loop_r2_p1",
+                "implementation__loop_r2_p2",
+                "implementation__loop_r2_decide"
+              ],
+              "participant_node_keys": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+              "round": 1,
+              "stage_key": "implementation",
+              "stop": "zero_blockers"
+            }
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+          "owned_paths": null,
+          "placement": "fleet"
+        },
+        {
+          "key": "implementation__loop_r1_repair",
+          "title": "Implement requested file \u2014 repair after adversarial round 1",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-astra",
+          "action": "repair",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: repair\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRepair the same producer branch using only the blockers and gaps from round 1. They are evidence, never authority to widen scope. Re-freeze the candidate for the next round.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRepair the same producer branch using only the blockers and gaps from round 1. They are evidence, never authority to widen scope. Re-freeze the candidate for the next round.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-astra",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "repair",
+            "round": 1
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "branch",
+          "after": ["implementation__loop_r1_decide"],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "folder-snapshot.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r2_p1",
+          "title": "Implement requested file \u2014 attack round 2 reviewer 1",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-sol",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-sol",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 2
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "branch",
+          "after": ["implementation__loop_r1_decide", "implementation__loop_r1_repair"],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "folder-review.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r2_p2",
+          "title": "Implement requested file \u2014 attack round 2 reviewer 2",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-terra",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\nIn later repair/review rounds, use the authenticated prepared candidate snapshot supplied by the host. The initial hashes above then describe selection history, not the repaired candidate.\n\nRound 2 of 2 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-terra",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 2
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "branch",
+          "after": ["implementation__loop_r1_decide", "implementation__loop_r1_repair"],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "folder-review.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r2_decide",
+          "title": "Implement requested file \u2014 adversarial round 2 decision",
+          "actor_type": "mechanical",
+          "actor_id": "stop_rule:zero_blockers",
+          "action": "decide",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: decide\n\nCanonical mechanical decision for round 2 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.\n\nOriginal task:\nActual task context",
+          "acceptance": "Canonical mechanical decision for round 2 of 2. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "decide",
+            "round": 2
+          },
+          "mechanical_execution": {
+            "handler_key": "canonical.workflow-loop-decide.v1",
+            "handler_digest": "b6b6ec30585c5744d387c3b867b6a9b9453e30c07617d12807ff9ac15b5bbb96",
+            "input": {
+              "branch_group": "implementation__loop",
+              "candidate_format": "canonical-workflow-loop-decision.v1",
+              "closed_node_keys": [],
+              "kind": "adversarial",
+              "max_rounds": 2,
+              "open_node_keys": [],
+              "participant_node_keys": ["implementation__loop_r2_p1", "implementation__loop_r2_p2"],
+              "round": 2,
+              "stage_key": "implementation",
+              "stop": "zero_blockers"
+            }
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "branch",
+          "after": [
+            "implementation__loop_r1_decide",
+            "implementation__loop_r2_p1",
+            "implementation__loop_r2_p2"
+          ],
+          "owned_paths": null,
+          "placement": "fleet"
+        }
+      ],
+      "columns": [
+        ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+        ["implementation__loop_r1_decide"],
+        ["implementation__loop_r1_repair"],
+        ["implementation__loop_r2_p1", "implementation__loop_r2_p2"],
+        ["implementation__loop_r2_decide"]
+      ],
+      "edges": [
+        {
+          "edge_key": "implementation__loop_r1_p1_to_implementation__loop_r1_decide",
+          "from_node_key": "implementation__loop_r1_p1",
+          "to_node_key": "implementation__loop_r1_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r1_p2_to_implementation__loop_r1_decide",
+          "from_node_key": "implementation__loop_r1_p2",
+          "to_node_key": "implementation__loop_r1_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r1_repair",
+          "from_node_key": "implementation__loop_r1_decide",
+          "to_node_key": "implementation__loop_r1_repair",
+          "edge_kind": "branch",
+          "condition_kind": "selected",
+          "branch_group": "implementation__loop",
+          "condition": {
+            "equals": "open"
+          }
+        },
+        {
+          "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_p1",
+          "from_node_key": "implementation__loop_r1_decide",
+          "to_node_key": "implementation__loop_r2_p1",
+          "edge_kind": "branch",
+          "condition_kind": "selected",
+          "branch_group": "implementation__loop",
+          "condition": {
+            "equals": "open"
+          }
+        },
+        {
+          "edge_key": "implementation__loop_r1_repair_to_implementation__loop_r2_p1",
+          "from_node_key": "implementation__loop_r1_repair",
+          "to_node_key": "implementation__loop_r2_p1",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_p2",
+          "from_node_key": "implementation__loop_r1_decide",
+          "to_node_key": "implementation__loop_r2_p2",
+          "edge_kind": "branch",
+          "condition_kind": "selected",
+          "branch_group": "implementation__loop",
+          "condition": {
+            "equals": "open"
+          }
+        },
+        {
+          "edge_key": "implementation__loop_r1_repair_to_implementation__loop_r2_p2",
+          "from_node_key": "implementation__loop_r1_repair",
+          "to_node_key": "implementation__loop_r2_p2",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r1_decide_to_implementation__loop_r2_decide",
+          "from_node_key": "implementation__loop_r1_decide",
+          "to_node_key": "implementation__loop_r2_decide",
+          "edge_kind": "branch",
+          "condition_kind": "selected",
+          "branch_group": "implementation__loop",
+          "condition": {
+            "equals": "open"
+          }
+        },
+        {
+          "edge_key": "implementation__loop_r2_p1_to_implementation__loop_r2_decide",
+          "from_node_key": "implementation__loop_r2_p1",
+          "to_node_key": "implementation__loop_r2_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r2_p2_to_implementation__loop_r2_decide",
+          "from_node_key": "implementation__loop_r2_p2",
+          "to_node_key": "implementation__loop_r2_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        }
+      ],
+      "dispatch_id": "wf_console_graph_e65a1b9a06274c823e61175badaab910",
+      "digest": "f69eff09e1f4be007d09ece65283b4d603341dd3c7bb59f18a34b87e9a6e1450"
+    },
+    "digest": "f69eff09e1f4be007d09ece65283b4d603341dd3c7bb59f18a34b87e9a6e1450",
+    "workflow_id": "wf_console_graph_e65a1b9a06274c823e61175badaab910",
+    "admission": {
+      "filing_root_task_id": "btk_continue1234",
+      "filing_root_expected_revision": 7,
+      "org_unit_id": "org_example",
+      "expected_authority_epoch": 1,
+      "objective": {
+        "goal_id": "cgl_actual",
+        "title": "Review work \u2014 staged continuation",
+        "desired_result": "Complete the frozen continuation stages; the original task retains its full acceptance.",
+        "acceptance_policy": {
+          "required": ["all_selected_nodes_verified"]
+        },
+        "verification_policy": {
+          "schema_version": 1,
+          "independent": true,
+          "require_current_contract_generation": true,
+          "require_exact_deployed_sha": true,
+          "assignments": {
+            "machine": {
+              "assignment_id": "verification-assignment:console:machine:v1",
+              "policy_ref": "objective:console:verification:machine:v1",
+              "executor_kind": "llm",
+              "provider": "grok",
+              "model": "grok-4.6",
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:machine:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "executor_adapter": "foreman",
+                      "session_continuity": {
+                        "mode": "fresh_context"
+                      },
+                      "foreman_launch": {
+                        "provider": "grok",
+                        "model": "grok-4.6",
+                        "effort": null,
+                        "machine": "mw0002",
+                        "workspace": {
+                          "kind": "folder",
+                          "host": "mw0002",
+                          "allocation": "job"
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "b4e0b8e46dc65689d873e39c77c732af71950f6bd9fa85f4526a5e8a7278a6a0"
+              }
+            },
+            "human": {
+              "assignment_id": "verification-assignment:console:human:v1",
+              "policy_ref": "objective:console:verification:human:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:human:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.human-decision-authenticity.v1",
+                        "handler_digest": "39ae478b085b39ea10b88f64f94646a2601d57eeb0e475f34a8fd3827ba4f32c",
+                        "input": {
+                          "candidate_format": "canonical-human-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "f2f6c7c0e9c7b2f469bd5659d33e48ded2a88cc42f539516612ee625abc34bdb"
+              }
+            },
+            "mechanical": {
+              "assignment_id": "verification-assignment:console:loop:v1",
+              "policy_ref": "objective:console:verification:loop:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:loop:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.workflow-loop-decision.v1",
+                        "handler_digest": "71c3959ce34cada7f90cd28cc7f989c8863b997d3178ac3fe43bfacf8a46a847",
+                        "input": {
+                          "candidate_format": "canonical-workflow-loop-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "de24c10052f6e6c67da657fd8664be432efaa3a88ea27feb586032504b5c8cdd"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "folder_input": {
+    "ok": true,
+    "candidate": {
+      "schema_version": 1,
+      "producer_key": "implementation__loop_r1_repair",
+      "job_id": "job_a531b227439fd0b2c71f",
+      "task_id": "btk_0004graph0",
+      "attempt": 1,
+      "receipt_event_id": 9,
+      "fingerprint": "b81a30ff52a6cd2403676488f97786bc5347fc1b6a3e288424dd5c5b043c8c64",
+      "result_event_id": 8,
+      "source_receipt_id": "source_folder_round",
+      "verification_report_id": "vr_folder_round",
+      "candidate_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "evidence_id": "evidence_folder_round",
+      "artifact": {
+        "file_id": "tfl_a531b227439fd0b2c71f",
+        "rel": "uploads/job_a531b227439fd0b2c71f-1-folder-snapshot.json",
+        "sha256": "af46c41aedf3d7da2fe4a1d68c103cbabf77b024ffc1ac96716e7a92df40679b",
+        "size_bytes": 375
+      },
+      "manifest": [
+        {
+          "mode": 420,
+          "path": "docs/report.txt",
+          "sha256": "ecab956d280fad65d843de5dfdb32cd2addd02d93923223a18e8d977d547e84b",
+          "size_bytes": 21
+        }
+      ],
+      "snapshot_digest": "d47ad202b8526e20858f7d87ce3fa864f8b0c1bc3917916f03dd466893b845ec"
+    },
+    "content_b64": "eyJzY2hlbWFfdmVyc2lvbiI6IDEsICJraW5kIjogImZvbGRlcl9yZXBvcnQiLCAiam9iX2lkIjogImpvYl9hNTMxYjIyNzQzOWZkMGIyYzcxZiIsICJhdHRlbXB0IjogMSwgInJlc3BvbnNlIjogIlJlcGFpcmVkIHRoZSBzZWxlY3RlZCBmaWxlLiIsICJjaGFuZ2VkX2ZpbGVzIjogWyJkb2NzL3JlcG9ydC50eHQiXSwgImZpbGVzIjogW3sicGF0aCI6ICJkb2NzL3JlcG9ydC50eHQiLCAibW9kZSI6IDQyMCwgInNoYTI1NiI6ICJlY2FiOTU2ZDI4MGZhZDY1ZDg0M2RlNWRmZGIzMmNkMmFkZGQwMmQ5MzkyMzIyM2ExOGU4ZDk3N2Q1NDdlODRiIiwgInNpemVfYnl0ZXMiOiAyMSwgImNvbnRlbnRfYjY0IjogIllXTjBkV0ZzSUhKbGNHRnBjbVZrSUdKNWRHVnoifV19"
+  },
+  "source_artifact": {
+    "job_id": "job_a531b227439fd0b2c71f",
+    "attempt": 1,
+    "file_id": "tfl_a531b227439fd0b2c71f",
+    "principal": "folder-round@example.test",
+    "sha256": "af46c41aedf3d7da2fe4a1d68c103cbabf77b024ffc1ac96716e7a92df40679b",
+    "rel": "uploads/job_a531b227439fd0b2c71f-1-folder-snapshot.json",
+    "size_bytes": 375,
+    "folder_snapshot": {
+      "snapshot_digest": "d47ad202b8526e20858f7d87ce3fa864f8b0c1bc3917916f03dd466893b845ec",
+      "manifest": [
+        {
+          "path": "docs/report.txt",
+          "mode": 420,
+          "sha256": "ecab956d280fad65d843de5dfdb32cd2addd02d93923223a18e8d977d547e84b",
+          "size_bytes": 21
+        }
+      ]
+    }
+  },
+  "review_artifact": {
+    "job_id": "job_ac596976f5ff0e09d26d",
+    "attempt": 1,
+    "file_id": "tfl_ac596976f5ff0e09d26d",
+    "principal": "folder-round@example.test",
+    "sha256": "92b2f3421d264c5e820307d33414dd3cf4fa9b329b6c7bac6560fce245b6cce8",
+    "rel": "uploads/job_ac596976f5ff0e09d26d-1-folder-review.json",
+    "size_bytes": 366,
+    "reviewed_snapshot": {
+      "schema_version": 1,
+      "kind": "accepted_folder_snapshot",
+      "snapshot_digest": "d47ad202b8526e20858f7d87ce3fa864f8b0c1bc3917916f03dd466893b845ec",
+      "artifact_sha256": "af46c41aedf3d7da2fe4a1d68c103cbabf77b024ffc1ac96716e7a92df40679b",
+      "source_job_id": "job_a531b227439fd0b2c71f",
+      "source_attempt": 1
+    }
+  },
+  "review_result_event": {
+    "id": 10,
+    "job_id": "job_ac596976f5ff0e09d26d",
+    "at": "2026-09-13T20:05:42.229302-04:00",
+    "kind": "result",
+    "machine": "local:emp_person",
+    "detail": {
+      "error": "",
+      "pr_url": null,
+      "status": "done",
+      "attempt": 1,
+      "file_id": "tfl_ac596976f5ff0e09d26d",
+      "reported": "done",
+      "execution": null,
+      "claimed_at": "2026-09-14T00:04:51.258531+00:00",
+      "changed_files": [],
+      "output_digest": "b607311bdded4c86a03ce09fab23deea2b5dbb512886faf33024e28bb139bf73",
+      "terminal_proof": {
+        "kind": "exited",
+        "exit_cause": {
+          "kind": "exited",
+          "exit_code": 0
+        },
+        "observed_at": "2026-09-14T00:05:42.250059+00:00",
+        "process_exited": true,
+        "process_identity": {
+          "pid": 14022,
+          "started_at": "Sun Sep 13 12:01:00 2026",
+          "runner_instance": "folder_round_runner"
+        },
+        "process_exit_code": 0
+      },
+      "artifact_sha256": "92b2f3421d264c5e820307d33414dd3cf4fa9b329b6c7bac6560fce245b6cce8",
+      "lease_generation": 1,
+      "result_exit_code": 0,
+      "reviewed_snapshot": {
+        "kind": "accepted_folder_snapshot",
+        "source_job_id": "job_a531b227439fd0b2c71f",
+        "schema_version": 1,
+        "source_attempt": 1,
+        "artifact_sha256": "af46c41aedf3d7da2fe4a1d68c103cbabf77b024ffc1ac96716e7a92df40679b",
+        "snapshot_digest": "d47ad202b8526e20858f7d87ce3fa864f8b0c1bc3917916f03dd466893b845ec"
+      },
+      "workflow_loop_verdict": {
+        "gaps": [],
+        "notes": "",
+        "verdict": "agree",
+        "blockers": []
+      },
+      "owned_paths_violations": []
+    },
+    "source_snapshot": {
+      "branch": null,
+      "detail": {
+        "error": "",
+        "pr_url": null,
+        "status": "done",
+        "attempt": 1,
+        "file_id": "tfl_ac596976f5ff0e09d26d",
+        "reported": "done",
+        "execution": null,
+        "claimed_at": "2026-09-14T00:04:51.258531+00:00",
+        "project_dir": "/local/work",
+        "changed_files": [],
+        "output_digest": "b607311bdded4c86a03ce09fab23deea2b5dbb512886faf33024e28bb139bf73",
+        "terminal_proof": {
+          "kind": "exited",
+          "exit_cause": {
+            "kind": "exited",
+            "exit_code": 0
+          },
+          "observed_at": "2026-09-14T00:05:42.250059+00:00",
+          "process_exited": true,
+          "process_identity": {
+            "pid": 14022,
+            "started_at": "Sun Sep 13 12:01:00 2026",
+            "runner_instance": "folder_round_runner"
+          },
+          "process_exit_code": 0
+        },
+        "artifact_sha256": "92b2f3421d264c5e820307d33414dd3cf4fa9b329b6c7bac6560fce245b6cce8",
+        "execution_claim": {
+          "host": "local:emp_person",
+          "job_id": "job_ac596976f5ff0e09d26d",
+          "attempt": 1,
+          "claimed_at": "2026-09-13T20:04:51.258531-04:00",
+          "runner_instance": "folder_round_runner",
+          "claim_request_id": "claim_job_ac596976f5ff0e09d26d"
+        },
+        "lease_generation": 1,
+        "process_identity": {
+          "pid": 14022,
+          "started_at": "Sun Sep 13 12:01:00 2026",
+          "runner_instance": "folder_round_runner"
+        },
+        "result_exit_code": 0,
+        "execution_binding": {
+          "host": "local:emp_person",
+          "job_id": "job_ac596976f5ff0e09d26d",
+          "attempt": 1,
+          "task_id": "btk_0005graph0",
+          "claimed_at": "2026-09-14T00:04:51.258531+00:00",
+          "contract_id": "tc_implementation__loop_r2_p1",
+          "dispatch_key": "dispatch_job_ac596976f5ff0e09d26d",
+          "contract_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "runner_instance": "folder_round_runner",
+          "claim_request_id": "claim_job_ac596976f5ff0e09d26d",
+          "attempt_intent_id": "intent_job_ac596976f5ff0e09d26d",
+          "contract_generation": 1
+        },
+        "reviewed_snapshot": {
+          "kind": "accepted_folder_snapshot",
+          "source_job_id": "job_a531b227439fd0b2c71f",
+          "schema_version": 1,
+          "source_attempt": 1,
+          "artifact_sha256": "af46c41aedf3d7da2fe4a1d68c103cbabf77b024ffc1ac96716e7a92df40679b",
+          "snapshot_digest": "d47ad202b8526e20858f7d87ce3fa864f8b0c1bc3917916f03dd466893b845ec"
+        },
+        "workflow_loop_verdict": {
+          "gaps": [],
+          "notes": "",
+          "verdict": "agree",
+          "blockers": []
+        },
+        "owned_paths_violations": [],
+        "execution_start_receipt": {
+          "binding": {
+            "host": "local:emp_person",
+            "job_id": "job_ac596976f5ff0e09d26d",
+            "attempt": 1,
+            "task_id": "btk_0005graph0",
+            "claimed_at": "2026-09-14T00:04:51.258531+00:00",
+            "contract_id": "tc_implementation__loop_r2_p1",
+            "dispatch_key": "dispatch_job_ac596976f5ff0e09d26d",
+            "contract_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "runner_instance": "folder_round_runner",
+            "claim_request_id": "claim_job_ac596976f5ff0e09d26d",
+            "attempt_intent_id": "intent_job_ac596976f5ff0e09d26d",
+            "contract_generation": 1
+          },
+          "started": true,
+          "attempt_id": "attempt_job_ac596976f5ff0e09d26d",
+          "session_id": "session_job_ac596976f5ff0e09d26d"
+        }
+      },
+      "job_id": "job_ac596976f5ff0e09d26d",
+      "pr_url": null,
+      "status": "done",
+      "attempt": 1,
+      "company": "example",
+      "machine": "local:emp_person",
+      "node_id": "btk_0005graph0",
+      "task_id": "btk_0005graph0",
+      "provider": "codex",
+      "actor_type": "ai",
+      "department": "dev",
+      "event_type": "result",
+      "card_events": true,
+      "executor_kind": "ai",
+      "output_digest": "b607311bdded4c86a03ce09fab23deea2b5dbb512886faf33024e28bb139bf73",
+      "lease_generation": 1,
+      "merge_commit_sha": null
+    }
+  },
+  "review_runner_receipt": {
+    "id": 11,
+    "job_id": "job_ac596976f5ff0e09d26d",
+    "at": "2026-09-13T20:05:42.229302-04:00",
+    "kind": "runner_result_receipt",
+    "machine": "local:emp_person",
+    "detail": {
+      "host": "local:emp_person",
+      "attempt": 1,
+      "claim_id": "2026-09-14T00:04:51.258531+00:00",
+      "fingerprint": "a255abba3e6d09e465b08608160386fb6ff6e8a987204951ebc6bd172af63721"
+    },
+    "source_snapshot": null
+  }
+}

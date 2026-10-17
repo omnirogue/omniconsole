@@ -1,0 +1,4 @@
+interface:
+  display_name: "Electron & Remote Reviewer"
+  short_description: "Review IPC, host ownership and lifecycle boundaries"
+  default_prompt: "Use $omni-boundary-review to review this change for trust, host-ownership and compatibility defects."

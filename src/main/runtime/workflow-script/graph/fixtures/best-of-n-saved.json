@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "title": "Best of N",
+  "template": "best-of-n",
+  "steps": [
+    {
+      "id": "generate",
+      "kind": "do",
+      "title": "Candidates",
+      "instruction": "Produce a complete, finished version of what the task asks for, ready to use as it is. Take the angle you are given, but never at the expense of doing what the task asks. Return only the finished work, with no preamble.",
+      "agents": [
+        {
+          "route": "claude",
+          "angle": "the most direct, complete version"
+        },
+        {
+          "route": "codex",
+          "angle": "a bold, original take"
+        },
+        {
+          "route": "grok",
+          "angle": "the most rigorous, carefully checked version"
+        },
+        {
+          "route": "claude",
+          "angle": "the simplest version a busy reader gets at once"
+        }
+      ],
+      "inputs": []
+    },
+    {
+      "id": "judge",
+      "kind": "rank",
+      "title": "Judges pick the best",
+      "instruction": "",
+      "agents": [
+        {
+          "route": "claude"
+        },
+        {
+          "route": "codex"
+        },
+        {
+          "route": "grok"
+        }
+      ],
+      "inputs": [
+        "generate"
+      ],
+      "jev": {
+        "method": "auto",
+        "only": true
+      }
+    }
+  ]
+}

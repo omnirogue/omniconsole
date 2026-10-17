@@ -1,0 +1,86 @@
+{
+  "version": 3,
+  "frozenAt": "2026-09-21",
+  "status": "pre-registered Discover v3; all six packets disjoint from v1/v2 calibration and frozen before outputs",
+  "scope": "Synthetic source and contracts only; no repository access or external facts permitted",
+  "roster": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+  "comparators": ["claude-sonnet-5 low effort", "claude-sonnet-5 high effort"],
+  "analysisPlan": {
+    "primary": "One-shot firstOutcome. Compare substantive confirmed root-cause findings against seeded truth by case and arm: TP, FP, FN, precision, recall, F1. Failed/empty arms score zero utility. A tentative or contested workflow finding is not a confirmed TP; report it separately. Count duplicate paraphrases of one root cause once for TP, and report duplicate surplus separately.",
+    "resilience": "If an execution fails after a verified terminal attempt, up to two explicit repairs are allowed by the production three-attempt persisted ceiling. Keep first failure in primary denominator; final outcome is separate resilience evidence.",
+    "comparability": "Four seeded defects total, at most two per case; the single-model findings schema cap of four cannot bind true-positive recall. Workflow ranking is diagnostic and excluded from paired score. High effort is a stronger baseline, not compute-matched to multi-model calls.",
+    "blinding": "Hide arm/model identity in any independent human rating packet; preserve raw outputs and separate key. Mechanical seeded-truth scoring is preliminary and not a substitute for two independent human raters.",
+    "controls": "Retain all six cases and all arm failures, timeouts, repairs, latency and available usage. Do not tune prompts or cherry-pick after seeing output. Inspect native receipts for model identity/tool use before any frozen-evidence claim."
+  },
+  "cases": [
+    {
+      "id": "discover-v3-01",
+      "kind": "positive-capability-binding",
+      "prompt": "Inspect this download route for concrete access-control defects using only the supplied source and contract.",
+      "evidence": [
+        {"ref": "src/capability-download.ts:1-11", "text": "async function download(req) { const token = verifySignedToken(req.query.token); if (!token || token.expiresAt < Date.now()) return reply(403); const file = await files.get(req.params.fileId); return reply(file.bytes); }"},
+        {"ref": "contract:capability", "text": "A signed token grants read access only to the one file ID in token.allowedFileId. A caller may hold a valid token for a public file and request a different private file ID. File IDs are guessable; files.get has no authorization check. The signature verifier authenticates the token and expiry but does not compare the request path."}
+      ],
+      "groundTruth": [{"root": "requested file ID is not bound to signed token allowance", "severity": "high", "reference": "src/capability-download.ts:1-11"}],
+      "adjudication": "A valid public-file token can fetch a guessed private file because the route ignores allowedFileId. Confirm the high-severity authorization defect and bind request file ID to the signed allowance before reading. Signature and expiry alone do not guard it."
+    },
+    {
+      "id": "discover-v3-02",
+      "kind": "positive-ack-before-durable-write",
+      "prompt": "Inspect this queue consumer for a concrete loss or retry defect under the stated delivery contract.",
+      "evidence": [
+        {"ref": "src/consumer.ts:1-10", "text": "async function consume(message) { await queue.ack(message.id); await db.orders.insert({ id: message.orderId, payload: message.payload }); return 'stored'; }"},
+        {"ref": "contract:queue", "text": "A successful ack permanently removes this message and the queue will not redeliver it. A process may stop between any two awaits. The insert is the only durable copy of this order in this service. There is no other replay source or transactional coupling between ack and insert."}
+      ],
+      "groundTruth": [{"root": "ack permanently removes message before durable order insert", "severity": "high", "reference": "src/consumer.ts:1-10"}],
+      "adjudication": "A stop after ack and before insert loses the order permanently. Confirm a high-severity reliability defect, citing the queue contract; require durable insert or transactional handoff before ack and handle redelivery idempotently. No historical incident is needed for the feasible path."
+    },
+    {
+      "id": "discover-v3-03",
+      "kind": "positive-two-distinct-same-file-defects",
+      "prompt": "Inspect this account update path for concrete privilege and account-identity defects. Keep distinct root causes separate.",
+      "evidence": [
+        {"ref": "src/account.ts:1-12", "text": "async function updateAccount(req) { if (req.user.id !== req.params.id) return reply(403); await db.account.update({ id: req.params.id, email: req.body.email, isAdmin: req.body.isAdmin }); return reply(204); }"},
+        {"ref": "contract:account", "text": "A signed-in member may update only their own non-privileged account fields. Only a server-side administrator grant path may change isAdmin. A replacement email must be verified before it becomes the account's active email, because active email controls password recovery. This route has no other validation, field allowlist or deferred verification."}
+      ],
+      "groundTruth": [
+        {"root": "client-supplied isAdmin is mass-assigned to privileged field", "severity": "high", "reference": "src/account.ts:1-12"},
+        {"root": "unverified replacement email immediately becomes recovery identity", "severity": "high", "reference": "src/account.ts:1-12"}
+      ],
+      "adjudication": "Two separate high-severity root causes share one file and update statement: client-controlled isAdmin grants privilege; unverified email takes over the recovery identity. Ownership guard does not prevent either. Confirm both independently, without merging them as duplicate dimensions."
+    },
+    {
+      "id": "discover-v3-04",
+      "kind": "guarded-sql-injection-decoy",
+      "prompt": "Inspect this search route for a concrete injection defect under the supplied driver contract.",
+      "evidence": [
+        {"ref": "src/search.ts:1-8", "text": "async function search(req) { const rows = await db.query('SELECT id, title FROM docs WHERE title LIKE ? ORDER BY id LIMIT 20', [`%${req.query.term}%`]); return reply(rows); }"},
+        {"ref": "contract:driver", "text": "The database driver binds ? as a data parameter; it never interpolates the parameter into SQL syntax. req.query.term is a string. Document titles are safe for this caller to view. The order and limit are fixed SQL text."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The user string is a bound value, so the packet does not support SQL injection. No confirmed survivor; generic worries about search behavior without a contract are not defects."
+    },
+    {
+      "id": "discover-v3-05",
+      "kind": "unknown-caller-contract",
+      "prompt": "Inspect this helper for a demonstrated customer-visible defect. Do not assume a caller contract that is absent.",
+      "evidence": [
+        {"ref": "src/format.ts:1-4", "text": "export function formatPercent(n) { return Math.round(n * 100) + '%'; }"},
+        {"ref": "contract:format", "text": "The packet does not specify whether callers pass a fraction, whole percentage, out-of-range value, NaN, or already-rounded data. It does not specify the display precision or customer-facing use."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The helper's semantics could be correct for fractional inputs. Do not confirm a 100x display error or precision defect without a caller/display contract. A tentative note must remain unconfirmed."
+    },
+    {
+      "id": "discover-v3-06",
+      "kind": "clean-state-machine-control",
+      "prompt": "Inspect this bounded state transition for a concrete duplicate or invalid-state defect under the stated contract.",
+      "evidence": [
+        {"ref": "src/transition.ts:1-10", "text": "async function finish(id) { return db.transaction(async tx => { const job = await tx.jobs.getForUpdate(id); if (!job || job.status !== 'running') return false; await tx.jobs.update(id, { status: 'done' }); return true; }); }"},
+        {"ref": "contract:transition", "text": "getForUpdate locks the job row until commit. Updates inside this transaction are atomic and roll back on error. Only running may become done. A second caller waits for the lock and then sees the committed status. No external side effect occurs in finish."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The row lock and atomic transaction prevent two callers from both performing the transition; the second returns false. No supported defect or false survivor."
+    }
+  ]
+}

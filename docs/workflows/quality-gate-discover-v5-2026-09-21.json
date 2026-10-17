@@ -1,0 +1,86 @@
+{
+  "version": 5,
+  "frozenAt": "2026-09-21T12:10:05Z",
+  "status": "frozen before any v5 model output; inputs, ground truth, and scoring rules are immutable",
+  "scope": "Synthetic source and explicit contracts only; no external facts or repository access permitted",
+  "roster": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+  "comparators": ["claude-sonnet-5 low effort", "claude-sonnet-5 high effort"],
+  "analysisPlan": {
+    "primary": "For every case and arm, score firstOutcome only. Match substantive confirmed findings to the four seeded independent root causes; report TP, FP, FN, distinct-root precision/recall/F1, and duplicate confirmed entries separately. Failed or empty arms have zero utility. A contested or insufficient-evidence workflow finding is not a confirmed TP.",
+    "resilience": "Permit no more than two explicit repairs after verifying a failed terminal attempt, within the persisted three-attempt ceiling. Keep first failure in the primary denominator and report final outcome separately.",
+    "comparability": "Four seeded defects total, at most two per case, so the single-model four-finding schema cap cannot bind seeded recall. Exclude workflow-only ranking from paired score. High-effort Claude is a strong baseline, not compute-matched to the multi-model workflow; report model calls, receipts, latency, usage and known cost separately, without claiming equal-cost superiority.",
+    "blinding": "Make a separate model-masked, randomized per-case/arm packet with prompt, evidence, normalized confirmed findings and disposition, and a private arm key. Two independent raters judge distinct roots, severity, support and false claims before the key is opened. Seeded-truth mechanical scoring is preliminary only.",
+    "controls": "Retain all six cases and all arms, including failures, timeouts, repairs, latency and native receipts. Do not tune code or prompts after freezing. Audit tool events and model receipts for evidence isolation before making a frozen-evidence claim."
+  },
+  "cases": [
+    {
+      "id": "discover-v5-01",
+      "kind": "positive-local-time-recurrence",
+      "prompt": "Inspect this daily reminder scheduler for a concrete user-visible timing defect under the supplied calendar contract. Use only the packet.",
+      "evidence": [
+        {"ref": "src/reminders.ts:1-8", "text": "function nextReminder(lastRunUtcMs) { return new Date(lastRunUtcMs + 24 * 60 * 60 * 1000); }"},
+        {"ref": "contract:reminders", "text": "The product promises a reminder every calendar day at 9:00 AM in the user's America/New_York time zone. The last run was March 7, 2026 at 9:00 AM EST (14:00 UTC). The next intended local reminder is March 8, 2026 at 9:00 AM EDT (13:00 UTC), when daylight saving begins. This function's return value directly schedules the next reminder; no later timezone correction runs. The timestamp is valid."}
+      ],
+      "groundTruth": [{"root": "fixed 24-hour UTC increment shifts a local daily reminder across daylight saving", "severity": "medium", "reference": "src/reminders.ts:1-8"}],
+      "adjudication": "Adding 24 hours to March 7 14:00 UTC yields March 8 14:00 UTC, which is 10:00 AM EDT, an hour late. Confirm this local-calendar recurrence root once. Avoid speculative invalid-date or notification-delivery findings."
+    },
+    {
+      "id": "discover-v5-02",
+      "kind": "positive-unstable-rollout-assignment",
+      "prompt": "Inspect the feature rollout decision for a concrete violation of the stated assignment contract.",
+      "evidence": [
+        {"ref": "src/rollout.ts:1-7", "text": "function enabledForUser(userId) { return Math.random() < 0.10; }"},
+        {"ref": "contract:rollout", "text": "A 10% rollout must assign each user consistently for the entire week: the same user must receive the same decision on every request until the rollout version changes. Calls to enabledForUser occur independently for every request; there is no persisted assignment or sticky session. Math.random returns independent draws. userId is stable and nonempty."}
+      ],
+      "groundTruth": [{"root": "per-request randomness makes a user's rollout assignment change between requests", "severity": "medium", "reference": "src/rollout.ts:1-7"}],
+      "adjudication": "A user can be enabled on one request and disabled on the next because the function ignores the stable user ID and makes a fresh draw. Confirm one stickiness root. The 10% marginal probability alone does not satisfy the per-user contract; avoid claiming random number generation itself is insecure."
+    },
+    {
+      "id": "discover-v5-03",
+      "kind": "positive-two-distinct-remote-import-defects",
+      "prompt": "Inspect this remote import path for concrete supported-path defects. Keep independent network-target and response-size causes separate.",
+      "evidence": [
+        {"ref": "src/import-url.ts:1-11", "text": "async function importUrl(req) { const response = await fetch(req.body.url); const bytes = await response.arrayBuffer(); await storage.put(req.user.id, bytes); return reply(201); }"},
+        {"ref": "contract:remote-import", "text": "Any signed-in user controls req.body.url. The server can reach an internal metadata endpoint that the user cannot reach directly, and storage.put makes imported bytes downloadable by that user. There is no network egress allowlist, private-address filter, or redirect check on this path. A remote server may send a 2 GB response; the worker has a 256 MB memory limit. arrayBuffer buffers the full response before storage.put. No other size limit or streaming path runs."}
+      ],
+      "groundTruth": [
+        {"root": "user-controlled fetch can read and expose an internal metadata endpoint", "severity": "high", "reference": "src/import-url.ts:1-11"},
+        {"root": "unbounded full-response buffering can exhaust worker memory", "severity": "high", "reference": "src/import-url.ts:1-11"}
+      ],
+      "adjudication": "Confirm two independent causes in the same function: server-side request forgery and exposure through user-downloadable storage, plus memory exhaustion from buffering a response larger than the worker heap. The first requires target/redirect restrictions; the second requires byte limits and bounded streaming. Do not merge them just because the fetch and arrayBuffer calls are adjacent, and do not count metadata reachability/exposure as two roots."
+    },
+    {
+      "id": "discover-v5-04",
+      "kind": "guarded-dom-xss-decoy",
+      "prompt": "Inspect this search-result display for a concrete script-injection defect under the stated DOM contract.",
+      "evidence": [
+        {"ref": "src/result-view.ts:1-7", "text": "function showResult(label, node) { node.textContent = label; }"},
+        {"ref": "contract:result-view", "text": "label is untrusted text from a search index. node is an ordinary HTML element. DOM textContent inserts text rather than parsing HTML, and no later code copies this text into an HTML-parsing sink. The product intends to show the literal label. The label has a 200-character bound."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The untrusted label is inserted as text, so markup remains inert. No supported XSS finding; do not assume a later innerHTML copy or invent a missing sanitizer."
+    },
+    {
+      "id": "discover-v5-05",
+      "kind": "unknown-retention-policy-contract",
+      "prompt": "Inspect this archive eligibility helper for a demonstrated product defect using only the packet.",
+      "evidence": [
+        {"ref": "src/archive-policy.ts:1-4", "text": "export function shouldArchive(record) { return record.ageDays > 30; }"},
+        {"ref": "contract:archive-policy", "text": "The packet does not define whether retention is inclusive or exclusive at day 30, how ageDays is computed, whether records are legal-hold eligible, or whether a caller performs further checks before archival. The helper's name alone is not the product policy."}
+      ],
+      "groundTruth": [],
+      "adjudication": "The > 30 threshold could implement a valid exclusive retention boundary. No confirmed day-30, legal-hold, or timezone defect follows without the missing policy and caller behavior. Tentative questions must remain unconfirmed."
+    },
+    {
+      "id": "discover-v5-06",
+      "kind": "clean-bounded-set-union-control",
+      "prompt": "Inspect this set-union helper for a concrete correctness or resource defect under the supplied input contract.",
+      "evidence": [
+        {"ref": "src/set-union.ts:1-7", "text": "function union(a, b) { return [...new Set([...a, ...b])].sort((x, y) => x - y); }"},
+        {"ref": "contract:set-union", "text": "Each input is an array of at most 100 finite safe integers. The required output is the ascending list of distinct values present in either input. The arrays need not be sorted and may overlap. Neither input is mutated, and there is no latency-sensitive hot path."}
+      ],
+      "groundTruth": [],
+      "adjudication": "Set removes duplicate numbers and the numeric comparator orders them ascending; bounded inputs rule out a supported resource defect. No confirmed finding."
+    }
+  ]
+}

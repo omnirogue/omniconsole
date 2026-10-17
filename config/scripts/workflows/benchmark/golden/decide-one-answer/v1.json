@@ -1,0 +1,92 @@
+{
+  "set": "decide-one-answer",
+  "version": 1,
+  "frozenAt": "2026-09-24",
+  "status": "skeleton",
+  "reviewedBy": null,
+  "labels": "key",
+  "contract": "decide-one-answer@1",
+  "source": "decide/questions.json (decide-v1 v1): kind one-answer is yes, judgment is no. The kinds are the author's and unreviewed. Too small to calibrate: measured at most.",
+  "items": [
+    {
+      "id": "Q01",
+      "source": "decide/questions.json Q01 kind one-answer",
+      "state": {
+        "question": "A Postgres table has 40 million rows averaging 180 bytes. Roughly how much disk does the heap need, ignoring indexes, bloat and TOAST, if each row also carries a 24-byte tuple header and a 4-byte line pointer?"
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "Q02",
+      "source": "decide/questions.json Q02 kind one-answer",
+      "state": {
+        "question": "In JavaScript, what does [10, 1, 5, 100].sort() return, and why?"
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "Q03",
+      "source": "decide/questions.json Q03 kind one-answer",
+      "state": {
+        "question": "A service answers 99.95% of requests within its SLO. Over a 30-day month, how many minutes of complete outage would use up that whole error budget if traffic is uniform?"
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "Q04",
+      "source": "decide/questions.json Q04 kind one-answer",
+      "state": {
+        "question": "Which HTTP status should an API return when a request is well-formed but the authenticated user lacks permission for the resource, and how does it differ from 401?"
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "Q05",
+      "source": "decide/questions.json Q05 kind one-answer",
+      "state": {
+        "question": "A job queue retries with delays of 1s, 2s, 4s … doubling and capped at 5 minutes. After the 10th failure, how long until the 11th attempt?"
+      },
+      "truth": "yes"
+    },
+    {
+      "id": "Q06",
+      "source": "decide/questions.json Q06 kind judgment",
+      "state": {
+        "question": "We are a five-person team running one Node API on Postgres. Should we add Redis for caching now, or wait?"
+      },
+      "truth": "no"
+    },
+    {
+      "id": "Q07",
+      "source": "decide/questions.json Q07 kind judgment",
+      "state": {
+        "question": "Should a two-person startup's landing page lead with price or with the outcome the product delivers?"
+      },
+      "truth": "no"
+    },
+    {
+      "id": "Q08",
+      "source": "decide/questions.json Q08 kind judgment",
+      "state": {
+        "question": "Our monorepo CI takes 25 minutes. Is it worth a week to split the tests by affected package?"
+      },
+      "truth": "no"
+    },
+    {
+      "id": "Q09",
+      "source": "decide/questions.json Q09 kind judgment",
+      "state": {
+        "question": "Should customer-support replies for refunds be fully automated with an LLM?"
+      },
+      "truth": "no"
+    },
+    {
+      "id": "Q10",
+      "source": "decide/questions.json Q10 kind judgment",
+      "state": {
+        "question": "Is it better to write the next feature's design doc before or after a one-day spike?"
+      },
+      "truth": "no"
+    }
+  ]
+}

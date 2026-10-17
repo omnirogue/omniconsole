@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Reviewer"
+  short_description: "Review type boundaries and async correctness"
+  default_prompt: "Use $omni-typescript-review to review this diff and report concrete findings without editing."

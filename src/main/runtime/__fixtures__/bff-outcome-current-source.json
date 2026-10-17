@@ -1,0 +1,874 @@
+{
+  "base": {
+    "ok": true,
+    "graph": {
+      "schema_version": 1,
+      "mode": "single_shot",
+      "title": "Review work",
+      "prompt": "Actual task context",
+      "company": "example",
+      "owner": "emp_person",
+      "policy": {
+        "auto": false,
+        "max_attempts": 1,
+        "console_outcome_plan": {
+          "version": 1,
+          "task_id": "btk_continue1234",
+          "operation_id": "outcomes-1234",
+          "request_digest": "9fc839a1a2cbbeb21dd025180d1faa91222281a7ec1e4b1b492fe2e9a4b0f883",
+          "expected_revision": 7
+        }
+      },
+      "nodes": [
+        {
+          "key": "implementation",
+          "title": "Implement requested file",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-astra",
+          "action": "execute",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: execute\n\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\n\nOriginal task:\nActual task context",
+          "acceptance": "Write the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-astra",
+          "effort": "xhigh",
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "base",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "after": [],
+          "owned_paths": null,
+          "completion_role": "required",
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "work-result.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        }
+      ],
+      "columns": [["implementation"]],
+      "edges": [],
+      "dispatch_id": "wf_console_graph_c065696273369bdec7de2e078a060860",
+      "digest": "711b89ea9cb089b97e40f55bafcc2257ceb64fa042a2d83aa7f892852eb24d4d"
+    },
+    "digest": "711b89ea9cb089b97e40f55bafcc2257ceb64fa042a2d83aa7f892852eb24d4d",
+    "workflow_id": "wf_console_graph_c065696273369bdec7de2e078a060860",
+    "admission": {
+      "filing_root_task_id": "btk_continue1234",
+      "filing_root_expected_revision": 7,
+      "org_unit_id": "org_example",
+      "expected_authority_epoch": 1,
+      "objective": {
+        "goal_id": "cgl_actual",
+        "title": "Review work \u2014 staged continuation",
+        "desired_result": "Complete the frozen continuation stages; the original task retains its full acceptance.",
+        "acceptance_policy": {
+          "required": ["all_selected_nodes_verified"]
+        },
+        "verification_policy": {
+          "schema_version": 1,
+          "independent": true,
+          "require_current_contract_generation": true,
+          "require_exact_deployed_sha": true,
+          "assignments": {
+            "machine": {
+              "assignment_id": "verification-assignment:console:machine:v1",
+              "policy_ref": "objective:console:verification:machine:v1",
+              "executor_kind": "llm",
+              "provider": "grok",
+              "model": "grok-4.6",
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:machine:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "executor_adapter": "foreman",
+                      "session_continuity": {
+                        "mode": "fresh_context"
+                      },
+                      "foreman_launch": {
+                        "provider": "grok",
+                        "model": "grok-4.6",
+                        "effort": null,
+                        "machine": "mw0002",
+                        "workspace": {
+                          "kind": "folder",
+                          "host": "mw0002",
+                          "allocation": "job"
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "b4e0b8e46dc65689d873e39c77c732af71950f6bd9fa85f4526a5e8a7278a6a0"
+              }
+            },
+            "human": {
+              "assignment_id": "verification-assignment:console:human:v1",
+              "policy_ref": "objective:console:verification:human:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:human:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.human-decision-authenticity.v1",
+                        "handler_digest": "39ae478b085b39ea10b88f64f94646a2601d57eeb0e475f34a8fd3827ba4f32c",
+                        "input": {
+                          "candidate_format": "canonical-human-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "f2f6c7c0e9c7b2f469bd5659d33e48ded2a88cc42f539516612ee625abc34bdb"
+              }
+            },
+            "mechanical": {
+              "assignment_id": "verification-assignment:console:loop:v1",
+              "policy_ref": "objective:console:verification:loop:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:loop:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.workflow-loop-decision.v1",
+                        "handler_digest": "71c3959ce34cada7f90cd28cc7f989c8863b997d3178ac3fe43bfacf8a46a847",
+                        "input": {
+                          "candidate_format": "canonical-workflow-loop-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "de24c10052f6e6c67da657fd8664be432efaa3a88ea27feb586032504b5c8cdd"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "review-source": {
+    "ok": true,
+    "graph": {
+      "schema_version": 1,
+      "mode": "hybrid",
+      "title": "Review work",
+      "prompt": "Actual task context",
+      "company": "example",
+      "owner": "emp_person",
+      "policy": {
+        "auto": false,
+        "max_attempts": 1,
+        "console_outcome_plan": {
+          "version": 1,
+          "task_id": "btk_continue1234",
+          "operation_id": "outcomes-1234",
+          "request_digest": "5278bbb103ccebc94b0f1a17fa80ca32c331ed0ee136aa6938af228475981105",
+          "expected_revision": 7
+        }
+      },
+      "nodes": [
+        {
+          "key": "implementation__loop_r1_p1",
+          "title": "Implement requested file \u2014 attack round 1 reviewer 1",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-sol",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\n\nRound 1 of 1 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\n\nRound 1 of 1 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-sol",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 1
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": [],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "work-result.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r1_p2",
+          "title": "Implement requested file \u2014 attack round 1 reviewer 2",
+          "actor_type": "ai",
+          "actor_id": "codex:gpt-6-terra",
+          "action": "review",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: review\n\nImplement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\n\nRound 1 of 1 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.\n\nOriginal task:\nActual task context",
+          "acceptance": "Implement requested file\nWrite the requested result and report exact evidence.\n\nUse the immutable task-input copies of these currently captured files by logical path and digest:\n- docs/report.txt (SHA-256 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb)\nThis snapshot describes current input bytes; earlier completion receipts retain their separate meaning.\n\nRound 1 of 1 of a bounded adversarial loop. Read only: no edits, commits, pushes, PRs, messages or external writes. Adversarially attack the candidate: try to break it, find inputs and states it mishandles, and report every reproducible failure as a required finding with the exact reproduction as evidence. Earlier rounds' findings are the only prior context you receive. Finish with exactly one JSON object: {\"blockers\":[],\"gaps\":[],\"notes\":\"\",\"verdict\":\"agree|disagree\"}. Use disagree for every reason this loop should remain open; silence never means agree.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "workspace": {
+            "kind": "folder",
+            "path": "/Users/person/work",
+            "host": "local"
+          },
+          "placement": "local",
+          "repo": null,
+          "base_branch": null,
+          "provider": "codex",
+          "model": "gpt-6-terra",
+          "effort": "xhigh",
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "participant",
+            "round": 1
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": [],
+          "owned_paths": null,
+          "source_files": [
+            {
+              "kind": "task_file",
+              "task_id": "btk_continue1234",
+              "file": {
+                "rel": "uploads/report.txt",
+                "name": "report.txt",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "size_bytes": 14
+              },
+              "target_path": "docs/report.txt"
+            }
+          ],
+          "artifact_result": {
+            "path": "work-result.json",
+            "format": "json",
+            "max_bytes": 65536
+          },
+          "source_deletions": []
+        },
+        {
+          "key": "implementation__loop_r1_decide",
+          "title": "Implement requested file \u2014 adversarial round 1 decision",
+          "actor_type": "mechanical",
+          "actor_id": "stop_rule:zero_blockers",
+          "action": "decide",
+          "department": "dev",
+          "agent": "dev",
+          "brief": "Action: decide\n\nCanonical mechanical decision for round 1 of 1. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.\n\nOriginal task:\nActual task context",
+          "acceptance": "Canonical mechanical decision for round 1 of 1. The hub reads every participant's authenticated canonical-workflow-loop-decision.v1 evidence, applies zero_blockers, and selects exactly one branch.",
+          "acceptance_commands": [],
+          "timing": "now",
+          "timeout_minutes": 120,
+          "loop_stage": {
+            "stage_key": "implementation",
+            "branch_group": "implementation__loop",
+            "producer_key": "implementation",
+            "role": "decide",
+            "round": 1
+          },
+          "mechanical_execution": {
+            "handler_key": "canonical.workflow-loop-decide.v1",
+            "handler_digest": "b6b6ec30585c5744d387c3b867b6a9b9453e30c07617d12807ff9ac15b5bbb96",
+            "input": {
+              "branch_group": "implementation__loop",
+              "candidate_format": "canonical-workflow-loop-decision.v1",
+              "closed_node_keys": [],
+              "kind": "adversarial",
+              "max_rounds": 1,
+              "open_node_keys": [],
+              "participant_node_keys": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+              "round": 1,
+              "stage_key": "implementation",
+              "stop": "zero_blockers"
+            }
+          },
+          "current_source": {
+            "schema_version": 1,
+            "kind": "current_task_files",
+            "mode": "review-source",
+            "stage_key": "implementation",
+            "root_task_id": "btk_continue1234",
+            "files": [
+              {
+                "kind": "task_file",
+                "task_id": "btk_continue1234",
+                "file": {
+                  "rel": "uploads/report.txt",
+                  "name": "report.txt",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "size_bytes": 14
+                },
+                "target_path": "docs/report.txt"
+              }
+            ],
+            "snapshot_digest": "35f4151df6e2bcd2174b1e7effb2538d6e44fff0a25018e96d3f094a4e87759b",
+            "producer": {
+              "provider": "codex",
+              "model": "gpt-6-astra"
+            }
+          },
+          "completion_role": "required",
+          "after": ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+          "owned_paths": null,
+          "placement": "fleet"
+        }
+      ],
+      "columns": [
+        ["implementation__loop_r1_p1", "implementation__loop_r1_p2"],
+        ["implementation__loop_r1_decide"]
+      ],
+      "edges": [
+        {
+          "edge_key": "implementation__loop_r1_p1_to_implementation__loop_r1_decide",
+          "from_node_key": "implementation__loop_r1_p1",
+          "to_node_key": "implementation__loop_r1_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        },
+        {
+          "edge_key": "implementation__loop_r1_p2_to_implementation__loop_r1_decide",
+          "from_node_key": "implementation__loop_r1_p2",
+          "to_node_key": "implementation__loop_r1_decide",
+          "edge_kind": "dependency",
+          "condition_kind": "verified",
+          "branch_group": null,
+          "condition": {}
+        }
+      ],
+      "dispatch_id": "wf_console_graph_09cb29d1f8050bd481bfec90ae405c97",
+      "digest": "9fee82a301c5dee4b7d0a1f9e7c687d433af957a81e04bff9745c2967d82909d"
+    },
+    "digest": "9fee82a301c5dee4b7d0a1f9e7c687d433af957a81e04bff9745c2967d82909d",
+    "workflow_id": "wf_console_graph_09cb29d1f8050bd481bfec90ae405c97",
+    "admission": {
+      "filing_root_task_id": "btk_continue1234",
+      "filing_root_expected_revision": 7,
+      "org_unit_id": "org_example",
+      "expected_authority_epoch": 1,
+      "objective": {
+        "goal_id": "cgl_actual",
+        "title": "Review work \u2014 staged continuation",
+        "desired_result": "Complete the frozen continuation stages; the original task retains its full acceptance.",
+        "acceptance_policy": {
+          "required": ["all_selected_nodes_verified"]
+        },
+        "verification_policy": {
+          "schema_version": 1,
+          "independent": true,
+          "require_current_contract_generation": true,
+          "require_exact_deployed_sha": true,
+          "assignments": {
+            "machine": {
+              "assignment_id": "verification-assignment:console:machine:v1",
+              "policy_ref": "objective:console:verification:machine:v1",
+              "executor_kind": "llm",
+              "provider": "grok",
+              "model": "grok-4.6",
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:machine:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "executor_adapter": "foreman",
+                      "session_continuity": {
+                        "mode": "fresh_context"
+                      },
+                      "foreman_launch": {
+                        "provider": "grok",
+                        "model": "grok-4.6",
+                        "effort": null,
+                        "machine": "mw0002",
+                        "workspace": {
+                          "kind": "folder",
+                          "host": "mw0002",
+                          "allocation": "job"
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "b4e0b8e46dc65689d873e39c77c732af71950f6bd9fa85f4526a5e8a7278a6a0"
+              }
+            },
+            "human": {
+              "assignment_id": "verification-assignment:console:human:v1",
+              "policy_ref": "objective:console:verification:human:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:human:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.human-decision-authenticity.v1",
+                        "handler_digest": "39ae478b085b39ea10b88f64f94646a2601d57eeb0e475f34a8fd3827ba4f32c",
+                        "input": {
+                          "candidate_format": "canonical-human-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "f2f6c7c0e9c7b2f469bd5659d33e48ded2a88cc42f539516612ee625abc34bdb"
+              }
+            },
+            "mechanical": {
+              "assignment_id": "verification-assignment:console:loop:v1",
+              "policy_ref": "objective:console:verification:loop:v1",
+              "executor_kind": "mechanical",
+              "provider": "canonical",
+              "model": null,
+              "project_dir": "/workspace/Example/project",
+              "verifier_contract_template": {
+                "schema_version": 1,
+                "contract_version": "verifier-contract-template.v1",
+                "template_id": "verifier-template:loop:v1",
+                "task_contract": {
+                  "objective": "Independently verify the frozen candidate against its Work Contract",
+                  "acceptance_criteria": [
+                    {
+                      "id": "dod-verdict",
+                      "condition": "Return a supported verdict",
+                      "evidence_required": true
+                    }
+                  ],
+                  "read_set": ["/workspace/Example/project"],
+                  "write_set": [],
+                  "risk_class": "R2",
+                  "budgets": {
+                    "max_tokens": 20000,
+                    "max_cost_usd": 10,
+                    "max_wall_seconds": 1800,
+                    "max_tool_calls": 100
+                  },
+                  "task_id": null,
+                  "gates": [
+                    {
+                      "command": "verify-frozen-candidate",
+                      "timeout_s": 1800,
+                      "expected_exit": 0,
+                      "blocking": true
+                    }
+                  ],
+                  "allowed_tools": ["read", "test"],
+                  "allowed_actions": ["inspect", "report", "verify"],
+                  "prohibited_actions": ["delegate", "modify-source", "self-approve"],
+                  "delegation": {
+                    "allow_subagents": false,
+                    "max_depth": 0,
+                    "max_children": 0,
+                    "allowed_providers": [],
+                    "allowed_models": [],
+                    "require_child_contract": true,
+                    "require_independent_verification": true
+                  },
+                  "requires_independent_verification": true,
+                  "metadata": {
+                    "durable_workflow": {
+                      "mechanical_verification": {
+                        "schema_version": 1,
+                        "handler_key": "canonical.verify.workflow-loop-decision.v1",
+                        "handler_digest": "71c3959ce34cada7f90cd28cc7f989c8863b997d3178ac3fe43bfacf8a46a847",
+                        "input": {
+                          "candidate_format": "canonical-workflow-loop-decision.v1",
+                          "branch_resolution_map": []
+                        }
+                      }
+                    }
+                  }
+                },
+                "independence": {
+                  "no_delegation": true,
+                  "no_self_verification": true,
+                  "producer_session_separation": true
+                },
+                "template_digest": "de24c10052f6e6c67da657fd8664be432efaa3a88ea27feb586032504b5c8cdd"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

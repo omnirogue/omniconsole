@@ -1,0 +1,149 @@
+{
+  "version": 6,
+  "frozenAt": "2026-09-21T12:37:22Z",
+  "status": "frozen before any v6 model output; inputs, ground truth, and scoring rules are immutable",
+  "scope": "Synthetic source and explicit contracts only; no external facts or repository access permitted",
+  "roster": ["claude-sonnet-5", "gpt-5.6-sol", "grok-4.6-build"],
+  "comparators": ["claude-sonnet-5 low effort", "claude-sonnet-5 high effort"],
+  "analysisPlan": {
+    "primary": "For every case and arm, score firstOutcome only. Match substantive confirmed findings to the four seeded independent root causes; report TP, FP, FN, distinct-root precision/recall/F1, and duplicate confirmed entries separately. Failed or empty arms have zero utility. A contested or insufficient-evidence workflow finding is not a confirmed TP.",
+    "resilience": "Permit no more than two explicit repairs after verifying a failed terminal attempt, within the persisted three-attempt ceiling. Keep first failure in the primary denominator and report final outcome separately.",
+    "comparability": "Four seeded defects total, at most two per case, so the single-model four-finding schema cap cannot bind seeded recall. Case 01 fixes Discover maxCandidates at four to stress pre-selection quota pressure; each finder still returns at most four proposals, so at most twelve raw proposals exist. Exclude workflow-only ranking from paired score. High-effort Claude is a strong baseline, not compute-matched; report calls, receipts, latency, usage, and known cost separately.",
+    "blinding": "Make a separate model-masked, randomized per-case/arm packet with prompt, evidence, normalized confirmed findings and disposition, and a private arm key. Two independent raters judge distinct roots, severity, support and false claims before the key is opened. Seeded-truth mechanical scoring is preliminary only.",
+    "controls": "Retain all six cases and all arms, including failures, timeouts, repairs, latency and native receipts. Do not tune code, manifest or prompts after freezing. Audit tool events and model receipts for evidence isolation before claiming frozen evidence. Record whether the intended same-key and candidate-quota collisions actually occurred; a case that did not elicit the condition is not proof of its handling."
+  },
+  "cases": [
+    {
+      "id": "discover-v6-01",
+      "kind": "positive-same-key-distinct-reservation-roots-with-quota-pressure",
+      "maxCandidates": 4,
+      "prompt": "Inspect this inventory reservation path for concrete customer-visible defects using only the packet. For diagnostics, issueKey is a module routing tag rather than a unique defect ID: use inventory-reservation-validation for any finding in src/reserve.ts. Determine independent causes from the source and contract; report references may describe different observations of one cause.",
+      "evidence": [
+        {
+          "ref": "src/reserve.ts:1-10",
+          "text": "async function reserve(req) { const sku = req.params.sku; const qty = req.body.quantity; const stock = await db.stock.get(sku); if (stock.available < qty) return reply(409); await db.stock.put(sku, { available: stock.available - qty }); await db.reservations.insert({ sku, qty, customerId: req.user.id }); return reply(201); }"
+        },
+        {
+          "ref": "contract:reservation",
+          "text": "A successful reservation must represent a positive whole-unit quantity and must never reserve more units than are available. req.body.quantity is an integer supplied by a client and may be negative; no upstream validator runs. stock.get reads a committed value without a lock; stock.put writes the supplied absolute value and does not compare it with the prior value. Two calls can interleave across awaits. reservations.insert appends a durable row. There is no later stock check, rollback, or reconciliation. All channels below invoke this same function."
+        },
+        {
+          "ref": "observations:reservation-channels",
+          "text": "Six independent channel records for initially-one-unit SKUs: web/A, mobile/B, kiosk/C, partner/D, batch/E, and retry/F. For each record, two clients requested qty=1 concurrently; each received 201, two reservation rows were written, and the final available value was 0. The records have different SKUs and customers but the same source path. A seventh record, CLI/G, sent qty=-1 when available was 1; the call returned 201, wrote a qty=-1 reservation, and left available at 2."
+        }
+      ],
+      "groundTruth": [
+        {
+          "root": "unlocked read followed by absolute stock overwrite admits two last-unit reservations",
+          "severity": "high",
+          "reference": "src/reserve.ts:1-10",
+          "issueKey": "inventory-reservation-validation"
+        },
+        {
+          "root": "negative quantity is accepted and increases available stock",
+          "severity": "medium",
+          "reference": "src/reserve.ts:1-10",
+          "issueKey": "inventory-reservation-validation"
+        }
+      ],
+      "adjudication": "Confirm exactly two independent causes in the same file and overlapping locus despite the identical three-token issueKey: a concurrent read/put lost update admits more reservations than stock, while a negative quantity passes the comparison and increases stock. The six channel records are observations of one concurrency root, not six roots. Both defects can occur without the other and need different guards. Record the number of raw finder proposals, aliases, selected candidates, quota exclusions, and whether the lower-severity quantity root survived the cap of four. Do not count a merely hypothetical duplicate when no duplicate was emitted."
+    },
+    {
+      "id": "discover-v6-02",
+      "kind": "positive-plaintext-fallback-on-encryption-failure",
+      "prompt": "Inspect this note persistence path for a concrete security or correctness defect under the supplied data-handling contract.",
+      "evidence": [
+        {
+          "ref": "src/private-note.ts:1-8",
+          "text": "async function savePrivateNote(req) { const encrypted = await kms.encrypt(req.body.text).catch(() => null); await db.notes.insert({ ownerId: req.user.id, ciphertext: encrypted ?? req.body.text }); return reply(201); }"
+        },
+        {
+          "ref": "contract:private-note",
+          "text": "Notes may contain sensitive customer information. Product policy requires every persisted note to be encrypted by KMS; persistence must fail closed when KMS is unavailable. KMS can reject transiently. db.notes stores its ciphertext value verbatim; the database and backups do not provide another encryption layer. A support operator with database read access must not see note text. No later worker repairs or encrypts these rows."
+        }
+      ],
+      "groundTruth": [
+        {
+          "root": "KMS failure falls back to persisting sensitive note plaintext",
+          "severity": "high",
+          "reference": "src/private-note.ts:1-8"
+        }
+      ],
+      "adjudication": "On KMS rejection, null coalesces to req.body.text and the database durably stores plaintext while returning success. Confirm one fail-open confidentiality root. A transient KMS failure is explicitly supported; do not invent a separate duplicate-write or missing authorization cause."
+    },
+    {
+      "id": "discover-v6-03",
+      "kind": "positive-unicode-codepoints-versus-byte-limit",
+      "prompt": "Inspect this public handle creation path for a concrete supported-input defect using only the packet.",
+      "evidence": [
+        {
+          "ref": "src/handle.ts:1-8",
+          "text": "async function createHandle(req) { const handle = Array.from(req.body.handle).slice(0, 20).join(''); await db.handles.insert({ ownerId: req.user.id, handle }); return reply(201); }"
+        },
+        {
+          "ref": "contract:handle",
+          "text": "The product accepts any nonempty Unicode handle input and stores its longest initial prefix that fits within 20 UTF-8 bytes. The UI may submit 20 two-byte Unicode characters, and the handle is unique. db.handles.handle has a hard 20-byte UTF-8 limit and rejects longer values. The route does not catch that rejection or apply another byte check. Array.from iterates Unicode code points, and each cited two-byte character occupies one code point."
+        }
+      ],
+      "groundTruth": [
+        {
+          "root": "code-point truncation does not enforce the twenty-byte storage limit for Unicode handles",
+          "severity": "medium",
+          "reference": "src/handle.ts:1-8"
+        }
+      ],
+      "adjudication": "An input of more than ten two-byte characters remains over 20 bytes after the code-point slice, so insertion rejects an input for which the product promises a fitting prefix. Confirm one byte-limit mismatch root. Array.from avoids surrogate splitting, so do not claim a broken surrogate pair. Do not assume uniqueness or SQL injection problems."
+    },
+    {
+      "id": "discover-v6-04",
+      "kind": "guarded-linear-regex-decoy",
+      "prompt": "Inspect this identifier validator for a concrete correctness or resource defect under the supplied input and matching contract.",
+      "evidence": [
+        {
+          "ref": "src/identifier.ts:1-5",
+          "text": "function validIdentifier(value) { return /^[a-z0-9]{1,64}$/.test(value); }"
+        },
+        {
+          "ref": "contract:identifier",
+          "text": "value is a string of at most 64 characters. Valid identifiers consist of 1 to 64 lowercase ASCII letters or digits and must match in full. The regex uses one bounded character class and no nested repetition; the caller does not turn a rejected value into an error or side effect."
+        }
+      ],
+      "groundTruth": [],
+      "adjudication": "The anchored, bounded class implements the stated grammar and has no supported catastrophic backtracking path. No confirmed finding. Do not invent Unicode acceptance or case-insensitive behavior not in the contract."
+    },
+    {
+      "id": "discover-v6-05",
+      "kind": "unknown-retry-backoff-caller-contract",
+      "prompt": "Inspect this delay helper for a demonstrated customer-visible defect using only the packet.",
+      "evidence": [
+        {
+          "ref": "src/retry-delay.ts:1-4",
+          "text": "export function retryDelayMs(baseMs, attempt) { return baseMs * 2 ** attempt; }"
+        },
+        {
+          "ref": "contract:retry-delay",
+          "text": "The packet does not specify the caller's allowed baseMs or attempt range, whether callers clamp the result, whether zero attempts are valid, or which operations use this helper. It provides no service-level retry deadline or maximum delay requirement."
+        }
+      ],
+      "groundTruth": [],
+      "adjudication": "The helper can be a valid exponential backoff calculation under bounded caller inputs. Overflow, unbounded waiting, and off-by-one policy claims require missing caller constraints. Mark questions tentative rather than confirming a defect."
+    },
+    {
+      "id": "discover-v6-06",
+      "kind": "clean-bounded-binary-search-control",
+      "prompt": "Inspect this membership lookup for a concrete correctness or resource defect under the supplied collection contract.",
+      "evidence": [
+        {
+          "ref": "src/contains.ts:1-12",
+          "text": "function contains(sorted, value) { let lo = 0, hi = sorted.length; while (lo < hi) { const mid = lo + Math.floor((hi - lo) / 2); if (sorted[mid] < value) lo = mid + 1; else hi = mid; } return lo < sorted.length && sorted[lo] === value; }"
+        },
+        {
+          "ref": "contract:contains",
+          "text": "sorted is an immutable ascending array of at most 4096 distinct finite numbers, value is a finite number, and exact numeric membership is required. The array can be empty. The function has no side effects and no latency-sensitive external I/O."
+        }
+      ],
+      "groundTruth": [],
+      "adjudication": "This lower-bound binary search returns true exactly when value occurs in the sorted array and terminates for empty or bounded inputs. No supported defect or false survivor."
+    }
+  ]
+}

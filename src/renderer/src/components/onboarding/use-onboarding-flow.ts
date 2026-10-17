@@ -1,0 +1,210 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { getAgentCatalog } from '@/lib/agent-catalog'
+import { useAppStore } from '@/store'
+import { applyDocumentTheme } from '@/lib/document-theme'
+import { track } from '@/lib/telemetry'
+import { buildAgentPickedPayload } from './agent-picked-payload'
+import type { GlobalSettings } from '../../../../shared/global-settings-types'
+import type { OnboardingState } from '../../../../shared/onboarding-state-types'
+import type { TuiAgent } from '../../../../shared/tui-agent'
+import { STEPS } from './use-onboarding-flow-types'
+import {
+  persistStep,
+  resolveOnboardingYoloPermissions,
+  useCloseWith,
+  usePersistCurrentStep
+} from './use-onboarding-flow-persistence'
+import { resolveOnboardingSettingsHydration } from './onboarding-settings-hydration'
+import { translate } from '@/i18n/i18n'
+import { isWindowsUserAgent } from '@/components/terminal-pane/pane-helpers'
+import {
+  isSkippedStepIndex,
+  remapOpenOnboardingLastCompletedStep,
+  resolveStepIndex,
+  shouldSkipIntegrationsStep,
+  shouldSkipWindowsTerminalStep
+} from './onboarding-flow-state'
+
+import { useOnboardingFlowActions } from './use-onboarding-flow-actions'
+import { useOnboardingFlowTelemetry } from './use-onboarding-flow-telemetry'
+import { useOnboardingOmniRogueAccount } from './use-onboarding-omnirogue-account'
+export { STEPS } from './use-onboarding-flow-types'
+export type { StepId, StepNumber } from './use-onboarding-flow-types'
+
+export function useOnboardingFlow(
+  onboarding: OnboardingState,
+  onOnboardingChange: (state: OnboardingState) => void
+) {
+  const settings = useAppStore((s) => s.settings)
+  const updateSettings = useAppStore((s) => s.updateSettings)
+  const refreshDetectedAgents = useAppStore((s) => s.refreshDetectedAgents)
+  const detectedAgentIds = useAppStore((s) => s.detectedAgentIds)
+  const isDetectingAgents = useAppStore((s) => s.isDetectingAgents || s.isRefreshingAgents)
+  const pathSource = useAppStore((s) => s.pathSource)
+  const pathFailureReason = useAppStore((s) => s.pathFailureReason)
+  const openModal = useAppStore((s) => s.openModal)
+  const preflightStatus = useAppStore((s) => s.preflightStatus)
+  const preflightStatusChecked = useAppStore((s) => s.preflightStatusChecked)
+  const preflightStatusLoading = useAppStore((s) => s.preflightStatusLoading)
+  const refreshPreflightStatus = useAppStore((s) => s.refreshPreflightStatus)
+  const linearStatus = useAppStore((s) => s.linearStatus)
+  const linearStatusChecked = useAppStore((s) => s.linearStatusChecked)
+  // Why: renderToStaticMarkup uses Zustand's initial snapshot; the sync read keeps tests and the first client render aligned.
+  const effectivePreflightStatus = preflightStatus ?? useAppStore.getState().preflightStatus
+
+  const skipIntegrations = shouldSkipIntegrationsStep(effectivePreflightStatus)
+  const skipWindowsTerminal = shouldSkipWindowsTerminalStep(isWindowsUserAgent())
+  const skipOptions = useMemo(() => ({ skipIntegrations, skipWindowsTerminal }), [skipIntegrations, skipWindowsTerminal])
+  const remappedLastCompletedStep = remapOpenOnboardingLastCompletedStep(onboarding)
+  const initialStep = resolveStepIndex(Math.min(Math.max(remappedLastCompletedStep, 0), STEPS.length - 1), skipOptions, 'forward')
+  const [stepIndex, setStepIndex] = useState(initialStep)
+  const [selectedAgent, setSelectedAgent] = useState<TuiAgent | null>(
+    settings?.defaultTuiAgent && settings.defaultTuiAgent !== 'blank' ? settings.defaultTuiAgent : null
+  )
+  const [yoloPermissions, setYoloPermissions] = useState(resolveOnboardingYoloPermissions(settings))
+  const [theme, setTheme] = useState<GlobalSettings['theme']>(settings?.theme ?? 'dark')
+  const [busyLabel, setBusyLabel] = useState<string | null>(null)
+  const [, setError] = useState<string | null>(null)
+
+  const themeInteractedRef = useRef(false)
+  const agentInteractedRef = useRef(false)
+  const yoloPermissionsInteractedRef = useRef(false)
+  const [settingsHydrated, setSettingsHydrated] = useState(settings != null)
+  const settingsHydration = resolveOnboardingSettingsHydration({
+    settings, settingsHydrated, themeInteracted: themeInteractedRef.current,
+    agentInteracted: agentInteractedRef.current, currentTheme: theme, currentAgent: selectedAgent
+  })
+  if (settingsHydration) {
+    setSettingsHydrated(settingsHydration.settingsHydrated)
+    if (settingsHydration.theme !== undefined) {
+      setTheme(settingsHydration.theme)
+    }
+    if (settingsHydration.selectedAgent !== undefined) {
+      setSelectedAgent(settingsHydration.selectedAgent)
+    }
+  }
+  if (settings && !yoloPermissionsInteractedRef.current) {
+    const nextYoloPermissions = resolveOnboardingYoloPermissions(settings)
+    if (nextYoloPermissions !== yoloPermissions) {
+      setYoloPermissions(nextYoloPermissions)
+    }
+  }
+
+  const setThemeInteractive = useCallback((value: GlobalSettings['theme']) => {
+    themeInteractedRef.current = true
+    setTheme(value)
+  }, [])
+  const detectedAgentIdsRef = useRef<readonly TuiAgent[]>(detectedAgentIds ?? [])
+  const isDetectingRef = useRef<boolean>(isDetectingAgents)
+  const selectedAgentRef = useRef(selectedAgent)
+  const pathSourceRef = useRef(pathSource)
+  const pathFailureReasonRef = useRef(pathFailureReason)
+  selectedAgentRef.current = selectedAgent
+  detectedAgentIdsRef.current = detectedAgentIds ?? []
+  isDetectingRef.current = isDetectingAgents
+  pathSourceRef.current = pathSource
+  pathFailureReasonRef.current = pathFailureReason
+  const setSelectedAgentInteractive = useCallback((value: TuiAgent | null, fromCollapsedSection = false) => {
+    agentInteractedRef.current = true
+    const prev = selectedAgentRef.current
+    setSelectedAgent(value)
+    if (value === null || value === prev) {
+      return
+    }
+    track('onboarding_agent_picked', buildAgentPickedPayload({
+      agent: value, detectedAgentIds: detectedAgentIdsRef.current, isDetecting: isDetectingRef.current,
+      fromCollapsedSection, pathSource: pathSourceRef.current, pathFailureReason: pathFailureReasonRef.current
+    }))
+  }, [])
+  const setYoloPermissionsInteractive = useCallback((enabled: boolean) => {
+    yoloPermissionsInteractedRef.current = true
+    setYoloPermissions(enabled)
+  }, [])
+
+  const detectedSet = useMemo(() => new Set(detectedAgentIds ?? []), [detectedAgentIds])
+  const currentStep = STEPS[stepIndex]
+  const progressSteps = useMemo(
+    () => STEPS.map((step, index) => ({ step, index })).filter(({ index }) => !isSkippedStepIndex(index, skipOptions)),
+    [skipOptions]
+  )
+  const displayedStepIndex = resolveStepIndex(stepIndex, skipOptions, 'forward')
+  const progressStepIndex = Math.max(0, progressSteps.findIndex(({ index }) => index === displayedStepIndex))
+  const [initialStartTime] = useState(() => Date.now())
+  const startTimeRef = useRef<number>(initialStartTime)
+
+  const persistedThemeRef = useRef<GlobalSettings['theme']>(settings?.theme ?? 'dark')
+  persistedThemeRef.current = settings?.theme ?? 'dark'
+  const themeStepEntryThemeRef = useRef<GlobalSettings['theme'] | null>(null)
+  const themeStepEntryCapturedRef = useRef(false)
+  useEffect(() => {
+    if (currentStep.id !== 'theme') {
+      themeStepEntryCapturedRef.current = false
+      return
+    }
+    if (!settings || themeStepEntryCapturedRef.current) {
+      return
+    }
+    themeStepEntryCapturedRef.current = true
+    themeStepEntryThemeRef.current = settings.theme
+  }, [currentStep.id, settings])
+
+  useEffect(() => { applyDocumentTheme(theme) }, [theme])
+  useEffect(() => { void refreshPreflightStatus() }, [refreshPreflightStatus])
+
+  const getNextStepIndex = useCallback((idx: number): number => resolveStepIndex(idx + 1, skipOptions, 'forward'), [skipOptions])
+
+  useEffect(() => {
+    if (currentStep.id !== 'integrations' || !preflightStatusChecked || !skipIntegrations) {
+      return
+    }
+    const nextIndex = getNextStepIndex(stepIndex)
+    setStepIndex(nextIndex)
+    const skippedThroughStepNumber = Math.max(currentStep.stepNumber, STEPS[nextIndex].stepNumber - 1)
+    void persistStep(skippedThroughStepNumber).then(onOnboardingChange, (err) => {
+      toast.error(translate('auto.components.onboarding.use.onboarding.flow.52acfbef51', 'Could not save progress'), {
+        description: err instanceof Error ? err.message : String(err)
+      })
+    })
+  }, [currentStep.id, currentStep.stepNumber, getNextStepIndex, onOnboardingChange, preflightStatusChecked, skipIntegrations, stepIndex])
+
+  const { consumeStepDurationMs, setLifecycleRootRef, trackTaskSourcesSnapshot } = useOnboardingFlowTelemetry({
+    remappedLastCompletedStep, currentStep, persistedThemeRef, preflightStatus, preflightStatusLoading, linearStatus, linearStatusChecked
+  })
+
+  const didAutoSelectRef = useRef(false)
+  useEffect(() => {
+    if (didAutoSelectRef.current) {
+      return
+    }
+    didAutoSelectRef.current = true
+    void refreshDetectedAgents().then((ids) => {
+      if (selectedAgentRef.current !== null) {
+        return
+      }
+      const preferred = getAgentCatalog().find((agent) => ids.includes(agent.id))?.id ?? null
+      setSelectedAgent(preferred)
+    })
+  }, [refreshDetectedAgents])
+
+  const omnirogueAccount = useOnboardingOmniRogueAccount({ settings, selectedAgent, setSelectedAgent: setSelectedAgentInteractive })
+  const closeWith = useCloseWith({ onOnboardingChange, startTimeRef, setError })
+  const persistCurrentStep = usePersistCurrentStep({
+    currentStepId: currentStep.id, selectedAgent, selectedModel: omnirogueAccount.selectedModel, selectedBilling: omnirogueAccount.selectedBilling,
+    yoloPermissions, yoloPermissionsChanged: yoloPermissionsInteractedRef.current, theme, settings, updateSettings, onboardingChecklist: onboarding.checklist, onOnboardingChange, setError
+  })
+
+  const { next, skipToRepo, dismissOnboarding, back, jumpToStep } = useOnboardingFlowActions({
+    busyLabel, setBusyLabel, setError, currentStep, consumeStepDurationMs, trackTaskSourcesSnapshot, settings,
+    persistCurrentStep, closeWith, openModal, getNextStepIndex, onOnboardingChange, stepIndex, setStepIndex,
+    selectedAgent, selectedModel: omnirogueAccount.selectedModel, selectedBilling: omnirogueAccount.selectedBilling,
+    themeStepEntryThemeRef, setTheme, updateSettings, skipOptions
+  })
+
+  return {
+    settings, updateSettings, stepIndex, progressSteps, progressStepIndex, currentStep, selectedAgent,
+    setSelectedAgent: setSelectedAgentInteractive, yoloPermissions, setYoloPermissions: setYoloPermissionsInteractive,
+    theme, setTheme: setThemeInteractive, busyLabel, detectedSet, isDetectingAgents, omnirogueAccount,
+    next, skipToRepo, dismissOnboarding, back, jumpToStep, setLifecycleRootRef
+  }
+}

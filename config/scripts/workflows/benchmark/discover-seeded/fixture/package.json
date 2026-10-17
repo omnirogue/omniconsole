@@ -1,0 +1,7 @@
+{
+  "name": "storefront-core",
+  "version": "0.4.2",
+  "private": true,
+  "description": "Checkout, inventory, payments and background jobs for the storefront service",
+  "type": "module"
+}
