@@ -481,8 +481,7 @@ describe('omni-console Claude headersHelper shape', () => {
   })
 
   it('shell-quotes a helper path with spaces and still recognises it', () => {
-    const path =
-      "/Users/maintainer/Library/Application Support/it's/mcp/omni-console-mcp-headers.sh"
+    const path = "/Users/maintainer/Library/Application Support/it's/mcp/omni-console-mcp-headers.sh"
     const command = omniConsoleMcpHeadersHelperCommand(path)
     expect(command).toBe(
       "'/Users/maintainer/Library/Application Support/it'\\''s/mcp/omni-console-mcp-headers.sh'"

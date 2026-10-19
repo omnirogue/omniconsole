@@ -52,7 +52,15 @@ const commentMarkdownUrlTransform: UrlTransform = (value, key, node) => {
 }
 
 const commentMarkdownFileUriUrlTransform: UrlTransform = (value, key, node) => {
-  if (key === 'href' && node?.tagName === 'a' && value.trim().toLowerCase().startsWith('file:')) {
+  const trimmed = value.trim().toLowerCase()
+  if (key === 'href' && node?.tagName === 'a' && trimmed.startsWith('file:')) {
+    return value
+  }
+  if (
+    key === 'src' &&
+    node?.tagName === 'img' &&
+    (trimmed.startsWith('file:') || value.trim().startsWith('/'))
+  ) {
     return value
   }
   return commentMarkdownUrlTransform(value, key, node)
@@ -213,17 +221,18 @@ const CommentMarkdown = React.memo(
     ref
   ) {
     const components = React.useMemo(() => {
-      const base = !onLinkClick
-        ? variant === 'document'
-          ? documentCommentMarkdownComponents
-          : expandImages
-            ? createCompactCommentMarkdownComponents(undefined, true)
-            : compactCommentMarkdownComponents
-        : variant === 'document'
-          ? createDocumentCommentMarkdownComponents(onLinkClick)
-          : createCompactCommentMarkdownComponents(onLinkClick, expandImages)
+      const base =
+        !onLinkClick && !allowFileUriLinks
+          ? variant === 'document'
+            ? documentCommentMarkdownComponents
+            : expandImages
+              ? createCompactCommentMarkdownComponents(undefined, true)
+              : compactCommentMarkdownComponents
+          : variant === 'document'
+            ? createDocumentCommentMarkdownComponents(onLinkClick, allowFileUriLinks)
+            : createCompactCommentMarkdownComponents(onLinkClick, expandImages)
       return remoteImages === 'link' ? withRemoteImagesAsLinks(base) : base
-    }, [expandImages, variant, onLinkClick, remoteImages])
+    }, [allowFileUriLinks, expandImages, variant, onLinkClick, remoteImages])
     const activeRemarkPlugins = React.useMemo(() => {
       const plugins = linkifyFilePaths
         ? [...remarkPlugins, remarkNativeChatFileLinks]

@@ -1,3 +1,4 @@
+import { getDeliverableVerifier } from '../deliverable-verifier/deliverable-verifier-slot'
 import { upNextView } from '../runtime/up-next'
 import { getNextStepSuggestionService } from '../next-steps/next-step-suggestion-slot'
 import { createArchiveReview } from './steward-archive-review'
@@ -288,7 +289,10 @@ export function createStewardRuntimeSources(options: {
     observe,
     drivers: (row, source) => ({
       chainBound: source ? isChainBoundToConversation(runtime, source) : false,
-      heldDelivery: row.paneKey ? isHeld(row.paneKey) : false
+      heldDelivery: row.paneKey ? isHeld(row.paneKey) : false,
+      deliverableRepair: source
+        ? (getDeliverableVerifier()?.hasOutstandingRepair(source) ?? false)
+        : false
     }),
     readOwnSteps: readRuntimeOwnSteps,
     latestTurn,

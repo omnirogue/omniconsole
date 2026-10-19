@@ -28,6 +28,7 @@ import {
 } from './idle-auto-close-settings'
 import { getDefaultSessionHostControlSettings } from './session-host-control-settings'
 import { getDefaultSessionQuestionsSettings } from './session-questions-settings'
+import { getDefaultDeliverableVerifierSettings } from './deliverable-verifier-settings'
 import { DEFAULT_REVIEW_WAIT_LIVE_MINUTES } from './artifact-review-sleep'
 
 export function buildDefaultSettings(args: {
@@ -269,6 +270,7 @@ export function buildDefaultSettings(args: {
     idleAutoCloseMinutes: DEFAULT_IDLE_AUTO_CLOSE_MINUTES,
     experimentalNewWorktreeCardStyle: false,
     experimentalEphemeralVms: false,
+    experimentalOmniCredits: false,
     experimentalOmniSiPreviews: false,
     experimentalDecisionsTitlebarBadge: false,
     experimentalCardlessHandoffs: DEFAULT_CARDLESS_HANDOFFS,
@@ -300,6 +302,7 @@ export function buildDefaultSettings(args: {
     sessionSteward: getDefaultSessionStewardSettings(),
     sessionHostControl: getDefaultSessionHostControlSettings(),
     sessionQuestions: getDefaultSessionQuestionsSettings(),
+    deliverableVerifier: getDefaultDeliverableVerifierSettings(),
     // Why on: it acts only while restoreFloodGuard (default true) is on (archive-sleep-verdict.ts).
     archiveSleepsIdleAgents: true,
     reviewWaitLiveMinutes: DEFAULT_REVIEW_WAIT_LIVE_MINUTES,

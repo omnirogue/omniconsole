@@ -46,7 +46,7 @@ describe('orchestration RPC methods', () => {
           data: {
             runId: existing.run_id,
             hubTaskId: 'btk_rpcauthority',
-            omniosUrl: 'https://app.omnisi.ai'
+            omniosUrl: 'https://console.example.com'
           }
         })
         expect(db.listTasks()).toEqual(before)

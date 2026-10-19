@@ -188,6 +188,11 @@ export type SessionManageEntry = Partial<SessionParityFields> & {
   archiveKind?: 'manual' | 'automatic' | null
   /** The agent template it launched with (`omni agents`); null when the launch recorded none. */
   agentTemplate?: SessionAgentTemplate | null
+  /**
+   * An agent launched it (Agent sessions); false when a person started it. Only an agent's session
+   * is cleaned up unasked. Absent from an older window.
+   */
+  agentSession?: boolean
   /** The steward tried and could not move it: when and why. Cleared by its next turn. */
   stalled?: { at: number; reason: string }
   /** Pane keys of sessions waiting on this one's result. */

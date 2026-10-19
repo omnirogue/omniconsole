@@ -70,7 +70,10 @@ it('falls back to the id when no name is known, and keeps the person’s own wor
   chain.steps = []
   chain.outcomeSet!.outcomes[0]!.conditions[1]!.label = 'the hat page renders'
   const facts = doneWhenFacts(chain)
-  expect(facts.items.map((item) => item.label)).toEqual(['emp_sal_qa_test', 'the hat page renders'])
+  expect(facts.items.map((item) => item.label)).toEqual([
+    'emp_sal_qa_test',
+    'the hat page renders'
+  ])
   expect(facts.items[1]!.detail).toBe(HAT)
 })
 

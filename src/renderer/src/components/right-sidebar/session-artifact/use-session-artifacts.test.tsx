@@ -94,4 +94,24 @@ describe('useSessionArtifacts', () => {
     expect(result.current.active).toBe(true)
     expect(useTestStore.getState().rightSidebarOpen).toBe(true)
   })
+
+  it('auto-opens the right review panel once when a new OmniOS artifact is recorded for the session', () => {
+    useTestStore.setState({ rightSidebarOpen: false })
+    useSessionWorkView.setState({ preferred: false })
+    const { result } = renderHook(() => useSessionArtifacts())
+    act(() => {
+      tryOpenSessionDocument('https://omnios.example/a/review-page-1', 'w')
+    })
+    expect(useTestStore.getState().rightSidebarOpen).toBe(true)
+    expect(result.current.active).toBe(true)
+    // Closing the panel and switching sessions A -> B -> A must not force-reopen the same artifact.
+    act(() => {
+      useTestStore.getState().setRightSidebarOpen(false)
+      useTestStore.setState({ tabId: 'tab-b' })
+    })
+    act(() => {
+      useTestStore.setState({ tabId: 'tab' })
+    })
+    expect(useTestStore.getState().rightSidebarOpen).toBe(false)
+  })
 })

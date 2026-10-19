@@ -326,7 +326,10 @@ async function judge(
     return stewardArchiveRecheck(deps, row, reading, observed, recheck.granted)
   }
   const refused: StewardTier2Verdict[] = []
-  if (stewardFeatureMode('tier2Archive') === 'on') {
+  if (stewardFeatureMode('tier2Archive') === 'on' && row.agentSession !== true) {
+    // Why (Sal, 2026-10-19): "human started sessions stay open until we close them."
+    refused.push({ ok: false, reason: 'a person started it, so it stays until they close it' })
+  } else if (stewardFeatureMode('tier2Archive') === 'on') {
     const finished = await stewardFinishedArchiveCheck(deps, target, row, reading, observed)
     if (finished.ok) {
       return finished

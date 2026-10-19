@@ -1,3 +1,4 @@
+import { registerOmnisiTeamHandlers, setTrustedOmnisiTeamRenderer } from '../../omnisi-team/handlers'
 import { registerRoutineAlertHandlers } from '../routine-alerts'
 import { registerConsoleRoutineConversationHandlers } from '../console-routine-conversation'
 import { registerConsoleTeamRoutinesHandlers } from '../console-team-routines'
@@ -53,6 +54,7 @@ import { registerNativeChatHandlers } from '../native-chat'
 import { registerNotificationHandlers } from '../notifications'
 import { registerNotebookHandlers } from '../notebook'
 import { registerOnboardingHandlers } from '../onboarding'
+import { registerOmniCreditsIpc } from '../omni-credits-ipc'
 import { registerOmniRogueHandlers } from '../omnirogue'
 import { registerDashboardPopoutHandlers } from '../dashboard-popout'
 import { registerTerminalPreviewHandlers } from '../terminal-preview'
@@ -159,6 +161,7 @@ export function registerCoreHandlers(
   setTrustedBrowserRendererWebContentsId(mainWindowWebContentsId)
   setTrustedClipboardRendererWebContentsId(mainWindowWebContentsId)
   setTrustedUIRendererWebContentsId(mainWindowWebContentsId)
+  setTrustedOmnisiTeamRenderer(mainWindowWebContentsId)
   setAgentBrowserBridgeRef(runtime.getAgentBrowserBridge())
   if (registered) {
     return
@@ -220,6 +223,7 @@ export function registerCoreHandlers(
   startTeamMemoryStatusPolling()
   registerNotebookHandlers(store)
   registerOnboardingHandlers(store)
+  registerOmniCreditsIpc(store)
   registerOmniRogueHandlers(store)
   registerDashboardPopoutHandlers(store, keybindings)
   registerTerminalPreviewHandlers(runtime)
@@ -234,6 +238,7 @@ export function registerCoreHandlers(
   registerComputerUsePermissionHandlers()
   registerSettingsHandlers(store, agentAwakeService)
   registerMcpConnectorHandlers(() => store.getSettings())
+  registerOmnisiTeamHandlers(store, runtime)
   registerSkillsHandlers(store, runtime)
   registerSkillDeleteIpcHandlers(store, runtime)
   if (automations) {

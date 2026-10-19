@@ -8,7 +8,7 @@ import {
 } from './session-sidebar-view'
 import { SESSION_WORKERS_GROUP_KEY } from './session-sidebar-worker-keys'
 
-const ORPHAN_WORKER_CLASSES = new Set([
+const AGENT_SESSION_CLASSES = new Set([
   'conversations',
   'drafts',
   'waiting',
@@ -17,7 +17,8 @@ const ORPHAN_WORKER_CLASSES = new Set([
 ])
 
 // Why: Hidden sits after Completed — put away on purpose, not aged out like Archived. Drafts
-// lead: they are the person's own, still being written. Agent sessions sit with the done work.
+// lead: they are the person's own, still being written. Agent sessions follow the person's own
+// sessions (Saved is inserted before them, saved-session-sidebar-groups).
 const STATUS_KINDS = [
   'drafts',
   'waiting',
@@ -34,15 +35,16 @@ const STATUS_GROUP_KEYS: Partial<Record<(typeof STATUS_KINDS)[number], string>> 
 }
 
 /**
- * The Active rows and the status groups (Drafts … Archived) of the Status view. A worker whose
- * launcher is gone waits folded in Agent sessions, not among the person's own.
+ * The Active rows and the status groups (Drafts … Archived) of the Status view. A session an
+ * agent launched, and a worker whose launcher is gone, waits folded in Agent sessions, not among
+ * the person's own; one that needs the person is in Needs you.
  */
 export function sessionStatusGroups(args: {
   automaticRows: readonly SessionSidebarTreeRow[]
   hiddenRows: SessionSidebarTreeRow[]
   listed: readonly SessionSidebarTreeRow[]
   classifications: ReadonlyMap<string, string>
-  orphanRowKeys: ReadonlySet<string>
+  agentRowKeys: ReadonlySet<string>
   view: SessionSidebarView
   showArchived: boolean
   query: string
@@ -50,18 +52,18 @@ export function sessionStatusGroups(args: {
   const { automaticRows, classifications, view, query } = args
   const classOf = (row: SessionSidebarTreeRow): string =>
     classifications.get(row.session.rowKey) ?? ''
-  const orphan = (row: SessionSidebarTreeRow): boolean =>
-    args.orphanRowKeys.has(row.session.rowKey) &&
+  const agentRow = (row: SessionSidebarTreeRow): boolean =>
+    args.agentRowKeys.has(row.session.rowKey) &&
     !row.archived &&
-    ORPHAN_WORKER_CLASSES.has(classOf(row))
+    AGENT_SESSION_CLASSES.has(classOf(row))
   const inGroup = (kind: string) =>
-    automaticRows.filter((row) => classOf(row) === kind && !orphan(row))
+    automaticRows.filter((row) => classOf(row) === kind && !agentRow(row))
   const grouped = {
     drafts: inGroup('drafts'),
     waiting: inGroup('waiting'),
     stopped: inGroup('stopped'),
     completed: inGroup('completed'),
-    workers: automaticRows.filter(orphan),
+    workers: automaticRows.filter(agentRow),
     hidden: args.hiddenRows,
     archived: newestArchivedFirst(
       args.listed.filter((row) => row.archived),

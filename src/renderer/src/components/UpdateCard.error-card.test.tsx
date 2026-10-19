@@ -259,9 +259,7 @@ describe('UpdateCard Linux package-install recovery', () => {
     await flushActions()
 
     fireEvent.click(screen.getByRole('button', { name: 'Download Manually' }))
-    expect(openUrl).toHaveBeenCalledWith(
-      'https://github.com/omnirogue/omniconsole/releases/tag/v1.4.200'
-    )
+    expect(openUrl).toHaveBeenCalledWith('https://github.com/omnirogue/omniconsole/releases/tag/v1.4.200')
   })
 
   it('keeps generic errors on the generic card when no recovery is attached', () => {

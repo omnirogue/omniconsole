@@ -21,7 +21,7 @@ function item(sourceContentType: string): ArtifactListItem {
       byteSize: 1,
       deletedAt: null
     },
-    shareUrl: 'https://app.omnisi.ai/a/doc'
+    shareUrl: 'https://console.example.com/a/doc'
   }
 }
 

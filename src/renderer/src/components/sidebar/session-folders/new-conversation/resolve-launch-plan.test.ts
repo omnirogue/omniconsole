@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { AccountCapacityRow } from '../../../../../../shared/provider-account-capacity'
 import { getAgentSessionOptionCatalog } from '../../../../../../shared/agent-session-option-catalog'
-import { LAUNCHER_PROVIDERS, resolveLaunchPlan } from './resolve-launch-plan'
+import {
+  isOtherLauncherAgent,
+  LAUNCHER_PROVIDERS,
+  resolveLaunchPlan,
+  resolveLaunchPreferences
+} from './resolve-launch-plan'
 
 const row = (patch: Partial<AccountCapacityRow> = {}): AccountCapacityRow => ({
   provider: 'claude',
@@ -270,66 +275,71 @@ it.each(['claude', 'codex'] as const)(
   }
 )
 
-describe('Gemini launcher plans', () => {
-  it.each([true, false])('pins the model without account selection (local: %s)', (local) => {
-    expect(resolveLaunchPlan({ ...base(), local, defaultProvider: 'gemini' })).toEqual({
-      kind: 'launch',
-      agent: 'gemini',
-      launchPreferences: { model: 'gemini-3.8-flash' }
-    })
+describe('Antigravity launcher plans', () => {
+  it.each([true, false])('launches without account selection (local: %s)', (local) => {
+    const input = { ...base(), local, defaultProvider: 'antigravity' as const }
+    const expected = { kind: 'launch', agent: 'antigravity', launchPreferences: undefined }
+    expect(resolveLaunchPlan(input)).toEqual(expected)
+    expect(resolveLaunchPlan({ ...input, pick: { agent: 'antigravity' } })).toEqual(expected)
   })
-  it.each(['disabled', 'cli-missing'])('refuses a %s Gemini CLI', (status) => {
+  it.each(['disabled', 'cli-missing'])('refuses a %s Antigravity CLI', (status) => {
     const input = base()
-    input.capabilities.find((entry) => entry.id === 'gemini')!.status = status
-    expect(resolveLaunchPlan({ ...input, pick: { agent: 'gemini' } })).toEqual({
+    input.capabilities.find((entry) => entry.id === 'antigravity')!.status = status
+    expect(resolveLaunchPlan({ ...input, pick: { agent: 'antigravity' } })).toEqual({
       kind: 'provider-unavailable'
     })
   })
+  it('keeps Gemini out of Other agents so it cannot launch without its model pin', () => {
+    expect(isOtherLauncherAgent('gemini')).toBe(false)
+    expect(isOtherLauncherAgent('antigravity')).toBe(false)
+    expect(
+      resolveLaunchPlan({
+        ...base(),
+        capabilities: [{ id: 'gemini', label: 'Gemini', status: 'usable', models: [] }],
+        pick: { otherAgent: 'gemini' }
+      })
+    ).toEqual({ kind: 'provider-unavailable' })
+  })
+})
+
+describe('Gemini launch preferences', () => {
+  const models = getAgentSessionOptionCatalog('gemini')!.models
   it('preserves saved and explicit older model choices without effort', () => {
-    const input = {
-      ...base(),
-      defaults: { gemini: { model: 'gemini-3.5-flash', effort: 'high' } }
+    const saved = { model: 'gemini-3.5-flash', effort: 'high' }
+    expect(resolveLaunchPreferences('gemini', models, saved)).toEqual({
+      model: 'gemini-3.5-flash'
+    })
+    expect(
+      resolveLaunchPreferences('gemini', models, saved, { model: 'gemini-3.1-pro-preview' })
+    ).toEqual({ model: 'gemini-3.1-pro-preview' })
+    expect(resolveLaunchPreferences('gemini', models, saved, { model: undefined })).toEqual({
+      model: 'gemini-3.8-flash'
+    })
+  })
+  it.each(['missing', 'gemini-2.5-pro'])(
+    'replaces a retired saved model %s with the catalog default',
+    (model) => {
+      expect(resolveLaunchPreferences('gemini', models, { model })).toEqual({
+        model: 'gemini-3.8-flash'
+      })
     }
-    expect(resolveLaunchPlan({ ...input, pick: { agent: 'gemini' } })).toMatchObject({
-      launchPreferences: { model: 'gemini-3.5-flash' }
-    })
-    expect(
-      resolveLaunchPlan({ ...input, pick: { agent: 'gemini', model: 'gemini-3.1-pro-preview' } })
-    ).toMatchObject({ launchPreferences: { model: 'gemini-3.1-pro-preview' } })
-    expect(
-      resolveLaunchPlan({ ...input, pick: { agent: 'gemini', model: undefined } })
-    ).toMatchObject({ launchPreferences: { model: 'gemini-3.8-flash' } })
-  })
-  it('replaces a stale saved model with the catalog default', () => {
-    expect(
-      resolveLaunchPlan({
-        ...base(),
-        defaultProvider: 'gemini',
-        defaults: { gemini: { model: 'missing' } }
-      })
-    ).toMatchObject({ launchPreferences: { model: 'gemini-3.8-flash' } })
-  })
-  it('retires a no-longer-seeded saved model back to the catalog default', () => {
-    expect(
-      resolveLaunchPlan({
-        ...base(),
-        defaultProvider: 'gemini',
-        defaults: { gemini: { model: 'gemini-2.5-pro' } }
-      })
-    ).toMatchObject({ launchPreferences: { model: 'gemini-3.8-flash' } })
-  })
-  it('refuses to silently launch the CLI default if model evidence is empty', () => {
-    const input = base()
-    input.capabilities.find((entry) => entry.id === 'gemini')!.models = []
-    expect(resolveLaunchPlan({ ...input, pick: { agent: 'gemini' } })).toEqual({
-      kind: 'provider-unavailable'
-    })
+  )
+  it('returns no preference when model evidence is empty', () => {
+    expect(resolveLaunchPreferences('gemini', [])).toBeUndefined()
   })
 })
 
 describe('launcher provider order', () => {
-  it('lists Claude, Codex, Kimi, Grok, Muse, OMP, then Gemini', () => {
-    expect(LAUNCHER_PROVIDERS).toEqual(['claude', 'codex', 'kimi', 'grok', 'muse', 'omp', 'gemini'])
+  it('lists Claude, Codex, Kimi, Grok, Muse, OMP, then Antigravity', () => {
+    expect(LAUNCHER_PROVIDERS).toEqual([
+      'claude',
+      'codex',
+      'kimi',
+      'grok',
+      'muse',
+      'omp',
+      'antigravity'
+    ])
   })
   it('defaults a plain click to Kimi with its CLI default when it is the first usable provider', () => {
     const input = base()

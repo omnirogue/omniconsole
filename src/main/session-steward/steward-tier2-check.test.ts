@@ -59,6 +59,16 @@ describe('the Tier 2 check S1 asks before an unattended archive', () => {
     })
   })
 
+  // Sal, 2026-10-19: "human started sessions stay open until we close them."
+  it('never archives a finished, quiet session a person started', async () => {
+    finishedQuiet('p1', 8, { agentSession: false, emptyArchiveRevision: null })
+    const check = createStewardTier2Check(h.deps.tier2)
+    expect(await check({ target: { paneKey: 'p1', tabId: 'tab-p1' }, context })).toMatchObject({
+      ok: false,
+      reason: 'a person started it, so it stays until they close it'
+    })
+  })
+
   it('refuses a session on another computer before reading it', async () => {
     finishedQuiet('p1', 8, { hostId: 'ssh:box' })
     const check = createStewardTier2Check(h.deps.tier2)

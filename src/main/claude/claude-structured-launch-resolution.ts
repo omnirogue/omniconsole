@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+import { prepareTeamConnectorForLaunch } from '../omnisi-team/launch'
 import { createHash } from 'node:crypto'
 import type { EffortLevel, Options as ClaudeAgentSdkOptions } from '@anthropic-ai/claude-agent-sdk'
 import type { AgentSessionJournalIdentity } from '../../shared/agent-session-journal-types'
@@ -249,6 +251,7 @@ export function createClaudeStructuredLaunchResolver(
       },
       { platform: process.platform }
     )
+    prepareTeamConnectorForLaunch('claude', join(record.accountHome.path, '.claude.json'), env)
     return {
       pathToClaudeCodeExecutable: command,
       options: {

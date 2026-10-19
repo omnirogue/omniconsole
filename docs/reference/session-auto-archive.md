@@ -2,10 +2,35 @@
 
 Ordinary conversations stay open when an agent finishes answering. Automatic
 Done archiving requires an explicit **When finished: End** choice, as installed
-by `omni session launch --ephemeral` for disposable agent work. A missing choice,
-Keep open, Save, and an outcome-only finish preference never qualify for this
-background archive path. Clearing the choice cancels its Done clock. Existing
-finite orchestration workers still use their accepted-result cleanup contract.
+by `omni session launch --ephemeral` for disposable agent work, or an **agent
+session**. A missing choice, Keep open, Save, and an outcome-only finish
+preference never qualify a person's session for this background archive path.
+Clearing the choice cancels its Done clock. Existing finite orchestration
+workers still use their accepted-result cleanup contract.
+
+## Agent sessions and the person's own
+
+Sal, 19 Oct 2026: "agent sessions [are] separate from human sessions and human
+started sessions stay open until we close them." A session is an agent session
+when an agent launched it: `omni session launch` (and so `omni-models` and a raw
+OmniOS launch), an OmniOS/MCP launch through session prep (the connector path
+only; a person's own "create sessions for…" prep is theirs), or an orchestration
+worker that `worker-start` created. The computer that runs it keeps the note
+(`agentSessions` in the session folder metadata, moved with the session key)
+and its conversation ledger carries `agentSession: true` to paired computers.
+
+- The sidebar lists agent sessions in **Agent sessions**, folded by default,
+  below the person's own sessions, projects and Saved, wherever the launcher
+  filed them; they no longer count in that folder, and a batch folder only
+  agent sessions fill leaves the view. One that needs the person is in Needs
+  you. One the person saves, or files anywhere themselves, is theirs.
+- `omni session list --json` rows carry `agentSession` (true or false);
+  orchestration workers count as agent sessions there too.
+- Only agent sessions are cleaned up unasked: the Done archive above, the
+  steward's blank-session close (a person's blank session is never vouched
+  for) and its Tier 2 finished-session archive, and `omni session tidy
+  --apply`, which holds a person's session that would otherwise be archived
+  unless the request names it with `--include`.
 
 The Conversations clock menu has two independent controls: **Fold idle groups**
 (presentation only), and **Archive completed sessions**. Archive defaults to two

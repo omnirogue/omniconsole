@@ -99,6 +99,11 @@ export type SessionManageSidebarRow = Partial<SessionParityFields> & {
   folded: boolean
   /** A routine owns it, so no other task is routed in; older windows omit it. */
   routine?: boolean
+  /**
+   * An agent launched it (`session launch`, OmniOS/MCP, a worker): it lists in Agent sessions and
+   * only such sessions are cleaned up unasked. False: a person started it. Older windows omit it.
+   */
+  agentSession?: boolean
   /** The provider conversation its agent reported; older windows omit it (join unknown). */
   providerSessionId?: string | null
   transcriptPath?: string | null
@@ -221,6 +226,8 @@ export type SessionManageRendererRequest =
     }
   /** A finished one-off cleanup session: close it once its host confirms (an older window ignores it). */
   | { kind: 'scheduleFinish'; paneKey?: string; tabId?: string; action: 'archive' | 'end' | null }
+  /** An agent launched this session: list it in Agent sessions (an older window rejects the kind). */
+  | { kind: 'markAgentSession'; paneKey?: string; tabId?: string }
   /** Read-only: the sidebar's counts as last rendered (session-count step 0; an older window ignores it). */
   | { kind: 'readSidebarCounts' }
   /** Read-only (session parity, step 8): the unfiltered parity population; null while restoring. */

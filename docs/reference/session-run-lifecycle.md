@@ -113,6 +113,17 @@ unconfirmed (a replay cannot deliver twice), under a FRESH key when the hub refu
 it is `failed / handoff-delivery`. A reviewer or gate that returned no readable verdict is asked
 again within the same bound before the outcome reads `failed`; a missing verdict is never a request.
 
+A finished outcome whose promised `file` is missing is given back to the run's own conversation
+before it fails (`session-outcome-deliverable-repair.ts`): `recovering / deliverable-repair` until a
+repair prompt goes out after a finished turn, `waiting / deliverable-repair` (wake `repair turn`) on
+the turn that answers it, at most `SESSION_RECOVERY_MAX_AUTO_RETRIES` per outcome revision and plan
+version. A repair turn that leaves the same files missing stops the repairs; so does a gone
+conversation. Then it is `failed / deliverable-unverified`, as before, and never a request. Each
+repair is recorded durably before its prompt is admitted, in a host-local file outside the outcome
+set (`session-outcome-deliverable-repair-store.ts`), so a restart counts the same budget; a send
+whose result is unknown counts and is never repeated. Workflow runs, which re-verify only when a
+stage lands, are not repaired.
+
 Source readiness never waits silently: a live source that has not finished its turn is a `waiting`
 block with a code and a wake, never a tick that returns without a reason. A session receipt already
 earned survives loss of contact: an inconclusive observation (an `unverifiable` pane or host, a

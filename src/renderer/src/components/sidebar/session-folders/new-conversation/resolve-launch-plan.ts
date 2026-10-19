@@ -27,17 +27,20 @@ export const LAUNCHER_PROVIDERS = [
   'claude',
   'codex',
   'kimi',
-  'deepseek',
   'grok',
   'muse',
   'omp',
-  'gemini'
+  'antigravity'
 ] as const
 export type LauncherProvider = (typeof LAUNCHER_PROVIDERS)[number]
 
 /** An installed agent CLI the launcher lists under "Other agents" rather than as a provider row. */
 export function isOtherLauncherAgent(id: TuiAgent): boolean {
-  return id !== 'claude-agent-teams' && !LAUNCHER_PROVIDERS.some((provider) => provider === id)
+  return (
+    id !== 'claude-agent-teams' &&
+    id !== 'gemini' &&
+    !LAUNCHER_PROVIDERS.some((provider) => provider === id)
+  )
 }
 export type LaunchPick = {
   sessionContext?: readonly SessionContextAttachment[]
@@ -180,9 +183,6 @@ function resolveProviderLaunchPlan(input: {
   }
   const models = input.capabilities.find((entry) => entry.id === agent)?.models ?? []
   const launchPreferences = resolveLaunchPreferences(agent, models, input.defaults?.[agent], pick)
-  if (agent === 'gemini' && !launchPreferences) {
-    return { kind: 'provider-unavailable' }
-  }
   if ((!input.local && !input.accountEnvironmentId) || (agent !== 'claude' && agent !== 'codex')) {
     return { kind: 'launch', agent, launchPreferences }
   }

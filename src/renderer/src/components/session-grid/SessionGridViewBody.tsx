@@ -58,11 +58,6 @@ const WorkCompanies = lazy(() =>
     default: module.WorkCompaniesSection
   }))
 )
-const WorkArtifacts = lazy(() =>
-  import('../work/WorkArtifactsSection').then((module) => ({
-    default: module.WorkArtifactsSection
-  }))
-)
 
 export function SessionGridViewBody(props: {
   paneId: string
@@ -134,7 +129,6 @@ export function SessionGridViewBody(props: {
   }
   const bodies: Record<string, React.ReactNode> = {
     'section:needs-you': <NeedsYou />,
-    'section:artifacts': <WorkArtifacts />,
     'omnios-decisions': <Decisions />,
     'session-statistics': <Statistics />,
     artifacts: <Artifacts embedded />,

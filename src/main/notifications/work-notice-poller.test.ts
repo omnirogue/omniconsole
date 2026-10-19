@@ -12,7 +12,7 @@ function fixture() {
     event: 'assigned',
     title: 'Review',
     body: 'Waiting on you',
-    url: 'https://app.omnisi.ai/a/test',
+    url: 'https://console.example.com/a/test',
     created_at: '2026-10-12T00:00:00Z'
   }
   const request = vi.fn(async (_path: string, _id?: string | number): Promise<unknown> => ({
@@ -154,21 +154,21 @@ describe('Work notices', () => {
 })
 
 describe('Work notice click URL', () => {
-  it.each(['https://app.omnisi.ai/a/review', 'https://example-team.atlassian.net/browse/OAOS-1'])(
-    'accepts %s',
-    (url) => {
-      expect(workNoticeClickUrl(url)).toBe(url)
-    }
-  )
   it.each([
-    'http://app.omnisi.ai/a',
-    'https://app.omnisi.ai.evil.test/',
-    'https://app.omnisi.ai@evil.test/',
-    'https://user@app.omnisi.ai/',
-    'https://app.omnisi.ai:8443/',
+    'https://console.example.com/a/review',
+    'https://example-team.atlassian.net/browse/OAOS-1'
+  ])('accepts %s', (url) => {
+    expect(workNoticeClickUrl(url)).toBe(url)
+  })
+  it.each([
+    'http://console.example.com/a',
+    'https://console.example.com.evil.test/',
+    'https://console.example.com@evil.test/',
+    'https://user@console.example.com/',
+    'https://console.example.com:8443/',
     'javascript:alert(1)',
     'invalid'
   ])('falls back to Work for %s', (url) => {
-    expect(workNoticeClickUrl(url)).toBe('https://app.omnisi.ai/work')
+    expect(workNoticeClickUrl(url)).toBe('https://console.example.com/work')
   })
 })

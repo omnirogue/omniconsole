@@ -76,7 +76,10 @@ describe('sessionMilestones', () => {
       ['approved', 'todo'],
       ['live:OmniRogue', 'todo']
     ])
-    expect(summary(ready, new Set(['omnirogue/omnirogue#1']))).toContainEqual(['approved', 'done'])
+    expect(summary(ready, new Set(['omnirogue/omnirogue#1']))).toContainEqual([
+      'approved',
+      'done'
+    ])
     expect(summary([pr(1, 'prod-omnirogue', { state: 'open', approved: true })])).toContainEqual([
       'approved',
       'done'

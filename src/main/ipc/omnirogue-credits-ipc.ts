@@ -86,7 +86,8 @@ export function parseOmniRogueCreditBalancePayload(
     toNonEmptyString(root.tier) ??
     toNonEmptyString(user?.plan) ??
     toNonEmptyString(user?.tier)
-  const currency = toNonEmptyString(wallet.currency) ?? toNonEmptyString(root.currency) ?? 'credits'
+  const currency =
+    toNonEmptyString(wallet.currency) ?? toNonEmptyString(root.currency) ?? 'credits'
 
   return {
     availableCredits,

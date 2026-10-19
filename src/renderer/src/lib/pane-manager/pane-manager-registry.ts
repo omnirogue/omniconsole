@@ -93,31 +93,62 @@ export function getAllPaneRenderingDiagnostics(): PaneRenderingDiagnostics[] {
   return all
 }
 
+export type LivePaneCensus = {
+  managers: number
+  panes: number
+  /** Panes currently holding an xterm WebGL addon (and its GPU context). */
+  webglContexts: number
+  /** Subset held by managers reporting themselves hidden — the hibernation target. */
+  hiddenWebglContexts: number
+  /** Monotonic count of WebGL contexts released by pane teardown/park since load. */
+  webglContextsReleased: number
+}
+
+let webglContextsReleased = 0
+
+export function recordTerminalWebglContextRelease(): void {
+  webglContextsReleased += 1
+}
+
 /**
  * Live pane census: managers (≈ terminal tabs) and the panes they hold.
  *
  * Why: this is the population number crash reports have been inferring from
  * breadcrumb multiplicity, which never worked — `pane.id` restarts at 1 per
  * manager, so N panes and one looping pane are indistinguishable in the ring.
- * Measure it instead.
+ * Measure it instead. WebGL counts show whether parked/hidden panes actually
+ * gave their GPU contexts back.
  */
-export function getLivePaneCensus(): { managers: number; panes: number } {
+export function getLivePaneCensus(): LivePaneCensus {
   let panes = 0
+  let webglContexts = 0
+  let hiddenWebglContexts = 0
   for (const manager of liveManagers) {
     try {
       panes += manager.getPaneCount?.() ?? manager.getPanes?.().length ?? 0
+      const managerWebgl = (manager.getRenderingDiagnostics?.() ?? []).filter(
+        (pane) => pane.hasWebgl
+      ).length
+      webglContexts += managerWebgl
+      if (manager.isVisibleForAtlasRecovery?.() === false) {
+        hiddenWebglContexts += managerWebgl
+      }
     } catch {
       // Why: a manager mid-teardown must not sink the count for the rest.
     }
   }
-  return { managers: liveManagers.size, panes }
+  return {
+    managers: liveManagers.size,
+    panes,
+    webglContexts,
+    hiddenWebglContexts,
+    webglContextsReleased
+  }
 }
 
 export function getTerminalResourceCounts(): { xterms: number; webglContexts: number } {
-  return {
-    xterms: getLivePaneCensus().panes,
-    webglContexts: getAllPaneRenderingDiagnostics().filter((pane) => pane.hasWebgl).length
-  }
+  const census = getLivePaneCensus()
+  return { xterms: census.panes, webglContexts: census.webglContexts }
 }
 
 /**

@@ -15,7 +15,8 @@ const ANSWER = {
   approvedBy: 'sal@example.edu',
   actor
 }
-const REASON = 'restored for an answered decision review:plan:d42, approved by sal@example.edu'
+const REASON =
+  'restored for an answered decision review:plan:d42, approved by sal@example.edu'
 const DELETED_KEY = 'deleted-key'
 const HIDDEN_KEY = 'hidden-key'
 

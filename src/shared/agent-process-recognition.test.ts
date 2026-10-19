@@ -18,9 +18,7 @@ describe('agent process recognition', () => {
     ).toBe('claude')
     expect(recognizeAgentProcess('/opt/claude/versions/2.2.0-beta.1')?.agent).toBe('claude')
     expect(recognizeAgentProcess('/tmp/versions/2.1.296')).toBeNull()
-    expect(
-      recognizeAgentProcess('/Users/maintainer/.local/share/claude/versions/latest')
-    ).toBeNull()
+    expect(recognizeAgentProcess('/Users/maintainer/.local/share/claude/versions/latest')).toBeNull()
     expect(recognizeAgentProcess('2.1.296')).toBeNull()
   })
 

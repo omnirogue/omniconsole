@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -40,7 +39,6 @@ import { closeProjectSettings, useProjectSettingsDialog } from './project-settin
 import { ProjectSettingsAgents } from './ProjectSettingsAgents'
 import { ProjectSettingsComputers } from './ProjectSettingsComputers'
 import { ProjectSettingsCoordinator } from './ProjectSettingsCoordinator'
-import { ProjectSettingsMemoryTab } from './ProjectSettingsMemoryTab'
 import { ProjectSettingsNotes } from './ProjectSettingsNotes'
 import { ProjectSettingsRepos } from './ProjectSettingsRepos'
 import { withRepoRelativePaths } from './project-attachment-repo'
@@ -180,15 +178,10 @@ function ProjectSettingsDialog({
     }
     closeProjectSettings()
   }
-  const [activeTab, setActiveTab] = useState<'general' | 'memory'>('general')
-  const workspaceAttachment = draft.attachments.find((a) => a.kind === 'folder' && a.uri)
-  const workspaceRoot =
-    workspaceAttachment?.uri ?? `/Users/maintainer/Work/Shared/${folderName || 'Project'}`
-
   return (
     <Dialog open onOpenChange={(open) => !open && closeProjectSettings()}>
       <DialogContent
-        className="max-h-[85vh] overflow-y-auto scrollbar-sleek sm:max-w-2xl"
+        className="max-h-[85vh] overflow-y-auto scrollbar-sleek sm:max-w-xl"
         data-project-settings={create ? 'create' : ''}
       >
         <DialogHeader>
@@ -207,49 +200,11 @@ function ProjectSettingsDialog({
                 )
               : translate(
                   'projects.settings.description',
-                  'Configure project goal, coordinator & thread models/efforts, per-thread memories, and clean Output.txt transcripts.'
+                  'Every session started in this project folder inherits these.'
                 )}
           </DialogDescription>
         </DialogHeader>
-
-        <div className="flex items-center gap-1 border-b pb-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab('general')}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-              activeTab === 'general'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted'
-            }`}
-          >
-            General & Models
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('memory')}
-            data-project-settings-memory-tab=""
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-              activeTab === 'memory'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted'
-            }`}
-          >
-            <span>Memory & Output.txt</span>
-            <span className="rounded-full bg-background/20 px-1.5 py-px text-[10px] tabular-nums">
-              {draft.threadMemories.length}
-            </span>
-          </button>
-        </div>
-
-        {activeTab === 'memory' ? (
-          <ProjectSettingsMemoryTab
-            folderName={folderName}
-            workspaceRoot={workspaceRoot}
-            threadMemories={draft.threadMemories}
-          />
-        ) : null}
-
-        <div className={activeTab === 'general' ? 'space-y-4' : 'hidden'}>
+        <div className="space-y-4">
           {create ? (
             <>
               <div className="grid grid-cols-2 gap-3">
@@ -311,53 +266,6 @@ function ProjectSettingsDialog({
               </div>
             </>
           ) : null}
-
-          <div className="space-y-1">
-            <Label htmlFor={`project-goal-${idSuffix}`} className="text-xs">
-              {translate('projects.settings.goal', 'Goal')}
-            </Label>
-            <Textarea
-              id={`project-goal-${idSuffix}`}
-              rows={2}
-              maxLength={1000}
-              value={draft.goal}
-              onChange={(event) => update({ goal: event.target.value })}
-              placeholder={translate(
-                'projects.settings.goalPlaceholder',
-                'Describe what this project is working to achieve…'
-              )}
-            />
-          </div>
-
-          <div className="grid gap-4 rounded-lg border bg-muted/20 p-3">
-            <ProjectSettingsCoordinator
-              id={`project-coordinator-${idSuffix}`}
-              title={translate(
-                'projects.settings.coordinatorModelTitle',
-                'Coordinator model & effort (Main project chat)'
-              )}
-              value={draft.coordinator}
-              running={Boolean(existing?.coordinator?.sessionKey)}
-              onChange={(coordinator) => update({ coordinator })}
-            />
-            <div className="border-t pt-3">
-              <ProjectSettingsCoordinator
-                id={`project-thread-defaults-${idSuffix}`}
-                title={translate(
-                  'projects.settings.threadDefaultsTitle',
-                  'Default Thread model & effort (Child threads)'
-                )}
-                help={translate(
-                  'projects.settings.threadDefaultsHelp',
-                  'Default provider, model, effort level, and Team/Subagent mode when spawning a single thread in this project. Use the Multi-Model Launcher on the project page to launch parallel threads across multiple models simultaneously.'
-                )}
-                value={draft.threadDefaults}
-                running={false}
-                onChange={(threadDefaults) => update({ threadDefaults })}
-              />
-            </div>
-          </div>
-
           {/* Why re-stamp: a file picked before its repo was listed travels once the repo is. */}
           <ProjectSettingsRepos
             repos={draft.repos}
@@ -384,6 +292,12 @@ function ProjectSettingsDialog({
             onChange={(attachments) => update({ attachments })}
           />
           <ProjectSettingsAgents agents={draft.agents} onChange={(agents) => update({ agents })} />
+          <ProjectSettingsCoordinator
+            id={`project-coordinator-${idSuffix}`}
+            value={draft.coordinator}
+            running={Boolean(existing?.coordinator?.sessionKey)}
+            onChange={(coordinator) => update({ coordinator })}
+          />
           <ProjectSettingsComputers
             mode={draft.hostMode}
             hosts={draft.hosts}
@@ -412,25 +326,6 @@ function ProjectSettingsDialog({
                 onChange={(event) => update({ domain: event.target.value })}
               />
             </div>
-          </div>
-          <div className="rounded-md border border-border bg-muted/30 p-3 space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium">
-                {translate(
-                  'projects.settings.universalBundleTitle',
-                  'Universal Project Format (.omni-project/ v0.1.0 + Per-Thread Memory & Output.txt)'
-                )}
-              </span>
-              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                MCP Ready
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              {translate(
-                'projects.settings.universalBundleHelp',
-                'Projects materialize canonical .omni-project/ bundles (project.json, instructions/project.md, memory/threads/<id>.md, transcripts/<id>/Output.txt without tool calls, pinned skills & bots) plus native AGENTS.md, CLAUDE.md, and GEMINI.md projections. Use omni-projects MCP tools to transfer projects, per-thread memories, and skills across OmniConsole, Claude, Codex, Grok Bot, Kimi, and Gemini.'
-              )}
-            </p>
           </div>
           {error ? (
             <p role="alert" className="text-xs text-destructive">

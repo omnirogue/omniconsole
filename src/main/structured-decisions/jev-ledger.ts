@@ -147,7 +147,9 @@ export class JevLedger {
     }
     const stamp = new Date().toISOString().replace(/[-:.]/g, '')
     for (let suffix = 0; ; suffix++) {
-      const target = join(this.directory, `calls-${stamp}${suffix ? `-${suffix}` : ''}.jsonl`)
+      // Every ordinal, including zero, must sort in append order for export cursors.
+      const ordinal = String(suffix).padStart(16, '0')
+      const target = join(this.directory, `calls-${stamp}-${ordinal}.jsonl`)
       const taken = await lstat(target).then(
         () => true,
         () => false

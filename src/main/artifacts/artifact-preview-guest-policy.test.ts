@@ -37,10 +37,10 @@ describe('installArtifactPreviewGuestPolicy', () => {
     const openExternal = vi.fn().mockResolvedValue(undefined)
     installArtifactPreviewGuestPolicy(guest as never, openExternal, () => 10_000)
 
-    const event = navigate('https://app.omnisi.ai/a/plan')
+    const event = navigate('https://console.example.com/a/plan')
 
     expect(event.preventDefault).toHaveBeenCalled()
-    expect(openExternal).toHaveBeenCalledWith('https://app.omnisi.ai/a/plan')
+    expect(openExternal).toHaveBeenCalledWith('https://console.example.com/a/plan')
   })
 
   it('denies popups and routes them to the system browser', () => {

@@ -35,7 +35,7 @@ vi.mock('../browser/doc-preview-protocol', () => ({
 }))
 vi.mock('../artifacts/artifact-preview-session', () => ({
   isAdmissibleArtifactPreviewAttach: (partition: string, src: string) =>
-    partition === 'omni-artifact-preview' && src === 'https://app.omnisi.ai/a/plan/content',
+    partition === 'omni-artifact-preview' && src === 'https://console.example.com/a/plan/content',
   isArtifactPreviewSession: (candidate: unknown) => candidate === 'artifact-preview-session'
 }))
 vi.mock('../artifacts/artifact-preview-guest-policy', () => ({
@@ -337,7 +337,7 @@ describe('artifact preview admission', () => {
     mocks.isAllowedPartition.mockReturnValue(false)
     const preventDefault = vi.fn()
     const params = {
-      src: 'https://app.omnisi.ai/a/plan/content',
+      src: 'https://console.example.com/a/plan/content',
       preload: 'attacker.js'
     }
     const preferences: Record<string, unknown> = {

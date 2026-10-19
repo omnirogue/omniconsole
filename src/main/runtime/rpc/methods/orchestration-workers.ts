@@ -1,4 +1,5 @@
 import { orchestrationWorkerLaunchCause } from '../terminal-launch-cause'
+import { noteAgentTerminal } from '../../../session-organization/agent-session-mark'
 import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { PtyLaunchGateReceipt } from '../../../../shared/pty-launch-gate'
 import { prepareConsoleWorkerLaunchGate } from '../../../console-workflows/console-worker-start-gate'
@@ -199,6 +200,10 @@ export const ORCHESTRATION_WORKER_START_METHODS: RpcMethod[] = [
         }
         if (!resolvedWorktree || !terminalHandle) {
           throw new Error('Worker topology did not resolve an agent terminal and worktree.')
+        }
+        if (!params.terminal) {
+          // A worker this start launched is an agent session; a reused terminal keeps its place.
+          noteAgentTerminal(runtime, terminalHandle)
         }
         const setupStage = {
           db,

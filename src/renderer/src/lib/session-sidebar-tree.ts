@@ -33,6 +33,7 @@ import {
   type SessionSidebarTreeInput
 } from './session-sidebar-tree-rows'
 import { readOnlyOwnerFolders } from './mirrored-conversation-folders'
+import { personFolderRows } from './agent-session-note'
 
 export { sessionGroupListedRows } from './session-sidebar-group-model'
 
@@ -119,11 +120,17 @@ export function buildSessionSidebarTree(input: SessionSidebarTreeInput): Session
     ...ownerFolders
   ]
   const batchOrigins = input.batchOrigins ?? {}
+  const batchIds = new Set(Object.keys(batchOrigins))
+  const filed = personFolderRows(rows, built.agentRowKeys, classifications)
   // Why: a finished batch leaves the default view with its rows; Show archived brings both back.
+  // A batch only agent sessions fill leaves it too: they list in Agent sessions.
   const settled = input.showArchived
     ? new Set<string>()
-    : settledBatchFolderIds(activeFolders, rows, new Set(Object.keys(batchOrigins)))
-  const tallies = sessionFolderTallies(activeFolders, rows, classifications)
+    : new Set([
+        ...settledBatchFolderIds(activeFolders, filed.rows, batchIds),
+        ...[...filed.emptied].filter((id) => batchIds.has(id))
+      ])
+  const tallies = sessionFolderTallies(activeFolders, filed.rows, classifications)
   const folderGroups = new Map<string, SessionSidebarGroup>()
   for (const { folder, depth } of sessionFolderTree(
     activeFolders.filter((folder) => !settled.has(folder.id))
@@ -172,6 +179,14 @@ export function buildSessionSidebarTree(input: SessionSidebarTreeInput): Session
     if (row.archived) {
       return true
     }
+    // Why (Sal, 2026-10-19): "an Agent sessions folder underneath our sessions which agents launch
+    // to" — an agent session lists there, wherever its launcher filed it.
+    if (
+      built.agentRowKeys.has(row.session.rowKey) &&
+      classifications.get(row.session.rowKey) !== 'saved'
+    ) {
+      return true
+    }
     const folderGroup = row.folderId ? folderGroups.get(row.folderId) : undefined
     if (folderGroup) {
       folderGroup.rows.push(row)
@@ -208,7 +223,7 @@ export function buildSessionSidebarTree(input: SessionSidebarTreeInput): Session
     hiddenRows,
     listed,
     classifications,
-    orphanRowKeys: built.orphanRowKeys,
+    agentRowKeys: built.agentRowKeys,
     view: input.view,
     showArchived: Boolean(input.showArchived),
     query

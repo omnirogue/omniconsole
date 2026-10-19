@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { isFirstPartyCloudHost } from './artifact-cloud-first-party'
 
 describe('isFirstPartyCloudHost', () => {
-  const auth = 'https://app.omnisi.ai'
+  const auth = 'https://console.example.com'
   it('accepts the sign-in host, its sibling subdomains, and loopback', () => {
-    expect(isFirstPartyCloudHost('https://app.omnisi.ai', auth)).toBe(true)
+    expect(isFirstPartyCloudHost('https://console.example.com', auth)).toBe(true)
     expect(isFirstPartyCloudHost('https://share.omnirogue.com', auth)).toBe(true)
     expect(isFirstPartyCloudHost('http://127.0.0.1:3000', auth)).toBe(true)
     expect(isFirstPartyCloudHost('http://localhost:4100', auth)).toBe(true)

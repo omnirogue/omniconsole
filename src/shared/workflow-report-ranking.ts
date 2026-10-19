@@ -73,6 +73,9 @@ export function workflowLastFencedBlock(
   return found
 }
 
+// Why the original wording: every existing spec that ranks sends this text, and its saved prompt and
+// request digests must replay byte for byte (graph-evidence-legacy.test.ts). New wording belongs in a
+// separate instruction that only new saved specs enable, like WORKFLOW_REPORT_ESTIMATES_INSTRUCTION.
 export const WORKFLOW_REPORT_RANKING_INSTRUCTION = [
   'After the report, append exactly one fenced block tagged `ranking` (it is read by the app and hidden from people):',
   '```ranking',

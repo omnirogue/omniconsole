@@ -110,7 +110,7 @@ describe('projectSettingsFromDraft', () => {
       agent: 'claude',
       team: true
     })
-    expect(defaultCoordinatorDraft('gemini')).toEqual({ agent: 'gemini', team: false })
+    expect(defaultCoordinatorDraft('antigravity')).toEqual({ agent: 'antigravity', team: false })
   })
 
   it('keeps picks while another mode is chosen and refuses an empty pick', () => {
@@ -156,8 +156,8 @@ describe('projectCoordinatorFromDraft', () => {
       launch: { agent: 'codex', team: true },
       sessionKey: 'provider-key'
     })
-    expect(projectCoordinatorFromDraft({ agent: 'gemini', team: true }, undefined)).toEqual({
-      launch: { agent: 'gemini' }
+    expect(projectCoordinatorFromDraft({ agent: 'antigravity', team: true }, undefined)).toEqual({
+      launch: { agent: 'antigravity' }
     })
   })
 })

@@ -1,3 +1,4 @@
+import type { OmnisiTeamApi } from '../shared/omnisi-team'
 import type { CustomerServiceLaunchApi } from '../shared/customer-service-launch'
 import type { RoutineAlertApi } from '../shared/routine-alert-contract'
 import type { ConsoleRoutineConversationApi } from '../shared/console-routine-conversation-contract'
@@ -75,6 +76,7 @@ import type { LinearApi } from './api/linear-api'
 import type { MobileApi } from './api/mobile-api'
 import type { NativeChatApi } from './api/native-chat-api'
 import type { OnboardingApi, StarNagApi } from './api/onboarding-api'
+import type { OmniCreditsApi } from './api/omni-credits-api'
 import type { OmniRogueApi } from './api/omnirogue-api'
 import type { OrcaProfileApi } from './api/omni-profile-api'
 import type {
@@ -206,6 +208,7 @@ export type PreloadApi = LocalOllamaPreloadApi & {
   telemetryGetConsentState: TelemetryApi['telemetryGetConsentState']
   telemetryAcknowledgeBanner: TelemetryApi['telemetryAcknowledgeBanner']
   settings: SettingsApi
+  omnisiTeam?: OmnisiTeamApi
   mcpConnectors?: McpConnectorsApi
   agentAwake: AgentAwakeApi
   localhostWorktreeLabels: LocalhostWorktreeLabelsApi
@@ -218,6 +221,7 @@ export type PreloadApi = LocalOllamaPreloadApi & {
   agentTrust: AgentTrustApi
   preflight: PreflightApi
   rooms?: RoomsApi
+  omniCredits?: OmniCreditsApi
   omnirogue?: OmniRogueApi
   backoffice: BackofficeApi
   notifications: NotificationsApi

@@ -238,29 +238,18 @@ export class WorkDeliveryClaimer {
           pane = { ...pane, archived: false }
           started = true
         } catch (error) {
-          return this.hold(
-            hostId,
-            delivery,
-            'protection',
-            `It could not be unarchived: ${messageOf(error)}`
-          )
+          const msg = `It could not be unarchived: ${messageOf(error)}`
+          return this.hold(hostId, delivery, 'protection', msg)
         }
       }
     } else {
       if (!this.deps.windowAttached()) {
-        return this.hold(
-          hostId,
-          delivery,
-          'no_window',
-          'It reopens when the OmniConsole window is open on this computer.'
-        )
+        const msg = 'It reopens when the OmniConsole window is open on this computer.'
+        return this.hold(hostId, delivery, 'no_window', msg)
       }
       try {
-        pane = await this.deps.resume(
-          target,
-          `A reply on ${delivery.workItem} needs this session`,
-          delivery
-        )
+        const reason = `A reply on ${delivery.workItem} needs this session`
+        pane = await this.deps.resume(target, reason, delivery)
         await this.receipt(hostId, delivery, {
           state: 'claimed',
           step: target.archived ? 'unarchived' : 'resumed'

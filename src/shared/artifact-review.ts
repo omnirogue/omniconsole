@@ -57,9 +57,6 @@ export type ArtifactReviewInfo = {
   status: ArtifactReviewState
   statusAt: string | null
   context?: ArtifactProposal
-  summary?: string
-  options?: ArtifactReviewOption[]
-  multi?: true
   /** Set only on a typed page; an older server and an untyped page omit both. */
   type?: 'decision' | 'approval' | 'review' | 'study'
   mode?: 'decide' | 'collect'
@@ -151,7 +148,7 @@ export type ArtifactLifecycleFields = {
   supersededAt?: string | null
 }
 
-/** A page id, or an omnios page link such as `https://app.omnisi.ai/a/<id>`; null otherwise. */
+/** A page id, or an omnios page link such as `https://console.example.com/a/<id>`; null otherwise. */
 export function artifactSlugFromReference(reference: string): string | null {
   const text = reference.trim()
   if (ARTIFACT_SLUG_PATTERN.test(text)) {

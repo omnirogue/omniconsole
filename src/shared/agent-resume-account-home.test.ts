@@ -5,8 +5,7 @@ import { buildAgentResumeStartupPlan } from './tui-agent-resume-startup'
 const ID = '1d684562-0f4e-4c7e-9b8e-0e6f3f2a1b7c'
 const MANAGED =
   '/Users/maintainer/Library/Application Support/omniconsole-ide/claude-accounts/1d5b/auth/session'
-const CODEX_HOME =
-  '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/e627/home'
+const CODEX_HOME = '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/e627/home'
 
 function plan(args: {
   agent: 'claude' | 'codex'

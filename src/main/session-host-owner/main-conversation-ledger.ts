@@ -43,7 +43,7 @@ const REPUBLISH_COALESCE_MS = 100
 
 type Organization = Pick<
   RuntimeSessionConversationRecord,
-  'archived' | 'folderId' | 'saved' | 'hidden'
+  'archived' | 'folderId' | 'saved' | 'hidden' | 'agentSession'
 >
 
 const recordKey = (worktreeId: string, identity: string) => JSON.stringify([worktreeId, identity])
@@ -129,6 +129,10 @@ function organizationOf(
     out.hidden = values.hidden === true
   } else if (remembered?.hidden !== undefined) {
     out.hidden = remembered.hidden
+  }
+  // Why the listing: only the window knows an agent launched it, and that never changes.
+  if (remembered?.agentSession && out.saved !== true) {
+    out.agentSession = true
   }
   return out
 }

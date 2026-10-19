@@ -1,3 +1,4 @@
+import { hasTeamLaunchConnection } from '../../../omnisi-team/launch'
 import { join, delimiter } from 'node:path'
 import { resolveSetupAgentSequenceLaunchCommand } from '../../../../shared/setup-agent-sequencing'
 import {
@@ -308,8 +309,9 @@ export function buildPtyHostEnv(
     }
   }
 
-  if (isOmniConsoleMcpDefaultRequested(opts.userDataPath)) {
+  if (isOmniConsoleMcpDefaultRequested(opts.userDataPath) || (!opts.isWsl && hasTeamLaunchConnection())) {
     prepareOmniConsoleMcpForPty({
+      internalSignedIn: isOmniConsoleMcpDefaultRequested(opts.userDataPath),
       env: baseEnv,
       userDataPath: opts.userDataPath,
       cwd: opts.cwd,

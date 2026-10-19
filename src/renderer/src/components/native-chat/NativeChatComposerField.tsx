@@ -242,13 +242,13 @@ export function NativeChatComposerField({
               // Why: always-on hairline (token-level border, not focus ring) —
               // no focus/click border flash. The box is a container, not a
               // focus target.
-              'rounded-lg border border-border p-1.5 shadow-xs',
-              'bg-muted/50 dark:bg-input/40'
+              'rounded-2xl border border-border px-3 py-2 shadow-xs',
+              'bg-card dark:bg-card/90'
             )}
           >
             {deliveryBar}
             {imageAttachments.length > 0 ? (
-              <div className="mb-2 flex flex-wrap gap-2 px-1 pt-1.5">
+              <div className="mb-2 flex flex-wrap gap-2 border-b border-border/60 px-1 pt-1 pb-2">
                 {imageAttachments.map((attachment) => (
                   <NativeChatImageAttachmentPreview
                     key={attachment.id}

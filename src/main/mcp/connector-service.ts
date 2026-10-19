@@ -1,3 +1,4 @@
+import type { TeamConfigTarget } from '../omnisi-team/config-targets'
 import { readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -18,14 +19,17 @@ import {
   withCliRuntimeOnPath
 } from '../codex-cli/command'
 import { runClaudeConnectorLoginInPty } from './claude-connector-login-pty'
-import { connectorAccountHome, connectorConfigFile } from './connector-accounts'
+import { connectorAccounts, connectorAccountHome, connectorConfigFile } from './connector-accounts'
 import {
   rememberConnectorChoice,
   persistRemovedConnector,
-  restoreClaudeConnectorChoice
+  restoreClaudeConnectorChoice,
+  updateTeamConnectorConfig,
+  forgetTeamConnectorChoice
 } from './connector-config-preservation'
 import { checkCodexConnector } from './codex-connector-status'
 import { isOmniConsoleMcpNameUnavailable } from '../../shared/omni-console-mcp-alias'
+import { resolveGrokHomeDir } from '../../shared/grok-session-paths'
 import { MCP_CONFIG_INSPECTION_MAX_SERVERS } from '../../shared/mcp-config-inspection-limits'
 
 const { parse } = require('smol-toml') as typeof SmolToml
@@ -36,6 +40,41 @@ const PROVIDER_FAILED =
 export class ConnectorService {
   private readonly busy = new Set<string>()
   constructor(private readonly settings: () => GlobalSettings) {}
+
+  async syncOmnisiTeam(
+    server: string | null,
+    onTarget?: (target: TeamConfigTarget) => void
+  ): Promise<void> {
+    for (const account of connectorAccounts(this.settings()).filter(
+      (account) => account.available
+    )) {
+      await this.exclusive(account.id, async () => {
+        const target = await connectorAccountHome(this.settings(), account.id)
+        const file = connectorConfigFile(target)
+        onTarget?.({ file, provider: target.provider, home: target.home })
+        updateTeamConnectorConfig(file, target.provider, server)
+        if (server) {
+          rememberConnectorChoice(target.home, 'omnisi-team', 'keep')
+        } else {
+          forgetTeamConnectorChoice(target.home)
+        }
+      })
+    }
+    const home = homedir()
+    for (const target of [
+      {
+        file: join(process.env.GEMINI_CLI_HOME || home, '.gemini', 'settings.json'),
+        provider: 'gemini' as const
+      },
+      {
+        file: join(resolveGrokHomeDir(process.env, home), 'config.toml'),
+        provider: 'grok' as const
+      }
+    ]) {
+      onTarget?.(target)
+      updateTeamConnectorConfig(target.file, target.provider, server)
+    }
+  }
 
   async list(id: string): Promise<ConnectorSummary[]> {
     const account = await connectorAccountHome(this.settings(), id)

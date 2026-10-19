@@ -152,7 +152,7 @@ describe('find-owner over past work', () => {
 
   it('reuses a finished result with its links instead of assigning or launching', async () => {
     const summary =
-      'Goal: retries for the ads fetcher\nOutputs: https://github.com/o/r/pull/9 https://app.omnisi.ai/a/abc'
+      'Goal: retries for the ads fetcher\nOutputs: https://github.com/o/r/pull/9 https://console.example.com/a/abc'
     const result = await setup({
       hits: [hit(ARCHIVED, 'Ads fetcher', summary)],
       rows: [
@@ -169,7 +169,7 @@ describe('find-owner over past work', () => {
     expect(result.launchNew).toBe(false)
     expect(result.pastOwner?.links).toEqual([
       'https://github.com/o/r/pull/9',
-      'https://app.omnisi.ai/a/abc'
+      'https://console.example.com/a/abc'
     ])
     expect(result.reason).toContain('https://github.com/o/r/pull/9')
     expect(result.recommend).toBeUndefined()

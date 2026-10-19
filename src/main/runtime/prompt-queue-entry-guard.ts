@@ -1,5 +1,6 @@
 import type { ConversationSource } from '../../shared/conversation-source'
 import type { PromptQueueEntry } from '../../shared/prompt-queue-types'
+import { getDeliverableVerifier } from '../deliverable-verifier/deliverable-verifier-slot'
 import { getNextStepKeepGoingController } from '../next-steps/next-step-suggestion-slot'
 import { assertCapacityRecoveryDelivery } from './conversation-capacity-recovery-delivery'
 import { isChainBoundToConversation } from './conversation-chain-ownership'
@@ -32,5 +33,15 @@ export function assertPromptQueueEntryDelivery(
       throw new Error('Keep going is not running, so its automatic prompt was not sent.')
     }
     controller.assertDelivery(source, current)
+  }
+  if (entry.automation?.kind === 'deliverable-repair') {
+    const verifier = getDeliverableVerifier()
+    const current = runtime
+      .readPromptQueue(rowKey)
+      ?.entries.find((candidate) => candidate.id === entry.id)
+    if (!verifier || !current) {
+      throw new Error('The deliverable check is not running, so its prompt was not sent.')
+    }
+    verifier.assertDelivery(source, current)
   }
 }

@@ -36,6 +36,7 @@ export function sanitizeRendererSettingsUpdate(
   }
   // Plugin consent and enablement are main-owned authority state. Renderer
   // writes must pass the dedicated reviewed-fingerprint handlers.
+  delete sanitizedArgs.experimentalOmnisiTeam
   delete sanitizedArgs.pluginConsents
   delete sanitizedArgs.disabledPlugins
   return sanitizedArgs

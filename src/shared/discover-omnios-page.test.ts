@@ -270,6 +270,34 @@ describe('a Discover run as its OmniOS page', () => {
     // A stop right at the limit still ends the sentence, and a cut never splits a character.
     expect(discoverOmniosSummary('Hello you. Next words here', 10)).toBe('Hello you.')
     expect(discoverOmniosSummary('xxxxx😀😀😀', 6)).toBe('xxxxx😀…')
+    // Strips raw markdown emphasis and inline code markers so summaries read as plain English.
+    expect(
+      discoverOmniosSummary('**Scope is partly right.** Check `bff/omni_bff/` - **Seat:** ready.')
+    ).toBe('Scope is partly right. Check bff/omni_bff/ Seat: ready.')
+  })
+
+  it('keeps rankingComplete true when all confirmed findings are ranked and fills fallback why for unranked tail items', () => {
+    const run = discoverOmniosRun(
+      result(
+        [
+          target('c1', 'confirmed'),
+          target('c2', 'confirmed'),
+          target('u1', 'unverified', { detail: 'What it is: Stale cache serves old rows. Extra detail.' })
+        ],
+        [
+          { key: 'c1', rank: 1 },
+          { key: 'c2', rank: 2 }
+        ]
+      ),
+      context
+    )
+    expect(run.rankingComplete).toBe(true)
+    expect(run.findings.map((f) => [f.key, f.recommended])).toEqual([
+      ['c1', 'Start'],
+      ['c2', 'Start'],
+      ['u1', 'Not now']
+    ])
+    expect(run.findings[2]?.why).toBe('Stale cache serves old rows.')
   })
 
   it('writes one radio group per finding, keyed short, the recommended one ticked, and no button', () => {

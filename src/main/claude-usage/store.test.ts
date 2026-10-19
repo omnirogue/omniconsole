@@ -648,7 +648,7 @@ describe('ClaudeUsageStore', () => {
     expect(refreshMock).toHaveBeenCalledWith(false)
   })
 
-  it('adapts Claude scans to pretty-printed cache persistence', async () => {
+  it('adapts Claude scans to compact cache persistence with worktree attribution revalidation', async () => {
     const store = createStoreWithState({
       schemaVersion: 5,
       scanState: {
@@ -661,7 +661,15 @@ describe('ClaudeUsageStore', () => {
 
     await store.refresh(true)
 
-    expect(scanClaudeUsageFiles).toHaveBeenCalledWith([], [])
-    expect(readFileSync(join(tempUserData, 'omni-claude-usage.json'), 'utf-8')).toContain('\n')
+    expect(scanClaudeUsageFiles).toHaveBeenCalledWith(
+      [],
+      [],
+      expect.objectContaining({
+        worktreeSetChanged: true,
+        shouldStop: expect.any(Function),
+        onCheckpoint: expect.any(Function)
+      })
+    )
+    expect(readFileSync(join(tempUserData, 'omni-claude-usage.json'), 'utf-8')).not.toContain('\n')
   })
 })

@@ -230,7 +230,10 @@ export const getAgentCatalog = createLocalizedCatalog((): AgentCatalogEntry[] =>
   {
     id: 'command-code',
     label: translate('auto.lib.agent.catalog.6f8056a565', 'Command Code'),
-    // Why: `npm i -g command-code` installs both `command-code` and `cmd`; show full name to match detectCmd.
+    // Why: `npm i -g command-code` installs both `command-code` and the
+    // shorter alias `cmd`. Show the full name in the settings hint so it
+    // matches TUI_AGENT_CONFIG['command-code'].detectCmd and avoids any
+    // suggestion that OmniConsole is looking for Windows' built-in `cmd.exe`.
     cmd: 'command-code',
     faviconDomain: 'commandcode.ai',
     homepageUrl: 'https://commandcode.ai/docs/quickstart'
@@ -238,7 +241,8 @@ export const getAgentCatalog = createLocalizedCatalog((): AgentCatalogEntry[] =>
   {
     id: 'continue',
     label: translate('auto.lib.agent.catalog.9e2a9bb87b', 'Continue'),
-    // Why: Continue's terminal agent installs as `cn`; `continue` is a shell builtin.
+    // Why: Continue's terminal agent installs as `cn`; `continue` resolves to
+    // a shell builtin in common shells and is not a reliable executable hint.
     cmd: 'cn',
     faviconDomain: 'continue.dev',
     homepageUrl: 'https://docs.continue.dev/guides/cli'
@@ -264,16 +268,10 @@ export const getAgentCatalog = createLocalizedCatalog((): AgentCatalogEntry[] =>
     homepageUrl: 'https://www.kimi.com/code/docs/en/kimi-code-cli/getting-started.html'
   },
   {
-    id: 'deepseek',
-    label: translate('auto.lib.agent.catalog.deepseek_label', 'DeepSeek'),
-    cmd: 'deepseek',
-    faviconDomain: 'deepseek.com',
-    homepageUrl: 'https://api-docs.deepseek.com/'
-  },
-  {
     id: 'mistral-vibe',
     label: translate('auto.lib.agent.catalog.ca73055bd0', 'Mistral Vibe'),
-    // Why: `uv tool install mistral-vibe` exposes the interactive CLI as `vibe`.
+    // Why: `uv tool install mistral-vibe` exposes the interactive CLI as
+    // `vibe`; the package name is not the executable users put on PATH.
     cmd: 'vibe',
     faviconDomain: 'mistral.ai',
     homepageUrl: 'https://github.com/mistralai/mistral-vibe'

@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import { creditsExhaustedSchema, type CreditsExhausted } from '../../shared/omni-credits'
 import { readFetchResponseJsonWithinLimit } from '../../shared/fetch-response-body'
 import type { ConsoleWorkflowResult } from '../../shared/console-workflow-types'
 import {
@@ -14,6 +15,32 @@ export { failure, refusal, unavailable } from './console-workflow-refusal'
 
 /** The one request whose sign-in links (an AirTop live view's token) reach OmniOS whole, so the person can open them. */
 const SIGN_IN_LINK_ROUTE = '/api/session-questions/sync'
+
+const creditsExhaustedListeners = new Set<(event: CreditsExhausted) => void>()
+
+export function onConsoleCreditsExhausted(listener: (event: CreditsExhausted) => void): () => void {
+  creditsExhaustedListeners.add(listener)
+  return () => {
+    creditsExhaustedListeners.delete(listener)
+  }
+}
+
+function publishCreditsExhausted(payload: unknown, status: number): void {
+  if (status !== 402) {
+    return
+  }
+  const parsed = creditsExhaustedSchema.safeParse(payload)
+  if (!parsed.success) {
+    return
+  }
+  for (const listener of creditsExhaustedListeners) {
+    try {
+      listener(parsed.data)
+    } catch {
+      // An unavailable window must not change the server's refusal.
+    }
+  }
+}
 
 /** Main-only transport: the named client operations choose the route and verb. */
 export async function requestConsoleWorkflow<T>(
@@ -110,6 +137,7 @@ export async function requestConsoleWorkflow<T>(
     }
     const safe = redactConsoleWorkflowMemory(raw)
     if (!response.ok || record(safe).ok === false) {
+      publishCreditsExhausted(safe, response.status)
       return refusal(safe, response.status)
     }
     if (frozenResponse && JSON.stringify(raw) !== JSON.stringify(safe)) {
@@ -246,6 +274,7 @@ export async function requestConsoleWorkflowUpload<T>(
     }
     const safe = redactConsoleWorkflowMemory(raw)
     if (!response.ok || record(safe).ok === false) {
+      publishCreditsExhausted(safe, response.status)
       return refusal(safe, response.status)
     }
     const decoded = responseSchema.safeParse(safe)

@@ -16,6 +16,7 @@ import {
   type SessionFolderMetadata
 } from '@/lib/session-folders'
 import { moveSessionFolder } from '@/lib/session-folder-tree'
+import { withAgentSessionNote, withoutAgentSessionNotes } from '@/lib/agent-session-note'
 import {
   createLocalSessionFolderStorage,
   type SessionFolderStorage
@@ -203,6 +204,8 @@ export function createSessionFoldersStore(storage: SessionFolderStorage) {
         const { [sessionKey]: _removed, ...finishActions } = get().metadata.finishActions ?? {}
         return save({ ...get().metadata, finishActions })
       },
+      markAgentSession: (sessionKey) => save(withAgentSessionNote(get().metadata, sessionKey)),
+      forgetAgentSessions: (keys) => save(withoutAgentSessionNotes(get().metadata, keys)),
       renameFolder: (id, name) => {
         const { metadata } = get()
         if (!metadata.folders.some((folder) => folder.id === id)) {

@@ -20,7 +20,7 @@ import {
 const PAGE = {
   slug: 'launch-plan_7',
   title: 'Launch plan',
-  url: 'https://app.omnisi.ai/a/launch-plan_7'
+  url: 'https://console.example.com/a/launch-plan_7'
 }
 
 describe('page reference on the opening entry', () => {
@@ -93,12 +93,12 @@ describe('page links', () => {
     expect(parseArtifactReviewLink(PAGE.url)).toBe(PAGE.slug)
     expect(parseArtifactReviewLink(`${PAGE.url}/content`)).toBe(PAGE.slug)
     expect(parseArtifactReviewLink(' launch-plan_7 ')).toBe(PAGE.slug)
-    expect(parseArtifactReviewLink('https://app.omnisi.ai/b/launch')).toBe(null)
-    expect(parseArtifactReviewLink('ftp://app.omnisi.ai/a/launch')).toBe(null)
+    expect(parseArtifactReviewLink('https://console.example.com/b/launch')).toBe(null)
+    expect(parseArtifactReviewLink('ftp://console.example.com/a/launch')).toBe(null)
   })
 
   it('drops a link that names another page, and refuses it on the wire', () => {
-    const other = { ...PAGE, url: 'https://app.omnisi.ai/a/someone-else' }
+    const other = { ...PAGE, url: 'https://console.example.com/a/someone-else' }
     expect(normalizeHandoffArtifactReview(other)).toEqual({ slug: PAGE.slug, title: PAGE.title })
     expect(handoffArtifactReview.safeParse(other).success).toBe(false)
     expect(handoffArtifactReview.safeParse(PAGE).success).toBe(true)

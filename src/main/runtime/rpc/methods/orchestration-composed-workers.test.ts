@@ -281,8 +281,14 @@ describe('orchestration RPC methods', () => {
       const preamble = vi.mocked(runtime.sendTerminalAgentPrompt).mock.calls[0]![1] as string
       expect(preamble.startsWith('Project: Ads')).toBe(true)
       expect(preamble).toContain('Ship small')
-      // The first read is the project's Computers list; the second resolves the brief.
-      expect(relayed).toEqual(['projectForPane', 'readProject', 'readProject', 'bindLaunchContext'])
+      // The first read is the project's Computers list; markAgentSession notes the worker; the second read resolves the brief.
+      expect(relayed).toEqual([
+        'projectForPane',
+        'readProject',
+        'markAgentSession',
+        'readProject',
+        'bindLaunchContext'
+      ])
       // The runtime gives a local Claude launch its own memory folder for this owner.
       expect(runtime.createTerminal).toHaveBeenCalledWith(
         expect.any(String),

@@ -10,9 +10,7 @@ import {
   type ProjectAgent,
   type ProjectCoordinator,
   type ProjectRepo,
-  type ProjectSettings,
-  type ProjectThreadLaunch,
-  type ProjectThreadMemory
+  type ProjectSettings
 } from '../../../../shared/project-settings'
 import type { TuiAgent } from '../../../../shared/tui-agent'
 import type { SessionContextAttachment } from '../../../../shared/session-context-attachments'
@@ -29,9 +27,8 @@ export const COORDINATOR_AGENTS: readonly TuiAgent[] = [
   'claude',
   'codex',
   'kimi',
-  'deepseek',
   'grok',
-  'gemini',
+  'antigravity',
   'omp'
 ]
 
@@ -65,11 +62,7 @@ export type ProjectSettingsDraft = {
   hosts: string[]
   company: string
   domain: string
-  goal: string
   coordinator: ProjectCoordinatorDraft
-  threadDefaults: ProjectCoordinatorDraft
-  multiThreadFleet: ProjectThreadLaunch[]
-  threadMemories: ProjectThreadMemory[]
 }
 
 /** A new project's chat: the launcher's default provider, as a team where that is offered. */
@@ -81,31 +74,6 @@ export function defaultCoordinatorDraft(
   return { agent, team: coordinatorAgentOffersTeam(agent) }
 }
 
-export function defaultMultiThreadFleet(): ProjectThreadLaunch[] {
-  return [
-    {
-      agent: 'claude',
-      model: 'claude-opus-5-5',
-      effort: 'xhigh',
-      team: true,
-      role: 'Lead Architect & Verifier'
-    },
-    {
-      agent: 'codex',
-      model: 'gpt-6-astra',
-      effort: 'xhigh',
-      team: true,
-      role: 'Deep Implementation & Systems'
-    },
-    {
-      agent: 'grok',
-      model: 'grok-4',
-      effort: 'high',
-      role: 'Adversarial Audit & Edge Cases'
-    }
-  ]
-}
-
 export function projectSettingsDraftFor(
   existing: ProjectSettings | null,
   defaultAgent?: TuiAgent | 'blank' | null
@@ -113,7 +81,6 @@ export function projectSettingsDraftFor(
   const settings = existing ?? emptyProjectSettings(0)
   const policy = settings.hostPolicy
   const recorded = settings.coordinator?.launch
-  const recordedThread = settings.threadDefaults
   return {
     repos: settings.repos,
     attachments: settings.attachments,
@@ -122,7 +89,6 @@ export function projectSettingsDraftFor(
     hosts: Array.isArray(policy) ? policy : [],
     company: settings.company ?? '',
     domain: settings.domain ?? '',
-    goal: settings.goal ?? '',
     coordinator: recorded
       ? {
           agent: recorded.agent,
@@ -130,25 +96,7 @@ export function projectSettingsDraftFor(
           ...(recorded.model ? { model: recorded.model } : {}),
           ...(recorded.effort ? { effort: recorded.effort } : {})
         }
-      : defaultCoordinatorDraft(defaultAgent),
-    threadDefaults: recordedThread
-      ? {
-          agent: recordedThread.agent,
-          team: recordedThread.team ?? false,
-          ...(recordedThread.model ? { model: recordedThread.model } : {}),
-          ...(recordedThread.effort ? { effort: recordedThread.effort } : {})
-        }
-      : {
-          agent: 'claude',
-          model: 'claude-opus-5-5',
-          effort: 'high',
-          team: true
-        },
-    multiThreadFleet:
-      settings.multiThreadFleet && settings.multiThreadFleet.length > 0
-        ? settings.multiThreadFleet
-        : defaultMultiThreadFleet(),
-    threadMemories: settings.threadMemories ?? []
+      : defaultCoordinatorDraft(defaultAgent)
   }
 }
 
@@ -192,9 +140,6 @@ export function projectSettingsFromDraft(
   }
   const company = draft.company.trim()
   const domain = draft.domain.trim()
-  const goal = draft.goal.trim()
-  const threadTeam =
-    coordinatorAgentOffersTeam(draft.threadDefaults.agent) && draft.threadDefaults.team
   return {
     ok: true,
     settings: {
@@ -204,22 +149,7 @@ export function projectSettingsFromDraft(
       hostPolicy: draft.hostMode === 'hosts' ? draft.hosts : draft.hostMode,
       ...(company ? { company } : {}),
       ...(domain ? { domain } : {}),
-      ...(goal ? { goal: goal.slice(0, 1000) } : {}),
       coordinator: projectCoordinatorFromDraft(draft.coordinator, existing?.coordinator),
-      threadDefaults: {
-        agent: draft.threadDefaults.agent,
-        ...(draft.threadDefaults.model ? { model: draft.threadDefaults.model } : {}),
-        ...(draft.threadDefaults.effort ? { effort: draft.threadDefaults.effort } : {}),
-        ...(threadTeam ? { team: true } : {})
-      },
-      ...(draft.multiThreadFleet.length > 0
-        ? { multiThreadFleet: draft.multiThreadFleet.slice(0, 8) }
-        : {}),
-      ...(draft.threadMemories.length > 0
-        ? { threadMemories: draft.threadMemories.slice(0, 25) }
-        : existing?.threadMemories
-          ? { threadMemories: existing.threadMemories.slice(0, 25) }
-          : {}),
       // Why: the dialog doesn't edit the project's Jira issues, which the page picks.
       ...(existing?.tasks ? { tasks: existing.tasks } : {}),
       createdBy: 'person',

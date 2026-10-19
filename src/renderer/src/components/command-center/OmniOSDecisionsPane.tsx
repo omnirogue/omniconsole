@@ -153,8 +153,6 @@ function DecisionsBrowser({
     }
   }, [])
   useOmniOSDocumentStatus(root, baseUrl, reportStatus)
-  const openArtifactsPage = useAppStore((state) => state.openArtifactsPage)
-  const openWorkHomePage = useAppStore((state) => state.openWorkHomePage)
   const provider = useOpenInPaneHandler()
   const openNewPane = onOpenInNewPane ?? provider
   const failed = page.loadError !== null || documentStatus === 'unavailable'
@@ -190,12 +188,6 @@ function DecisionsBrowser({
         </div>
         <Button size="xs" variant="ghost" onClick={() => navigate(`${baseUrl}/work/decisions`)}>
           {translate('commandCenter.decisions.home', 'Decisions')}
-        </Button>
-        <Button size="xs" variant="ghost" onClick={() => openArtifactsPage?.()}>
-          {translate('commandCenter.decisions.artifacts', 'Artifacts')}
-        </Button>
-        <Button size="xs" variant="ghost" onClick={() => openWorkHomePage?.()}>
-          {translate('commandCenter.decisions.workHome', 'Work home')}
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

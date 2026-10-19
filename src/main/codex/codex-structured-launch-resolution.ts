@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+import { hasTeamLaunchConnection, prepareTeamConnectorForLaunch } from '../omnisi-team/launch'
 // How a durable session record becomes a Codex process launch.
 //
 // Every input is read back from the record the store already made durable, not
@@ -52,7 +54,7 @@ export function createCodexStructuredLaunchResolver(
       throw new Error(`codex sessions pin CODEX_HOME, not ${accountHome.variable}`)
     }
     const resolvedEnvironment = await deps.resolveEnvironment?.()
-    const environment =
+    let environment =
       resolvedEnvironment || record.hubTaskId
         ? { ...resolvedEnvironment, ...buildHubTaskEnvironment(record.hubTaskId) }
         : undefined
@@ -65,6 +67,10 @@ export function createCodexStructuredLaunchResolver(
     const args = [...(record.launchArgs ?? []), 'app-server']
     const cwd = await deps.resolveWorkspacePath(location.workspaceId)
     await deps.prepareMcp?.({ cwd, env: { ...environment, CODEX_HOME: accountHome.path } })
+    if (hasTeamLaunchConnection()) {
+      environment = { ...environment }
+      prepareTeamConnectorForLaunch('codex', join(accountHome.path, 'config.toml'), environment)
+    }
     const head = agentSessionProviderHandleChainHead(record.providerHandleChain)
     const resumeThreadId = head?.handle.provider === 'codex' ? head.handle.threadId : null
     return {

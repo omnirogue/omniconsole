@@ -59,3 +59,30 @@ describe('agentSession.scheduleFinish on the executing host', () => {
     }
   })
 })
+
+// Sal, 2026-10-19: every `omni session launch` is an agent's, listed in Agent sessions.
+describe('agentSession.markAgentSession on the executing host', () => {
+  const method = AGENT_SESSION_CONTRACT_METHODS.find(
+    (entry) => entry.name === 'agentSession.markAgentSession'
+  )!
+  const schema = method.params!
+
+  it('takes the launched terminal only', () => {
+    expect(schema.parse({ terminal: 'term_new' })).toEqual({ terminal: 'term_new' })
+    expect(() => schema.parse({ terminal: '' })).toThrow()
+    expect(() => schema.parse({ terminal: 'term_new', paneKey: 'x' })).toThrow()
+  })
+
+  it('notes the launched pane on its window, retried there, and answers at once', async () => {
+    const requestSessionFolders = vi.fn(async () => ({ marked: true }))
+    await expect(
+      method.handler(schema.parse({ terminal: 'term_new' }), {
+        runtime: { requestSessionFolders, getTerminalPaneKey: () => 'tab:leaf' }
+      } as never)
+    ).resolves.toEqual({ noted: true })
+    expect(requestSessionFolders).toHaveBeenCalledWith({
+      kind: 'markAgentSession',
+      paneKey: 'tab:leaf'
+    })
+  })
+})

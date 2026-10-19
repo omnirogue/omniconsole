@@ -21,7 +21,9 @@ function rule(patch: Partial<SessionFollowUpRule> = {}): SessionFollowUpRule {
     taskId: null,
     taskTitle: 'Seedance lander',
     sessionLabel: 'Seedance lander',
-    recipients: [{ employeeId: 'emp_uma', name: 'Uma', operationId: 'op_1', delivery: 'pending' }],
+    recipients: [
+      { employeeId: 'emp_uma', name: 'Uma', operationId: 'op_1', delivery: 'pending' }
+    ],
     deliverables: { kind: 'files', paths: pins.map((pin) => pin.sourcePath!) },
     includeSummary: false,
     note: 'Take it from here.',

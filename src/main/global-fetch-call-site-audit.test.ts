@@ -17,6 +17,8 @@ const AUDITED_GLOBAL_FETCH_LINES = new Map<string, number>([
   // HTTP call sites — body consumed or cancelled on every path, including !ok
   // Wallet reads cancel the response in finally, including authentication failures.
   ['main/ipc/omnirogue-credits-ipc.ts', 1],
+  // Team MCP client cancels the response body on DELETE/notification/!ok and cancels the reader in finally.
+  ['main/omnisi-team/mcp-client.ts', 2],
   ['main/runtime/workflow-script/discover-credit-quote.ts', 1],
   ['main/artifacts/artifact-cloud-request.ts', 1],
   // Context snapshots consume their bounded reader or cancel on !ok/unsupported content types.

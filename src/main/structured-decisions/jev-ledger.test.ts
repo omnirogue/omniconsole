@@ -1,6 +1,6 @@
 import { appendFile, readdir, readFile, stat, writeFile, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   JEV_CALLS_FILE,
   JevLedger,
@@ -97,6 +97,35 @@ describe('JEV call ledger writer', () => {
       rows += (await readLedgerLines(join(directory, name))).length
     }
     expect(rows).toBe(7)
+  })
+
+  it('keeps same-tick rotations in append order past single-digit suffixes', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] }).setSystemTime(new Date('2026-10-05T00:00:00Z'))
+    try {
+      const probe = new JevLedger(await directories.create(), { host: 'h', runtimeId: null })
+      await probe.appendCall(callFields({ question_ids: ['q0'] }))
+      const limit = (await stat(join(probe.directory, JEV_CALLS_FILE))).size * 2 - 1
+      const ledger = new JevLedger(
+        await directories.create(),
+        { host: 'h', runtimeId: null },
+        limit
+      )
+      for (let index = 0; index < 14; index++) {
+        expect(await ledger.appendCall(callFields({ question_ids: [`q${index}`] }))).toBe('saved')
+      }
+      const names = (await readdir(ledger.directory))
+        .filter((name) => name !== JEV_CALLS_FILE)
+        .toSorted()
+      expect(names).toHaveLength(13)
+      const rows = (
+        await Promise.all(names.map((name) => readLedgerLines(join(ledger.directory, name))))
+      ).flat()
+      expect(rows.map((row) => (row.question_ids as string[])[0])).toEqual(
+        Array.from({ length: 13 }, (_, index) => `q${index}`)
+      )
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('starts a fresh line after a torn last line, so no saved row is lost', async () => {

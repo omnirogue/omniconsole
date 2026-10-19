@@ -1,6 +1,6 @@
 const SHARE_ID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/
 // Why omnios: skill shares are hosted with the sign-in (see artifact-cloud-config.ts).
-const PRODUCTION_HOSTS = new Set(['app.omnisi.ai', 'app.omnisi.ai'])
+const PRODUCTION_HOSTS = new Set(['console.example.com'])
 
 export function parseSkillShareId(value: string): string | null {
   const trimmed = value.trim()

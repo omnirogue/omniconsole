@@ -33,7 +33,16 @@ describe('publication profile scope', () => {
   it('distinguishes IDE profiles while preserving the existing account principal', async () => {
     const first = currentConsolePublicationScope()!
     const captured = await captureConsoleWorkflowPerson()
-    expect(captured).toMatchObject({ ok: true, data: first })
+    expect(captured.ok).toBe(true)
+    if (captured.ok) {
+      const data = captured.data as typeof captured.data & { organizationId?: string }
+      expect({
+        principal: data.principal,
+        baseUrl: data.baseUrl,
+        profileKey: data.profileKey,
+        organizationId: data.organizationId
+      }).toEqual(first)
+    }
     profile('two')
     const second = currentConsolePublicationScope()!
     expect(second.principal).toBe(first.principal)

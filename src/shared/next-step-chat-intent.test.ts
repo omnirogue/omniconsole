@@ -118,7 +118,10 @@ describe('isNextStepChatIntent', () => {
   })
 
   it('ignores a launch prompt that already carries outcome discovery', () => {
-    const launch = prependNextOutcomeDiscovery('Write the report, then hand it off to Uma.', 'omni')
+    const launch = prependNextOutcomeDiscovery(
+      'Write the report, then hand it off to Uma.',
+      'omni'
+    )
     expect(isNextStepChatIntent(launch)).toBe(false)
   })
 

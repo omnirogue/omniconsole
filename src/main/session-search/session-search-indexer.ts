@@ -80,12 +80,17 @@ export class SessionSearchIndexer {
   /** Index whatever was appended to `file` since the last pass. */
   async indexFile(listed: TranscriptFile, signal?: AbortSignal): Promise<FileIndexOutcome> {
     const sessionKey = `${listed.agent}:${listed.sessionId}`
-    const existing = this.index.sessionByKey(sessionKey)
     // Why: Codex rollouts are hardlinked into every account home; reading through the alias
     // already indexed keeps a newly bridged link from looking like a different file.
+    // Check file size/mtime before hydrating the full session row (with summary/embedding/links)
+    // so the 99.9% unchanged-file fast path avoids 85k+ `SELECT * FROM sessions` + JSON.parse calls.
+    const existingPath =
+      listed.aliases && listed.aliases.length > 1
+        ? this.index.sessionPathByKey(sessionKey)
+        : null
     const file =
-      existing && existing.path !== listed.path && listed.aliases?.includes(existing.path)
-        ? { ...listed, path: existing.path }
+      existingPath && existingPath !== listed.path && listed.aliases?.includes(existingPath)
+        ? { ...listed, path: existingPath }
         : listed
     const known = this.index.getFile(file.path)
     if (
@@ -95,13 +100,26 @@ export class SessionSearchIndexer {
     ) {
       return 'unchanged'
     }
+    const existing = this.index.sessionByKey(sessionKey)
+    const resolvedFile =
+      existing && existing.path !== file.path && listed.aliases?.includes(existing.path)
+        ? { ...listed, path: existing.path }
+        : file
+    const resolvedKnown = resolvedFile.path === file.path ? known : this.index.getFile(resolvedFile.path)
+    if (
+      resolvedKnown &&
+      resolvedKnown.size === resolvedFile.size &&
+      Math.round(resolvedKnown.mtimeMs) === Math.round(resolvedFile.mtimeMs)
+    ) {
+      return 'unchanged'
+    }
     const session = this.index.ensureSession({
       sessionKey,
-      agent: file.agent,
-      sessionId: file.sessionId,
-      path: file.path
+      agent: resolvedFile.agent,
+      sessionId: resolvedFile.sessionId,
+      path: resolvedFile.path
     })
-    const resumeAt = await this.resumeOffset(existing, known, file)
+    const resumeAt = await this.resumeOffset(existing, resolvedKnown, resolvedFile)
     let offset = resumeAt ?? 0
     let outcome: FileIndexOutcome = 'indexed'
     if (resumeAt === null && existing) {
@@ -110,8 +128,8 @@ export class SessionSearchIndexer {
       Object.assign(session, this.index.sessionByKey(session.sessionKey))
       outcome = 'reset'
     }
-    session.path = file.path
-    const handle = await open(file.path, 'r')
+    session.path = resolvedFile.path
+    const handle = await open(resolvedFile.path, 'r')
     try {
       const seen = this.seenFor(session.sid)
       const decoder = new StringDecoder('utf8')
@@ -119,9 +137,9 @@ export class SessionSearchIndexer {
       let pending = ''
       let readAt = offset
       let recorded = false
-      while (readAt < file.size && !signal?.aborted) {
+      while (readAt < resolvedFile.size && !signal?.aborted) {
         const started = performance.now()
-        const slice = Buffer.alloc(Math.min(READ_SLICE_BYTES, file.size - readAt))
+        const slice = Buffer.alloc(Math.min(READ_SLICE_BYTES, resolvedFile.size - readAt))
         const { bytesRead } = await handle.read(slice, 0, slice.length, readAt)
         if (bytesRead === 0) {
           break
@@ -140,7 +158,7 @@ export class SessionSearchIndexer {
         }
         const complete = text.slice(0, lastNewline + 1)
         pending = text.slice(lastNewline + 1)
-        const finished = readAt >= file.size
+        const finished = readAt >= resolvedFile.size
         this.index.transaction(() => {
           this.consumeLines(session, complete, seen)
           offset += Buffer.byteLength(complete)
@@ -148,10 +166,10 @@ export class SessionSearchIndexer {
           // Why: size and mtime are recorded only once the whole file is read, so an
           // interrupted pass resumes from `offset` instead of believing it finished.
           this.index.putFile({
-            path: file.path,
+            path: resolvedFile.path,
             sid: session.sid,
-            size: finished ? file.size : offset,
-            mtimeMs: finished ? file.mtimeMs : 0,
+            size: finished ? resolvedFile.size : offset,
+            mtimeMs: finished ? resolvedFile.mtimeMs : 0,
             offset
           })
         })
@@ -159,13 +177,13 @@ export class SessionSearchIndexer {
         this.index.writes.roll()
         await this.pause(performance.now() - started)
       }
-      if (!recorded && readAt >= file.size && !signal?.aborted) {
+      if (!recorded && readAt >= resolvedFile.size && !signal?.aborted) {
         // Why: an empty file, or one with no complete line yet, was re-read and rewritten every pass.
         this.index.putFile({
-          path: file.path,
+          path: resolvedFile.path,
           sid: session.sid,
-          size: file.size,
-          mtimeMs: file.mtimeMs,
+          size: resolvedFile.size,
+          mtimeMs: resolvedFile.mtimeMs,
           offset
         })
       }

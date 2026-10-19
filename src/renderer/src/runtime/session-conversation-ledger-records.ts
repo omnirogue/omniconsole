@@ -13,6 +13,7 @@ import {
   isSessionSaved,
   type SessionFolderMetadata
 } from '@/lib/session-folders'
+import { isAgentLaunchedSession } from '@/lib/agent-session-note'
 import { sessionArchiveKind } from '@/lib/session-manage-conversation-organization'
 import { livePtyIdForSessionPane } from '@/lib/session-sleep-target'
 import {
@@ -58,7 +59,7 @@ type Marks = Pick<SessionConversationLedgerInputs, 'metadata'> & {
 }
 type OrganizationFields = Pick<
   RuntimeSessionConversationRecord,
-  'archived' | 'folderId' | 'saved' | 'hidden'
+  'archived' | 'folderId' | 'saved' | 'hidden' | 'agentSession'
 >
 
 /** The owner's own marks for one conversation, each explicit: `false` and `null` are answers too. */
@@ -70,7 +71,8 @@ function organization(marks: Marks, session: ConversationLedgerViewKeyed): Organ
     archived: kind ? { archived: true, byHand: kind === 'manual' } : { archived: false },
     folderId: getSessionFolderId(marks.metadata, viewKey),
     saved: isSessionSaved(marks.metadata, viewKey),
-    hidden: isPersonalRowHidden(marks.view, session)
+    hidden: isPersonalRowHidden(marks.view, session),
+    ...(isAgentLaunchedSession(marks.metadata, viewKey) ? { agentSession: true as const } : {})
   }
 }
 

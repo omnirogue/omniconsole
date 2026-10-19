@@ -5,10 +5,9 @@ const home = '/Users/shona'
 
 describe('transcriptSessionScope', () => {
   it('reads company and domain from ~/Work/<Company>/<Domain>/…', () => {
-    expect(transcriptSessionScope('/Users/shona/Work/OmniRogue/Marketing/site', { home })).toEqual({
-      company: 'OmniRogue',
-      domain: 'Marketing'
-    })
+    expect(
+      transcriptSessionScope('/Users/shona/Work/OmniRogue/Marketing/site', { home })
+    ).toEqual({ company: 'OmniRogue', domain: 'Marketing' })
     expect(transcriptSessionScope('/Users/shona/Work/ApexLabs', { home })).toEqual({
       company: 'ApexLabs',
       domain: null

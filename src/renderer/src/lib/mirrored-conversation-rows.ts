@@ -101,6 +101,8 @@ function vouch(
     ...(owner && record.folderId !== undefined ? { folderIdByOwner: record.folderId } : {}),
     ...(owner && folder ? { folderByOwner: folder } : {}),
     ...(owner && record.hidden !== undefined ? { hidden: record.hidden } : {}),
+    // Why any word: who launched a session never changes, so a frozen bucket still says it.
+    ...(record.agentSession ? { agentSessionByOwner: true } : {}),
     listed: record.listed,
     stale: bucket.stale === true,
     ownerState: bucket.ownerState,

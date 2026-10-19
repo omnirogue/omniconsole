@@ -193,8 +193,17 @@ describe('organization commits against the revision the caller read', () => {
 })
 
 describe('host tidy', () => {
+  it('holds a session a person started: it stays until they close it (Sal, 2026-10-19)', async () => {
+    const { conversationId } = await adopted()
+    const params = { operationId: fixtureOperationId(10), apply: true, origin: MAC_B }
+    const held = await host.executor.tidy(params, remote('mac-b', MAC_B))
+    expect(held).toMatchObject({ status: 'ok', rows: [{ conversationId, action: 'hold' }] })
+    expect(host.organization.applied).toHaveLength(0)
+  })
+
   it('archives each eligible session as its own operation, and a retried tidy archives nothing twice', async () => {
     const { conversationId } = await adopted()
+    host.rows[0] = { ...host.rows[0]!, agentSession: true }
     const params = { operationId: fixtureOperationId(9), apply: true, origin: MAC_B }
     const first = await host.executor.tidy(params, remote('mac-b', MAC_B))
     expect(first).toMatchObject({

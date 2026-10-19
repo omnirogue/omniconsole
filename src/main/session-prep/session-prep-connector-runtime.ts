@@ -2,6 +2,7 @@ import type { RuntimeCreateAgentSessionRequest } from '../../shared/agent-sessio
 import type { SessionPrepConnectorLaunch } from '../../shared/session-prep-connector'
 import type { TuiAgent } from '../../shared/tui-agent'
 import { readManagedSessionToolsFiles } from '../runtime/managed-session-tools-files'
+import { noteConnectorLaunch } from '../session-organization/agent-session-mark'
 import { SessionPrepHostError } from './session-prep-execution-host'
 import type { SessionPrepHost } from './session-prep-host'
 import type { SessionPrepRuntime } from './session-prep-runtime-host'
@@ -61,6 +62,7 @@ export async function createSessionPrepConnectorWorktree(
 }
 
 export function sessionPrepLaunchSurface(
+  runtime: Pick<SessionPrepRuntime, 'requestSessionFolders'>,
   created: Awaited<ReturnType<SessionPrepRuntime['createAgentSession']>>,
   launch: SessionPrepConnectorLaunch | undefined,
   agent: TuiAgent
@@ -71,7 +73,7 @@ export function sessionPrepLaunchSurface(
       'Agent startup receipt is unverified. Inspect the workspace before retrying.'
     )
   }
-  return {
+  return noteConnectorLaunch(runtime, launch, {
     tabId: terminal.tabId,
     paneKey: terminal.paneKey,
     ...(launch && terminal.handle
@@ -84,5 +86,5 @@ export function sessionPrepLaunchSurface(
           }
         }
       : {})
-  }
+  })
 }

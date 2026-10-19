@@ -204,7 +204,11 @@ export async function listTranscriptFiles(
         known.dirMtimeMs === dirMtimeMs &&
         inodes.get(key) === known.inode
       ) {
-        canonical.aliases = [...(canonical.aliases ?? []), path]
+        if (canonical.aliases) {
+          ;(canonical.aliases as string[]).push(path)
+        } else {
+          canonical.aliases = [path]
+        }
         nextAliases.set(path, known)
         continue
       }
@@ -221,7 +225,11 @@ export async function listTranscriptFiles(
       const current = bySession.get(key)
       if (current && inode && inodes.get(key) === inode) {
         // Why: stats of one file taken moments apart differ while it is appended; that is not a newer copy.
-        current.aliases = [...(current.aliases ?? []), path]
+        if (current.aliases) {
+          ;(current.aliases as string[]).push(path)
+        } else {
+          current.aliases = [path]
+        }
         current.size = Math.max(current.size, info.size)
         current.mtimeMs = Math.max(current.mtimeMs, info.mtimeMs)
       } else if (!current || info.mtimeMs > current.mtimeMs) {

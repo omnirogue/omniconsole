@@ -10,7 +10,7 @@ import {
 
 describe('planSessionSearchQuery', () => {
   it('matches a URL as one phrase without its scheme', () => {
-    const plan = planSessionSearchQuery('https://app.omnisi.ai/a/1a0d42a7df36eefc2')
+    const plan = planSessionSearchQuery('https://console.example.com/a/1a0d42a7df36eefc2')
     expect(plan.groups).toHaveLength(1)
     expect(plan.groups[0]!.kind).toBe('phrase')
     expect(groupMatchExpression(plan.groups[0]!)).toBe('"omnios omnirogue com a 1a0d42a7df36eefc2"')

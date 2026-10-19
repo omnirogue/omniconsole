@@ -1,4 +1,5 @@
 import { AgentTeamModeSetting } from './AgentTeamModeSetting'
+import { DeliverableCheckSetting } from './DeliverableCheckSetting'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
@@ -316,6 +317,7 @@ export function AgentsPane({
       />
       <AgentStatusHooksSetting settings={settings} updateSettings={updateSettings} />
       <AgentGeneratedTabTitlesSetting settings={settings} updateSettings={updateSettings} />
+      <DeliverableCheckSetting settings={settings} updateSettings={updateSettings} />
       {!isPairedWebClientWindow() ? (
         <AgentAwakeSetting settings={settings} updateSettings={updateSettings} />
       ) : null}

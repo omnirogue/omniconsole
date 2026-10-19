@@ -14,8 +14,8 @@ export function getTaskHubBinding(db: OrchestrationDb, taskId: string): string |
 export function refuseHubBusinessMutation(taskId: string, hubTaskId: string): never {
   throw new OrchestrationError(
     'hub_task_read_only',
-    `Task ${taskId} is a projection of omnios card ${hubTaskId}. Change business state through https://app.omnisi.ai or the person's omni-console MCP.`,
-    { taskId, hubTaskId, omniosUrl: 'https://app.omnisi.ai' }
+    `Task ${taskId} is a projection of omnios card ${hubTaskId}. Change business state through https://console.example.com or the person's omni-console MCP.`,
+    { taskId, hubTaskId, omniosUrl: 'https://console.example.com' }
   )
 }
 
@@ -31,7 +31,7 @@ export function assertLocalDecisionGateAuthority(
   if (decisionScope === 'business') {
     throw new OrchestrationError(
       'hub_admission_required',
-      'Business decisions require an omnios card; create or adopt one through https://app.omnisi.ai first.'
+      'Business decisions require an omnios card; create or adopt one through https://console.example.com first.'
     )
   }
 }

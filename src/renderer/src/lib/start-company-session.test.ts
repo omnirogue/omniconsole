@@ -259,9 +259,7 @@ describe('startCompanySession', () => {
 })
 
 it('opens a new conversation when company activation reuses existing tabs', async () => {
-  storeState.folderWorkspaces = [
-    { id: 'workspace-9', folderPath: '/Users/maintainer/Work/OmniRogue' }
-  ]
+  storeState.folderWorkspaces = [{ id: 'workspace-9', folderPath: '/Users/maintainer/Work/OmniRogue' }]
   launchFolderWorkspaceAgentSession.mockImplementation(async (args) => {
     args.beforeActivate?.()
     return true

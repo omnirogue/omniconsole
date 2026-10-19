@@ -156,8 +156,12 @@ describe('fetchNewerReleaseTag', () => {
       const { fetchNewerReleaseTag } = await import('./updater-prerelease-feed')
 
       expect(await fetchNewerReleaseTag('1.4.0')).toBe('v1.4.1')
-      expect(manifestUrls).toEqual([`https://app.omnisi.ai/updates/v1.4.1/${manifestName}`])
-      expect(assetUrls).toEqual(['https://app.omnisi.ai/updates/v1.4.1/Orca-1.4.1-arm64-mac.zip'])
+      expect(manifestUrls).toEqual([
+        `https://console.example.com/updates/v1.4.1/${manifestName}`
+      ])
+      expect(assetUrls).toEqual([
+        'https://console.example.com/updates/v1.4.1/Orca-1.4.1-arm64-mac.zip'
+      ])
       expect(netRequestMock).toHaveBeenCalledTimes(platform === 'win32' ? 1 : 0)
     }
   )
@@ -393,6 +397,7 @@ describe('fetchNewerReleaseTag', () => {
   })
 })
 
+
 describe('a local build is its own base version for update checks', () => {
   beforeEach(() => {
     vi.resetModules()
@@ -404,9 +409,7 @@ describe('a local build is its own base version for update checks', () => {
   it('strips the local stamp from both release-based and prerelease-based local builds', async () => {
     const { effectiveCurrentVersion } = await import('./updater-prerelease-feed')
     expect(effectiveCurrentVersion('1.5.1-local.1788800843739.0d005b4a4053')).toBe('1.5.1')
-    expect(effectiveCurrentVersion('1.4.178-rc.2.local.1788714927177.f1d251bad969')).toBe(
-      '1.4.178-rc.2'
-    )
+    expect(effectiveCurrentVersion('1.4.178-rc.2.local.1788714927177.f1d251bad969')).toBe('1.4.178-rc.2')
     expect(effectiveCurrentVersion('1.5.1')).toBe('1.5.1')
     expect(effectiveCurrentVersion('1.5.1-rc.3')).toBe('1.5.1-rc.3')
   })

@@ -10,7 +10,7 @@ const decision = (comment: string, edits: Record<string, string> | null = null) 
   artifactDecisionMessage({
     slug: 'plan-page',
     title: 'Ad budget plan',
-    shareUrl: 'https://app.omnisi.ai/a/plan-page',
+    shareUrl: 'https://console.example.com/a/plan-page',
     decision: {
       id: '42',
       decision: 'approved',

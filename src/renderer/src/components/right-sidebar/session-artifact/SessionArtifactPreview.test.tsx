@@ -5,7 +5,7 @@ import { act, cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SessionArtifactPreview } from './SessionArtifactPreview'
 
-const CONTENT_URL = 'https://app.omnisi.ai/a/plan/content'
+const CONTENT_URL = 'https://console.example.com/a/plan/content'
 const SCROLL_READ = '[window.scrollX, window.scrollY]'
 
 function emit(webview: Element, type: string, fields: Record<string, unknown> = {}): void {
@@ -64,7 +64,7 @@ describe('SessionArtifactPreview', () => {
 
   it('treats a different artifact as a fresh page, not a revision change', () => {
     const { rerender } = render(<SessionArtifactPreview contentUrl={CONTENT_URL} revision={3} />)
-    const other = 'https://app.omnisi.ai/a/other/content'
+    const other = 'https://console.example.com/a/other/content'
     rerender(<SessionArtifactPreview contentUrl={other} revision={null} />)
     const webview = document.querySelector('webview') as Electron.WebviewTag
     expect(webview.getAttribute('src')).toBe(other)
@@ -164,7 +164,10 @@ describe('SessionArtifactPreview', () => {
     expect(showsLoadingOverlay()).toBe(false)
 
     rerender(
-      <SessionArtifactPreview contentUrl="https://app.omnisi.ai/a/other/content" revision={3} />
+      <SessionArtifactPreview
+        contentUrl="https://console.example.com/a/other/content"
+        revision={3}
+      />
     )
     expect(showsLoadingOverlay()).toBe(true)
   })

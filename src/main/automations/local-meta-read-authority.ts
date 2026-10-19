@@ -16,7 +16,7 @@ import {
   type AdvertisingEvidenceScope
 } from './typesafe-advertising-local-scope'
 
-const ORIGIN = 'https://app.omnisi.ai'
+const ORIGIN = 'https://console.example.com'
 const REFUSAL = 'Local Meta reporting is not authorized for this routine and signed-in person.'
 const MAX_CONFIGURATION_BYTES = 4096
 const clerkId = z.string().regex(/^user_[A-Za-z0-9]{5,128}$/)

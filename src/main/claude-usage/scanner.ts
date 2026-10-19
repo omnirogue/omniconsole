@@ -1,4 +1,6 @@
 import { stat } from 'node:fs/promises'
+import type { UsageScanOptions } from '../usage/usage-provider-contract'
+import { UsageScanStoppedError } from '../usage/usage-scan-stopped-error'
 import type {
   ClaudeUsageDailyAggregate,
   ClaudeUsageParsedTurn,
@@ -11,6 +13,8 @@ import { readClaudeUsageScanFile, stripClaudeSourceMetadata } from './transcript
 import {
   attributeClaudeUsageTurns,
   buildWorktreeLookup,
+  getClaudeUsageCwdAttribution,
+  resolveClaudeUsageCwdWorktree,
   type ClaudeUsageWorktreeRef
 } from './worktree-attribution'
 import {
@@ -21,6 +25,7 @@ import {
 } from './usage-aggregation'
 
 const FILE_SCAN_BATCH_SIZE = 4
+const CHECKPOINT_INTERVAL_MS = 2 * 60_000
 
 // Why setImmediate: setTimeout(0) is clamped to ~1ms, and this yields once per
 // 4-file batch, so a 7.5k-transcript scan spent ~2s parked on timers.
@@ -39,17 +44,41 @@ async function getProcessedFileStat(
   }
 }
 
+async function cachedAttributionStillHolds(
+  previous: ClaudeUsagePersistedFile,
+  worktreeLookup: Map<string, ClaudeUsageWorktreeRef>,
+  canonicalCwdByPath: Map<string, string>,
+  worktreeSetChanged: boolean
+): Promise<boolean> {
+  const attributionByCwd = previous.attributionByCwd
+  if (!attributionByCwd || typeof attributionByCwd !== 'object') {
+    return !worktreeSetChanged
+  }
+  for (const [cwd, attribution] of Object.entries(attributionByCwd)) {
+    const worktree = await resolveClaudeUsageCwdWorktree(cwd, worktreeLookup, canonicalCwdByPath)
+    if (getClaudeUsageCwdAttribution(worktree) !== attribution) {
+      return false
+    }
+  }
+  return true
+}
+
 export async function scanClaudeUsageFiles(
   worktrees: ClaudeUsageWorktreeRef[],
-  previousProcessedFiles: ClaudeUsagePersistedFile[] = []
+  previousProcessedFiles: ClaudeUsagePersistedFile[] = [],
+  options: UsageScanOptions<ClaudeUsagePersistedFile> = {}
 ): Promise<{
   processedFiles: ClaudeUsagePersistedFile[]
   sessions: ClaudeUsageSession[]
   dailyAggregates: ClaudeUsageDailyAggregate[]
 }> {
+  if (options.shouldStop?.()) {
+    throw new UsageScanStoppedError('Claude usage scan stopped')
+  }
   const files = await listClaudeTranscriptFiles()
   const previousByPath = new Map(previousProcessedFiles.map((file) => [file.path, file]))
   const worktreeLookup = await buildWorktreeLookup(worktrees)
+  const canonicalCwdByPath = new Map<string, string>()
 
   const currentPaths = new Set(files)
   // Why: when a file that owned dedupe keys is deleted, remaining forks still
@@ -66,6 +95,9 @@ export async function scanClaudeUsageFiles(
   const reusedByPath = new Map<string, ClaudeUsagePersistedFile>()
   const pathsToParse: string[] = []
   for (let index = 0; index < files.length; index += FILE_SCAN_BATCH_SIZE) {
+    if (options.shouldStop?.()) {
+      throw new UsageScanStoppedError('Claude usage scan stopped')
+    }
     const batch = files.slice(index, index + FILE_SCAN_BATCH_SIZE)
     const reusable = await Promise.all(
       batch.map(async (filePath) => {
@@ -83,7 +115,13 @@ export async function scanClaudeUsageFiles(
           Array.isArray(previous.sessions) &&
           Array.isArray(previous.dailyAggregates) &&
           Array.isArray(previous.ownedDedupeKeys) &&
-          typeof previous.hasDeferredClaims === 'boolean'
+          typeof previous.hasDeferredClaims === 'boolean' &&
+          (await cachedAttributionStillHolds(
+            previous,
+            worktreeLookup,
+            canonicalCwdByPath,
+            options.worktreeSetChanged === true
+          ))
         return canReuse ? previous : null
       })
     )
@@ -115,7 +153,16 @@ export async function scanClaudeUsageFiles(
   }
 
   const parsedByPath = new Map<string, ClaudeUsagePersistedFile>()
+  const settledFiles = (): ClaudeUsagePersistedFile[] =>
+    files.flatMap((filePath) => {
+      const settled = reusedByPath.get(filePath) ?? parsedByPath.get(filePath)
+      return settled ? [settled] : []
+    })
+  let lastCheckpointAt = Date.now()
   for (let index = 0; index < pathsToParse.length; index += FILE_SCAN_BATCH_SIZE) {
+    if (options.shouldStop?.()) {
+      throw new UsageScanStoppedError('Claude usage scan stopped')
+    }
     const batch = pathsToParse.slice(index, index + FILE_SCAN_BATCH_SIZE)
     // Why: transcript scans run in Electron's main process. Small parallel
     // batches cut independent file I/O without letting Settings stay blocked.
@@ -139,28 +186,34 @@ export async function scanClaudeUsageFiles(
         }
         ownedTurns.push(stripClaudeSourceMetadata(turn))
       }
-      const attributed = await attributeClaudeUsageTurns(ownedTurns, worktreeLookup)
+      const attributionByCwd: Record<string, string | null> = {}
+      const attributed = await attributeClaudeUsageTurns(
+        ownedTurns,
+        worktreeLookup,
+        new Map<string, string>(),
+        attributionByCwd
+      )
       parsedByPath.set(filePath, {
         ...processedFile,
         ...aggregateClaudeUsage(attributed),
         ownedDedupeKeys,
-        hasDeferredClaims
+        hasDeferredClaims,
+        attributionByCwd
       })
+    }
+    if (options.onCheckpoint && Date.now() - lastCheckpointAt >= CHECKPOINT_INTERVAL_MS) {
+      lastCheckpointAt = Date.now()
+      await options.onCheckpoint(settledFiles()).catch(() => {})
     }
     if (index + batch.length < pathsToParse.length) {
       await yieldToEventLoop()
     }
   }
 
-  const processedFiles: ClaudeUsagePersistedFile[] = []
+  const processedFiles = settledFiles()
   const sessionsById = new Map<string, ClaudeUsageSession>()
   const dailyByKey = new Map<string, ClaudeUsageDailyAggregate>()
-  for (const filePath of files) {
-    const processed = reusedByPath.get(filePath) ?? parsedByPath.get(filePath)
-    if (!processed) {
-      continue
-    }
-    processedFiles.push(processed)
+  for (const processed of processedFiles) {
     mergeClaudeSessions(sessionsById, processed.sessions)
     mergeClaudeDailyAggregates(dailyByKey, processed.dailyAggregates)
   }

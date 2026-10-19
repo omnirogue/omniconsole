@@ -18,6 +18,7 @@ import { classifyConversation } from './conversation-retention'
 import { describeSessionChain } from './session-chain-summary'
 import type { AgentPaneSnapshot } from '@/components/attention/agent-pane-snapshot'
 import { isSessionSaved, type SessionFolderMetadata } from './session-folders'
+import { agentSessionRowKeys } from './agent-session-note'
 import { sessionRowFolderId } from './mirrored-conversation-folders'
 import { isSessionGroupCollapsed, type SessionSidebarView } from './session-sidebar-view'
 import { sessionWorkersKey } from './session-sidebar-worker-keys'
@@ -94,7 +95,8 @@ export function buildSessionSidebarTreeRows(
   rows: PursuitSidebarTreeRow[]
   classifications: Map<string, string>
   workersByRowKey: Map<string, PursuitSidebarTreeRow[]>
-  orphanRowKeys: ReadonlySet<string>
+  /** Agent sessions: workers whose launcher is not listed, and sessions an agent launched. */
+  agentRowKeys: ReadonlySet<string>
 } {
   const rows: PursuitSidebarTreeRow[] = []
   const classifications = new Map<string, string>()
@@ -326,5 +328,7 @@ export function buildSessionSidebarTreeRows(
         !isSessionGroupCollapsed(input.view, sessionWorkersKey(conversationViewKey(row.session)))
     }
   )
-  return { ...nested, classifications }
+  const { orphanRowKeys, ...listed } = nested
+  const agentRowKeys = agentSessionRowKeys(listed, orphanRowKeys, input.metadata)
+  return { ...listed, agentRowKeys, classifications }
 }

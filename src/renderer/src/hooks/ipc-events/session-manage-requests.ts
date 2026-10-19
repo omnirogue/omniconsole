@@ -36,6 +36,7 @@ import type {
 import { useAppStore } from '../../store'
 import { showSidebarSession } from './session-show-request'
 import { scheduleWhenFinished } from '@/lib/session-when-finished'
+import { markAgentSession } from '@/lib/agent-launched-session'
 import { forgetSleptPane, sleptPaneParkedNow } from './slept-pane-parked-now'
 import { readRenderedSidebarCounts } from '@/components/sidebar/session-folders/rendered-sidebar-counts'
 import {
@@ -307,6 +308,8 @@ export function answerSessionManageRequest(request: SessionManageRendererRequest
         request.action ? { action: request.action === 'archive' ? 'save' : request.action } : null
       )
       return { scheduled: true }
+    case 'markAgentSession':
+      return { marked: markAgentSession(requireSession(request)) }
     case 'readSidebarCounts':
       return readRenderedSidebarCounts()
     case 'readParityPopulation':

@@ -10,6 +10,7 @@ import {
   sessionEmptyArchiveRevision,
   sessionTabLastSeenAt
 } from './session-done-archive-policy'
+import { isAgentSession } from './agent-session-note'
 import {
   selectAgentPaneSnapshot,
   selectAgentPaneSnapshotInputs
@@ -54,6 +55,7 @@ import type { SessionWorkflowAnchorRef } from '../../../shared/session-workflow-
 import { isWaitingUntil } from './wait-later'
 import { mirroredWorkflowOwnerArchivedKeys } from './mirrored-workflow-rows'
 import { readRememberedWorkerParents } from './worker-lineage-parents'
+import { paneLeafIdentity } from './session-sidebar-worker-rows'
 import { classifySessionParity } from './session-parity-classification'
 import { sessionParityInputs } from './session-parity-population'
 
@@ -170,6 +172,7 @@ export function buildSessionManageSidebarRows(
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
   const listed = new Set<string>()
+  const workerParents = readRememberedWorkerParents()
   const routineOwners = readRoutineOwners()
   // Session parity (step 8): one bucket rule for these rows and the sidebar's counts.
   const parity = sessionParityInputs(state)
@@ -247,6 +250,10 @@ export function buildSessionManageSidebarRows(
         shellForeground: isShellForeground(state, session),
         folded,
         routine: isRoutineBackedSession(session, routineOwners),
+        // Why workers too: the sidebar lists every orchestration worker with the agent sessions.
+        agentSession:
+          isAgentSession(metadata, session) ||
+          (session.paneKey !== null && workerParents.has(paneLeafIdentity(session.paneKey))),
         hidden: hidden.has(`conversation:${viewKey}`) || hidden.has(`session:${viewKey}`),
         waitingUntil: isWaitingUntil(waits[`conversation:${viewKey}`], new Date(now))
           ? waits[`conversation:${viewKey}`]!

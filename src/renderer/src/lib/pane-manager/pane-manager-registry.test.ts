@@ -241,10 +241,10 @@ describe('pane manager registry', () => {
     registerLivePaneManager(onePane)
     registeredManagers.push(onePane)
 
-    expect(getLivePaneCensus()).toEqual({ managers: 2, panes: 3 })
+    expect(getLivePaneCensus()).toMatchObject({ managers: 2, panes: 3 })
 
     unregisterLivePaneManager(twoPanes)
-    expect(getLivePaneCensus()).toEqual({ managers: 1, panes: 1 })
+    expect(getLivePaneCensus()).toMatchObject({ managers: 1, panes: 1 })
   })
 
   it('prefers the allocation-free pane count when a manager exposes one', () => {
@@ -256,7 +256,7 @@ describe('pane manager registry', () => {
     registerLivePaneManager(counted)
     registeredManagers.push(counted)
 
-    expect(getLivePaneCensus()).toEqual({ managers: 1, panes: 4 })
+    expect(getLivePaneCensus()).toMatchObject({ managers: 1, panes: 4 })
     expect(counted.getPanes).not.toHaveBeenCalled()
   })
 
@@ -276,7 +276,7 @@ describe('pane manager registry', () => {
     registerLivePaneManager(healthy)
     registeredManagers.push(healthy)
 
-    expect(getLivePaneCensus()).toEqual({ managers: 2, panes: 1 })
+    expect(getLivePaneCensus()).toMatchObject({ managers: 2, panes: 1 })
   })
 
   it('estimates scrollback bytes from pane buffers, skipping non-buffer terminals', () => {

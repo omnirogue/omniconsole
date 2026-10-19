@@ -522,40 +522,15 @@ it('reports complete bills from failed runs and labels partial and unknown total
 })
 
 it('invalidates a benchmark arm whose actual model differs from its pin', async () => {
-  const report = await runBenchmark({
-    set: 'discover-seeded',
-    arms: [
-      {
-        name: 'pinned',
-        template: 'discover',
-        expectedModels: { find: ['claude:claude-haiku-5-5'] }
-      }
-    ],
-    reps: 1,
-    kitDir: __dirname,
-    exec: async () => ({ code: 0, stderr: '', stdout: JSON.stringify(RECORDED_DISCOVER_RUN) })
-  })
+  const report = await runBenchmark({ set: 'discover-seeded', arms: [{ name: 'pinned', template: 'discover', expectedModels: { find: ['claude:claude-haiku-5-5'] } }], reps: 1, kitDir: __dirname, exec: async () => ({ code: 0, stderr: '', stdout: JSON.stringify(RECORDED_DISCOVER_RUN) }) })
   expect(report.runs[0]?.error).toContain('find resolved to no calls')
   expect(report.runs[0]?.discover).toBeUndefined()
 })
 
 it('keeps round-specific bills and unknown round cost separate', () => {
   const run = structuredClone(RECORDED_DISCOVER_RUN)
-  run.results.targets = run.results.targets
-    .slice(0, 2)
-    .map((target, i) => ({ ...target, round: i + 1 }))
-  run.calls = [1, 2, 3].map((round) => ({
-    id: `find/r${round}/a0`,
-    stage: 'find',
-    model: 'opus',
-    effort: null,
-    state: 'completed',
-    attempt: 1,
-    durationMs: 1,
-    tokens: 'unknown',
-    costUsd: round === 2 ? 'unknown' : 2,
-    costSource: round === 2 ? 'unknown' : 'cli'
-  }))
+  run.results.targets = run.results.targets.slice(0, 2).map((target, i) => ({ ...target, round: i + 1 }))
+  run.calls = [1, 2, 3].map((round) => ({ id: `find/r${round}/a0`, stage: 'find', model: 'opus', effort: null, state: 'completed', attempt: 1, durationMs: 1, tokens: 'unknown', costUsd: round === 2 ? 'unknown' : 2, costSource: round === 2 ? 'unknown' : 'cli' }))
   expect(summarizeDiscoverRounds([{ arm: 'x', rep: 1, result: run }])).toEqual([
     { round: 1, targets: 1, confirmed: 1, knownCostUsd: 2, unpricedCalls: 0 },
     { round: 2, targets: 1, confirmed: 1, knownCostUsd: 'unknown', unpricedCalls: 1 },

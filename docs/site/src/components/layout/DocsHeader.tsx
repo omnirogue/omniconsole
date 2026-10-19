@@ -13,7 +13,7 @@ export function DocsHeader() {
             aria-label="Orca docs"
             className="group flex shrink-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           >
-            <Image src="/docs/logo.svg" alt="" width={40} height={25} />
+            <Image src="/docs/logo.svg" alt="" width={28} height={28} />
             <span
               aria-hidden="true"
               className="font-sans text-sm font-semibold tracking-tight text-foreground"

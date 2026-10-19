@@ -119,7 +119,7 @@ function decision(
 
 function page(latest: ArtifactReviewDecision | null): ArtifactReviewStatus {
   return {
-    shareUrl: 'https://app.omnisi.ai/a/launch-plan',
+    shareUrl: 'https://console.example.com/a/launch-plan',
     status: latest?.decision ?? 'pending',
     latest,
     decisions: latest ? [latest] : [],

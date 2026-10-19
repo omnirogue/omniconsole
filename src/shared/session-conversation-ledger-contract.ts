@@ -103,6 +103,8 @@ export type RuntimeSessionConversationRecord = {
   folderId?: string | null
   saved?: boolean
   hidden?: boolean
+  /** An agent launched it (the owner's Agent sessions); absent from an older owner. */
+  agentSession?: true
   /** False for passive completed hibernation evidence the owner holds but does not list (G1). */
   listed: boolean
   updatedAt: number

@@ -53,7 +53,7 @@ const TOKEN = 'local_action_fixture_token_123456789'
 const grant = {
   version: 1,
   enabled: true,
-  origin: 'https://app.omnisi.ai',
+  origin: 'https://console.example.com',
   clerkUserId: 'user_reviewed123',
   employeeId: 'emp_sal',
   company: OLDACS_COMPANY,

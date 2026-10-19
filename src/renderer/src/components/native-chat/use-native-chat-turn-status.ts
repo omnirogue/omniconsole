@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import type { NativeChatMessage } from '../../../../shared/native-chat-types'
 
 type NativeChatTurnTiming = {
@@ -39,12 +39,18 @@ export function useNativeChatTurnStatus({
   )
   const latestUserId = latestUserIndex !== -1 ? (messages[latestUserIndex]?.id ?? null) : null
   const activeTurnKey = latestUserId ?? '__unanchored__'
+  const userTurnIdsKey = useMemo(
+    () =>
+      messages
+        .filter((message) => message.role === 'user')
+        .map((message) => message.id)
+        .join('\0'),
+    [messages]
+  )
   const [timingByTurn, setTimingByTurn] = useState<Record<string, NativeChatTurnTiming>>({})
 
   useLayoutEffect(() => {
-    const validTurnKeys = new Set(
-      messages.filter((message) => message.role === 'user').map((message) => message.id)
-    )
+    const validTurnKeys = new Set(userTurnIdsKey ? userTurnIdsKey.split('\0') : [])
     validTurnKeys.add(activeTurnKey)
     if (isWorking) {
       setTimingByTurn((current) => {
@@ -96,7 +102,7 @@ export function useNativeChatTurnStatus({
         }
       }
     })
-  }, [activeTurnKey, isWorking, messages, workingStartedAt])
+  }, [activeTurnKey, isWorking, userTurnIdsKey, workingStartedAt])
 
   const currentTiming = timingByTurn[activeTurnKey]
   const completedByTurn = Object.fromEntries(

@@ -148,7 +148,9 @@ with executor `app/steward`, reason `finished, not verified` and its evidence. U
 path's own; Unarchive sets `autoArchiveKeep`.
 
 **Blank sessions** (`steward-empty-session.ts`, `steward-row-empty.ts`; Sal, 26–27 Sep): an
-agent someone started and no person ever asked anything. Checked before the JEV readings, which a
+agent someone started and no person ever asked anything. Since 19 Oct only an agent session
+qualifies (see `session-auto-archive.md`): the window never vouches for a blank session a person
+started (`sessionEmptyArchiveRevision`), so it stays until the person closes it. Checked before the JEV readings, which a
 blank session never has. Tier 2's vetoes up to the quiet time apply (local and visible, no
 question, queue, own steps, wait, held prompt, commitment or waiter, not pinned, Saved or brought
 back; the rules loop also skips Keep going, a plan or runner, a pending launch). Then nobody

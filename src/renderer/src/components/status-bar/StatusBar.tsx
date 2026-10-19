@@ -74,6 +74,7 @@ import { SkillUpdateStatusSegment } from './SkillUpdateStatusSegment'
 import { CaffeinateStatusSegment } from './CaffeinateStatusSegment'
 import { RemoteServerUpdateStatusSegment } from './RemoteServerUpdateStatusSegment'
 import { TeamMemoryStatusSegment } from './TeamMemoryStatusSegment'
+import { OmniCreditsPill } from './OmniCreditsPill'
 import { OmniRogueCreditsPill } from './OmniRogueCreditsPill'
 import { isStatusBarItemAvailable } from './status-bar-agent-gating'
 import { getVisibleUsageProvider, isUsageEmptyState } from './status-bar-provider-visibility'
@@ -2395,6 +2396,7 @@ function StatusBarInner({ floatingTerminalOpen }: StatusBarProps): React.JSX.Ele
         {!isPairedWebClientWindow() ? <CaffeinateStatusSegment iconOnly={iconOnly} /> : null}
         <RemoteServerUpdateStatusSegment iconOnly={iconOnly} />
         {!isPairedWebClientWindow() ? <TeamMemoryStatusSegment iconOnly={iconOnly} /> : null}
+        {!isPairedWebClientWindow() ? <OmniCreditsPill iconOnly={iconOnly} /> : null}
         {!isPairedWebClientWindow() ? <OmniRogueCreditsPill iconOnly={iconOnly} /> : null}
         <SkillUpdateStatusSegment iconOnly={iconOnly} />
         <UpdateStatusSegment compact={compact} iconOnly={iconOnly} />

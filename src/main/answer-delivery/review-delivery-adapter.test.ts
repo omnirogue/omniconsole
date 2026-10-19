@@ -25,7 +25,7 @@ const delivery = (overrides: Partial<ClaimableDelivery> = {}): ClaimableDelivery
   key: `review:${SLUG}:758`,
   workItem: `review:${SLUG}`,
   kind: 'review',
-  text: `[OmniOS decision] Sal approved “Launch plan” (https://app.omnisi.ai/a/${SLUG}).`,
+  text: `[OmniOS decision] Sal approved “Launch plan” (https://console.example.com/a/${SLUG}).`,
   context: { slug: SLUG, decisionId: 758 },
   state: 'pending',
   step: '',
@@ -59,12 +59,7 @@ function sidecar(notifyState: Record<string, unknown>, notify = `mac-studio:${AS
   mkdirSync(join(dir, 'choices', '2026-10-16'), { recursive: true })
   writeFileSync(
     join(dir, 'choices', '2026-10-16', '191227-plan.json'),
-    JSON.stringify({
-      slug: SLUG,
-      cwd: '/Users/maintainer/omni-ide-worktrees/feat-1',
-      notify,
-      notifyState
-    })
+    JSON.stringify({ slug: SLUG, cwd: '/Users/maintainer/omni-ide-worktrees/feat-1', notify, notifyState })
   )
 }
 

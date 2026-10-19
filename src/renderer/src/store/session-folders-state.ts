@@ -25,6 +25,10 @@ export type SessionFoldersState = {
   saveSession: (sessionKey: string, folderId: string) => boolean
   setFinishAction: (sessionKey: string, action: SessionFinishAction) => boolean
   clearFinishAction: (sessionKey: string) => boolean
+  /** Notes that an agent launched this session (Agent sessions); idempotent. */
+  markAgentSession: (sessionKey: string) => boolean
+  /** A person filed these sessions: they are theirs now, not agent sessions. */
+  forgetAgentSessions: (sessionKeys: readonly string[]) => boolean
   finishForMe: (sessionKey: string, action: SessionFinishAction) => boolean
   renameFolder: (id: string, name: string) => boolean
   deleteFolder: (id: string) => boolean

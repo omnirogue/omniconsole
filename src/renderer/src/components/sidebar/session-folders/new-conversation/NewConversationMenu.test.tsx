@@ -92,7 +92,9 @@ it('launches a Muse model and effort directly from the provider submenu without 
   })
   expect(screen.queryByRole('menuitem', { name: 'Other agents' })).toBeNull()
   fireEvent.keyDown(screen.getByRole('menuitem', { name: /Muse Code/ }), { key: 'ArrowRight' })
-  fireEvent.keyDown(screen.getByRole('menuitem', { name: /Muse Spark 1.3/ }), { key: 'ArrowRight' })
+  fireEvent.keyDown(screen.getByRole('menuitem', { name: /Muse Spark 1.3/ }), {
+    key: 'ArrowRight'
+  })
   fireEvent.click(screen.getByRole('menuitem', { name: /^High/ }))
   expect(start).toHaveBeenCalledWith({
     agent: 'muse',
@@ -216,29 +218,35 @@ it('reports usage refresh errors instead of swallowing them', async () => {
 })
 
 it.each([true, false])(
-  'launches Gemini without account or effort controls (local: %s)',
+  'launches Antigravity without account or effort controls (local: %s)',
   (local) => {
     const start = vi.fn()
     menu(local, {
-      capabilities: [{ id: 'gemini', label: 'Gemini', status: 'usable', models: [] }],
+      capabilities: [{ id: 'antigravity', label: 'Antigravity', status: 'usable', models: [] }],
       start
     })
-    const item = screen.getByRole('menuitem', { name: /Gemini/ })
+    const item = screen.getByRole('menuitem', { name: /Antigravity/ })
     expect(item.hasAttribute('aria-haspopup')).toBe(false)
     expect(screen.queryByText(/Checking usage|Uses the host’s default account|Effort/)).toBeNull()
     fireEvent.click(item)
-    expect(start).toHaveBeenCalledWith({ agent: 'gemini' })
+    expect(start).toHaveBeenCalledWith({ agent: 'antigravity' })
   }
 )
-it.each(['disabled', 'cli-missing'])('hides Gemini when %s', (status) => {
-  menu(true, { capabilities: [{ id: 'gemini', label: 'Gemini', status, models: [] }] })
-  expect(screen.queryByRole('menuitem', { name: /Gemini/ })).toBeNull()
+it.each(['disabled', 'cli-missing'])('hides Antigravity when %s', (status) => {
+  menu(true, { capabilities: [{ id: 'antigravity', label: 'Antigravity', status, models: [] }] })
+  expect(screen.queryByRole('menuitem', { name: /Antigravity/ })).toBeNull()
+})
+it('does not offer Gemini under Other agents', () => {
+  menu(true, {
+    capabilities: [{ id: 'gemini', label: 'Gemini', status: 'usable', models: [] }]
+  })
+  expect(screen.queryByRole('menuitem', { name: /Gemini|Other agents/ })).toBeNull()
 })
 
 const allProviders = (kimiStatus = 'usable') =>
   (
     [
-      ['gemini', 'Gemini'],
+      ['antigravity', 'Antigravity'],
       ['omp', 'OMP'],
       ['grok', 'Grok'],
       ['kimi', 'Kimi'],
@@ -256,12 +264,12 @@ const providerRows = () =>
     .getAllByRole('menuitem')
     .map((item) => item.textContent ?? '')
     .map((text) =>
-      ['Claude', 'Codex', 'Kimi', 'Grok', 'OMP', 'Gemini'].find((l) => text.includes(l))
+      ['Claude', 'Codex', 'Kimi', 'Grok', 'OMP', 'Antigravity'].find((l) => text.includes(l))
     )
     .filter(Boolean)
-it('orders providers Claude, Codex, Kimi, Grok, OMP, Gemini', () => {
+it('orders providers Claude, Codex, Kimi, Grok, OMP, Antigravity', () => {
   menu(true, { capabilities: allProviders() })
-  expect(providerRows()).toEqual(['Claude', 'Codex', 'Kimi', 'Grok', 'OMP', 'Gemini'])
+  expect(providerRows()).toEqual(['Claude', 'Codex', 'Kimi', 'Grok', 'OMP', 'Antigravity'])
 })
 it('launches Kimi with its CLI default and no account submenu', () => {
   const start = vi.fn()
@@ -273,7 +281,7 @@ it('launches Kimi with its CLI default and no account submenu', () => {
 })
 it('hides Kimi when its login is signed out', () => {
   menu(true, { capabilities: allProviders('logged-out') })
-  expect(providerRows()).toEqual(['Claude', 'Codex', 'Grok', 'OMP', 'Gemini'])
+  expect(providerRows()).toEqual(['Claude', 'Codex', 'Grok', 'OMP', 'Antigravity'])
 })
 it('shows launcher context at the top level, with its count, only while some is attached', async () => {
   menu()

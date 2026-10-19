@@ -1,7 +1,7 @@
 import { WORK_PAGE_SECTIONS } from './work-page-sections'
 import { RoomsPage } from '../rooms/RoomsPage'
 import React, { useState } from 'react'
-import { Building2, Files, Focus, LayoutDashboard, ListTodo, RefreshCw, Scale } from 'lucide-react'
+import { Building2, Focus, LayoutDashboard, ListTodo, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { invalidateBackofficeWork } from '@/components/task-page/backoffice/backoffice-work-store'
 import { translate } from '@/i18n/i18n'
@@ -15,8 +15,6 @@ import { WorkStewardActivitySection } from './WorkStewardActivitySection'
 import { WorkCleanupRunsSection } from './WorkCleanupRunsSection'
 import { WorkOtherComputersSection } from './WorkOtherComputersSection'
 import { WorkProjectsSection } from './WorkProjectsSection'
-import { WorkArtifactsSection } from './WorkArtifactsSection'
-import { openWorkDecisions } from '@/lib/open-work-decisions'
 
 /**
  * Work — the home screen. Three questions, top down: what needs me, what is
@@ -33,7 +31,6 @@ export default function WorkPage(): React.JSX.Element {
   const openTaskPage = useAppStore((state) => state.openTaskPage)
   const openAttentionPage = useAppStore((state) => state.openAttentionPage)
   const openCompaniesPage = useAppStore((state) => state.openCompaniesPage)
-  const openArtifactsPage = useAppStore((state) => state.openArtifactsPage)
   const [revision, setRevision] = useState(0)
   const [roomsOpen, setRoomsOpen] = useState(false)
   if (roomsOpen && window.api.rooms) {
@@ -49,7 +46,6 @@ export default function WorkPage(): React.JSX.Element {
     dispatch: <WorkDispatchComposer />,
     projects: <WorkProjectsSection />,
     'needs-you': <WorkNeedsYouSection />,
-    artifacts: <WorkArtifactsSection />,
     happening: <WorkHappeningSection />,
     steward: <WorkStewardActivitySection />,
     cleanup: <WorkCleanupRunsSection />,
@@ -85,14 +81,6 @@ export default function WorkPage(): React.JSX.Element {
               {translate('rooms.title', 'Online Rooms')}
             </Button>
           ) : null}
-          <Button size="sm" variant="ghost" onClick={openArtifactsPage}>
-            <Files className="size-3.5" aria-hidden />
-            {translate('work.artifacts', 'Artifacts')}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => openWorkDecisions()}>
-            <Scale className="size-3.5" aria-hidden />
-            {translate('work.decisions', 'Decisions')}
-          </Button>
           <Button size="sm" variant="ghost" onClick={openAttentionPage}>
             <Focus className="size-3.5" aria-hidden />
             {translate('work.focus', 'Focus')}

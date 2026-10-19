@@ -35,10 +35,13 @@ import { blockOutcomesWithoutVerdictReceipt } from './session-outcome-verdict-in
 import { registerSessionOutcomeVerdictHandling } from './session-outcome-verdict-register'
 import { upNextCarriedStagePrompts, upNextStampedSeatPanes } from './up-next-stage-seat'
 import { advanceUpNextHeldReviews } from './up-next-review-fix'
+import { advanceSessionOutcomeDeliverableRepairs } from './session-outcome-deliverable-repair'
 
 // Host start: the verdict package is wired in here, where the tick that spends a verdict lives, so
 // no host can reach the completed-attempt arm with the consumer or the marker suffix unregistered.
 registerSessionOutcomeVerdictHandling()
+// The repair record is opened only by a host that starts its outcome timer, never by a lone pass.
+export { installProfileSessionOutcomeDeliverableRepairs as installDeliverableRepairs } from './session-outcome-deliverable-repair-store'
 
 /**
  * One host pass over one chain, inside that chain's lane: observe its attempts, run the bounded
@@ -207,6 +210,14 @@ export async function advanceSessionOutcomes(
         set = updated.outcomeSet!
         save()
       },
+      epoch: service.epoch,
+      now
+    })
+    // A finished outcome whose promised file is missing goes back to this conversation's agent,
+    // within its repair budget (`session-outcome-deliverable-repair.ts`).
+    await advanceSessionOutcomeDeliverableRepairs({
+      runtime: service.runtime,
+      read: () => ({ ...chain, outcomeSet: set }),
       epoch: service.epoch,
       now
     })

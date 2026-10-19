@@ -17,6 +17,11 @@ describe('coordinatorLaunchPick', () => {
       team: false,
       templateId: 'planner'
     })
+    expect(coordinatorLaunchPick({ agent: 'antigravity' })).toEqual({
+      agent: 'antigravity',
+      team: false,
+      templateId: 'coordinator'
+    })
   })
 
   it('is null for an agent the folder launcher does not start', () => {

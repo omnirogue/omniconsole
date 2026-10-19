@@ -59,9 +59,7 @@ describe('Start Work', () => {
   it('shows the resolved folder and the agent the settings default to', async () => {
     openPopover()
 
-    expect(
-      await screen.findByText('/Users/maintainer/Work/OmniRogue/Advertising')
-    ).toBeInTheDocument()
+    expect(await screen.findByText('/Users/maintainer/Work/OmniRogue/Advertising')).toBeInTheDocument()
     expect(screen.getByLabelText('Agent').textContent).toContain('Codex')
   })
 

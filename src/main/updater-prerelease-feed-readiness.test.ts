@@ -70,9 +70,7 @@ function respondWithAtom(
       })
     }
 
-    const manifestMatch = url.match(
-      /\/(?:releases\/download|updates)\/([^/]+)\/latest(?:-[a-z]+)?\.yml$/
-    )
+    const manifestMatch = url.match(/\/(?:releases\/download|updates)\/([^/]+)\/latest(?:-[a-z]+)?\.yml$/)
     if (manifestMatch) {
       const tag = decodeURIComponent(manifestMatch[1])
       if (unavailableManifests.has(tag)) {
@@ -373,9 +371,7 @@ describe('fetchNewerReleaseTagsWithReadiness', () => {
         })
       }
 
-      const manifestMatch = url.match(
-        /\/(?:releases\/download|updates)\/([^/]+)\/latest(?:-[a-z]+)?\.yml$/
-      )
+      const manifestMatch = url.match(/\/(?:releases\/download|updates)\/([^/]+)\/latest(?:-[a-z]+)?\.yml$/)
       if (manifestMatch) {
         const version = decodeURIComponent(manifestMatch[1]).replace(/^v/i, '')
         return Promise.resolve({

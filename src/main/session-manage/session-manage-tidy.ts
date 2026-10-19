@@ -39,7 +39,15 @@ type TidyRowInput = Pick<
   | 'workflow'
   | 'strandedMirrorRecord'
   | 'providerSessionId'
+  | 'agentSession'
 >
+
+/**
+ * Why (Sal, 2026-10-19): "human started sessions stay open until we close them." Tidy archives an
+ * agent's session on its own; a person's only when the request names it (`--include`).
+ */
+export const PERSON_STARTED_TIDY_HOLD =
+  'A person started it, so it stays until they close it; archive it only when they name it (--include).'
 
 export type SessionTidyVerdict = {
   action: SessionTidyAction
@@ -205,19 +213,31 @@ export function classifySessionTidy(
         }
       : { action: 'hold', reason: hold, group: 'held' }
   }
-  if (entry.state === 'exited') {
-    return { action: 'archive', reason: 'Exited.' }
-  }
-  if (entry.pendingSteps.length || entry.queueLength || entry.waitingOn) {
+  if (
+    entry.state !== 'exited' &&
+    (entry.pendingSteps.length || entry.queueLength || entry.waitingOn)
+  ) {
     return skip(
       'open-items',
       `Idle, but it has something open: ${entry.waitingOn ?? 'pending steps or queue'}`
     )
   }
-  return {
-    action: 'archive',
-    reason: 'Idle with no pending steps, no queue and nothing waiting on the person.'
+  const reason =
+    entry.state === 'exited'
+      ? 'Exited.'
+      : 'Idle with no pending steps, no queue and nothing waiting on the person.'
+  // Why last, and `!== true`: only what would be archived is held, so a skip still beats
+  // --include; an older window that does not say who started it is kept, as unknown is.
+  if (row.agentSession !== true) {
+    return include.has(entry.paneKey)
+      ? {
+          action: 'archive',
+          reason: `Held (${PERSON_STARTED_TIDY_HOLD}) but the request names it.`,
+          included: true
+        }
+      : { action: 'hold', reason: PERSON_STARTED_TIDY_HOLD, group: 'held' }
   }
+  return { action: 'archive', reason }
 }
 
 export function toSessionTidyRow(

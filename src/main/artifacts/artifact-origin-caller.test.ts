@@ -251,7 +251,7 @@ describe('the conversation verified for a write', () => {
     cloudUserId: 'user-a',
     cloudProfileId: 'cloud-a',
     cloudOrganizationId: 'org-a',
-    apiOrigin: 'https://app.omnisi.ai'
+    apiOrigin: 'https://console.example.com'
   }
   const entry = {
     paneKey: PANE,

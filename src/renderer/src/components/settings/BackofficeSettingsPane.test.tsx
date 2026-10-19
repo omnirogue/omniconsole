@@ -46,7 +46,7 @@ describe('BackofficeSettingsPane', () => {
   it('pre-fills the production URL with the live console when nothing is stored', () => {
     mocks.settings = { ...getDefaultSettings('/tmp'), backofficeProductionUrl: '' }
     render(<BackofficeSettingsPane />)
-    expect(productionField()).toHaveValue('https://app.omnisi.ai')
+    expect(productionField()).toHaveValue('https://console.example.com')
   })
 
   it('shows a stored production URL instead of the default', () => {

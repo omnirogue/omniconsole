@@ -27,6 +27,7 @@ export function enqueueConversationPrompt(
     createdAt: now,
     state: 'queued',
     ...(input.origin ? { origin: input.origin } : {}),
-    ...(input.requestedBy ? { requestedBy: input.requestedBy } : {})
+    ...(input.requestedBy ? { requestedBy: input.requestedBy } : {}),
+    ...(input.automation ? { automation: input.automation } : {})
   })
 }

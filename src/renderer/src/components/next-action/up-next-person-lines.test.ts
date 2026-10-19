@@ -138,7 +138,9 @@ describe('the status line under a sent block', () => {
     expect(line(sent({ waiting: waiting() }), 3)?.text).toBe(
       "Waiting for Uma's OK. 3 steps paused."
     )
-    expect(line(sent({ waiting: waiting() }), 1)?.text).toBe("Waiting for Uma's OK. 1 step paused.")
+    expect(line(sent({ waiting: waiting() }), 1)?.text).toBe(
+      "Waiting for Uma's OK. 1 step paused."
+    )
     expect(line(sent({ waiting: waiting() }))?.text).toBe("Waiting for Uma's OK.")
     expect(line(sent({ people: [UMA, GAMMA], waiting: waiting({ total: 2 }) }), 3)?.text).toBe(
       'Waiting for Uma and Gamma to say OK. 3 steps paused.'

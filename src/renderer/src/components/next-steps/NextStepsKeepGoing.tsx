@@ -60,10 +60,7 @@ function knownStopWords(reason: NextStepKeepGoingStopReason): string | undefined
     case 'needs-you-risky':
       return translate('nextSteps.keepGoing.stop.risky', 'the next step is risky and needs you')
     case 'needs-you-ad-spend':
-      return translate(
-        'nextSteps.keepGoing.stop.adSpend',
-        'the next step changes ad spend — needs you'
-      )
+      return translate('nextSteps.keepGoing.stop.adSpend', 'the next step changes ad spend — needs you')
     case 'needs-you-ad-pause':
       return translate(
         'nextSteps.keepGoing.stop.adPause',

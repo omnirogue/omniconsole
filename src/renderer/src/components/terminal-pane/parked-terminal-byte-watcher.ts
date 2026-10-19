@@ -27,6 +27,10 @@ import {
 import { dispatchTerminalNotification } from './use-notification-dispatch'
 import { acquireHiddenRendererPtyDeliveryClaim } from './pty-renderer-delivery-claims'
 import { isRemoteRuntimePtyId } from '@/runtime/runtime-terminal-inspection'
+import {
+  appendParkedTerminalPreviewOutput,
+  clearParkedTerminalPreviewTail
+} from './terminal-parked-preview-tail'
 
 // Why: keep the live path's BEL-vs-completion race window so notification behavior is identical whether a tab is parked or mounted.
 const PARKED_NOTIFICATION_GRACE_MS = AGENT_TASK_COMPLETE_NOTIFICATION_GRACE_MS
@@ -263,6 +267,7 @@ export function startParkedTerminalByteWatcher(
       return
     }
     processor.processData(data, {})
+    appendParkedTerminalPreviewOutput(ptyId, data)
     commandFinishedScanner?.scan(data)
     commandCodeOutputStatusDetector?.observe(data)
     if (observeTerminalGitHubPRLink) {
@@ -287,6 +292,8 @@ export function startParkedTerminalByteWatcher(
     // Why: unhide BEFORE the reveal remount registers pane handlers, so main resumes delivery and emits the restore marker the pane consumes.
     releaseHiddenDeliveryClaim?.()
     unsubscribeByteParsers?.()
+    // Why: the revealed pane's snapshot replay is the screen; a stale preview must not outlive it.
+    clearParkedTerminalPreviewTail(ptyId)
     unregisterFactConsumer?.()
     // Why: clears tracker/timer/detector state so the watcher can't fire after the revealed pane's live parsers take over.
     processor?.clearAccumulatedState()

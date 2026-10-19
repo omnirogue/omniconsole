@@ -124,11 +124,7 @@ describe('graph admission', () => {
     ])
     expect(quick.spec.template).toBe('quick-discover')
     expect(quick.spec.steps.map((step) => step.id)).toEqual(['find', 'verify'])
-    expect(quick.host.discoverSource).toEqual({
-      commit: 'a'.repeat(40),
-      branch: 'main-next',
-      dirty: false
-    })
+    expect(quick.host.discoverSource).toEqual({ commit: 'a'.repeat(40), branch: 'main-next', dirty: false })
     bundleQuickScope.mockRejectedValueOnce(new Error('over budget'))
     const large = await admit('discover', 'workspace-read', undefined, undefined, 'local', ['src/'])
     expect(large.spec.template).toBe('discover')

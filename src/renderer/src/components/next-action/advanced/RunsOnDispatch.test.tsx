@@ -221,7 +221,7 @@ describe('the one dispatch door behind Runs on', () => {
     ports.linked = null
     ports.createCard.mockResolvedValue({
       refusal: "Complete the task's company, goal and department before dispatching.",
-      actionUrl: 'https://app.omnisi.ai/work'
+      actionUrl: 'https://console.example.com/work'
     })
     const onSent = vi.fn()
     render(<RunsOnDispatch session={session} onSent={onSent} />)
@@ -230,7 +230,7 @@ describe('the one dispatch door behind Runs on', () => {
     expect(ports.onPrepare).not.toHaveBeenCalled()
     expect(screen.getByRole('alert').textContent).toContain('company, goal and department')
     const link = screen.getByRole('link', { name: 'Open in OmniOS' }) as HTMLAnchorElement
-    expect(link.href).toBe('https://app.omnisi.ai/work')
+    expect(link.href).toBe('https://console.example.com/work')
     expect(onSent).not.toHaveBeenCalled()
     // Why: pressing again before the estate is fixed would fail in exactly the same way.
     expect(endSession().disabled).toBe(true)

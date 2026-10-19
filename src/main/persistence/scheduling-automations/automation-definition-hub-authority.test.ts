@@ -19,7 +19,7 @@ const linkedItem: WorkspaceLinkedItem = {
   type: 'issue',
   number: 1,
   title: 'Reply to customers',
-  url: 'https://app.omnisi.ai',
+  url: 'https://console.example.com',
   hubTaskId
 }
 

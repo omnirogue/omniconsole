@@ -129,7 +129,7 @@ describe('coordinator decision-gate authority', () => {
       (message) => logs.push(message)
     )
 
-    expect(logs.at(-1)).toContain('https://app.omnisi.ai')
+    expect(logs.at(-1)).toContain('https://console.example.com')
     expect(db.listGates()).toEqual([])
     expect(db.getTask(task.id)?.status).toBe('dispatched')
     expect(db.getDispatchContextById(dispatch.id)?.status).toBe('dispatched')

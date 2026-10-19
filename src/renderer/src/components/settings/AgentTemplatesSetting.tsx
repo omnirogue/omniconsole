@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Bot, Plus } from 'lucide-react'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
@@ -11,9 +10,7 @@ import {
   normalizeAgentTemplateSettings,
   resolveAgentTemplates,
   type AgentTemplate,
-  type AgentTemplateOverride,
-  type AgentTemplateSettings,
-  type PreferredAgent
+  type AgentTemplateSettings
 } from '../../../../shared/agent-templates'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,39 +29,14 @@ type Props = {
   initialTemplateId?: string
 }
 
-type Draft = {
-  name: string
-  description: string
-  instructions: string
-  preferredModel: string
-  preferredAgent: string
-  defaultSkills: string
-  callableSkills: string
-  memory: string
-}
-
-function parseCommaList(text: string): string[] {
-  return text
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-}
+type Draft = { name: string; description: string; instructions: string; preferredModel: string }
 
 function draftFor(template: AgentTemplate): Draft {
-  const defaultSkills =
-    template.defaultSkills ?? (template.skills ? template.skills.slice(0, 1) : [])
-  const callableSkills =
-    template.callableSkills ??
-    (template.skills ? template.skills.filter((s) => !defaultSkills.includes(s)) : [])
   return {
     name: template.name,
     description: template.description,
     instructions: template.instructions ?? '',
-    preferredModel: template.preferredModel ?? '',
-    preferredAgent: template.preferredAgent ?? '',
-    defaultSkills: defaultSkills.join(', '),
-    callableSkills: callableSkills.join(', '),
-    memory: template.memory ?? ''
+    preferredModel: template.preferredModel ?? ''
   }
 }
 
@@ -136,26 +108,6 @@ export function AgentTemplatesSetting({ settings, initialTemplateId }: Props): R
     // Why: only the draft that was written is cleared; text typed meanwhile stays unsaved.
     const clear = (): void => setDraft((current) => (current === savedDraft ? null : current))
     const preferredModel = draft.preferredModel.trim() || undefined
-    const rawAgent = draft.preferredAgent.trim().toLowerCase()
-    const preferredAgent: PreferredAgent | undefined =
-      rawAgent === 'claude' || rawAgent === 'codex' || rawAgent === 'grok' || rawAgent === 'gemini'
-        ? rawAgent
-        : undefined
-    const defaultSkills = parseCommaList(draft.defaultSkills)
-    const callableSkills = parseCommaList(draft.callableSkills)
-    const skills = Array.from(new Set([...defaultSkills, ...callableSkills]))
-    const memory = draft.memory.trim() || undefined
-    const extraFields: Pick<
-      AgentTemplateOverride,
-      'preferredModel' | 'preferredAgent' | 'skills' | 'defaultSkills' | 'callableSkills' | 'memory'
-    > = {
-      ...(preferredModel ? { preferredModel } : {}),
-      ...(preferredAgent ? { preferredAgent } : {}),
-      ...(skills.length ? { skills } : {}),
-      ...(defaultSkills.length ? { defaultSkills } : {}),
-      ...(callableSkills.length ? { callableSkills } : {}),
-      ...(memory ? { memory } : {})
-    }
     if (selected.builtin) {
       void persist((current) => ({
         ...current,
@@ -164,7 +116,7 @@ export function AgentTemplatesSetting({ settings, initialTemplateId }: Props): R
           [selected.id]: {
             description: draft.description.trim(),
             ...(isDefault ? {} : { instructions: draft.instructions }),
-            ...extraFields
+            ...(preferredModel ? { preferredModel } : {})
           }
         }
       })).then(clear, () => undefined)
@@ -178,7 +130,7 @@ export function AgentTemplatesSetting({ settings, initialTemplateId }: Props): R
                 name: draft.name.trim() || entry.name,
                 description: draft.description.trim(),
                 instructions: draft.instructions,
-                ...extraFields
+                ...(preferredModel ? { preferredModel } : {})
               }
             : entry
         )
@@ -349,76 +301,6 @@ export function AgentTemplatesSetting({ settings, initialTemplateId }: Props): R
               value={shown.description}
               onChange={(event) => setDraft({ ...shown, description: event.target.value })}
             />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="agent-template-agent">
-                {translate('components.settings.agentTemplates.preferredAgent', 'Preferred agent')}
-                <span className="ml-2 text-[11px] font-normal text-muted-foreground">
-                  claude / codex / grok / gemini
-                </span>
-              </Label>
-              <Input
-                id="agent-template-agent"
-                disabled={isDefault}
-                placeholder="claude"
-                value={shown.preferredAgent}
-                onChange={(event) => setDraft({ ...shown, preferredAgent: event.target.value })}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="agent-template-memory">
-                {translate('components.settings.agentTemplates.memory', 'Memory file')}
-                <span className="ml-2 text-[11px] font-normal text-muted-foreground">
-                  {translate('components.settings.agentTemplates.optional', 'optional')}
-                </span>
-              </Label>
-              <Input
-                id="agent-template-memory"
-                disabled={isDefault}
-                placeholder="~/Work/Shared/Reverse-Engineering/memory/LESSONS.md"
-                value={shown.memory}
-                onChange={(event) => setDraft({ ...shown, memory: event.target.value })}
-              />
-            </div>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="agent-template-default-skills">
-                {translate(
-                  'components.settings.agentTemplates.defaultSkills',
-                  'Default-loaded skills (Tier 1)'
-                )}
-                <span className="ml-2 text-[11px] font-normal text-muted-foreground">
-                  auto-injected at startup
-                </span>
-              </Label>
-              <Input
-                id="agent-template-default-skills"
-                disabled={isDefault}
-                placeholder="reverse-engineer"
-                value={shown.defaultSkills}
-                onChange={(event) => setDraft({ ...shown, defaultSkills: event.target.value })}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="agent-template-callable-skills">
-                {translate(
-                  'components.settings.agentTemplates.callableSkills',
-                  'Callable skills (Tier 2)'
-                )}
-                <span className="ml-2 text-[11px] font-normal text-muted-foreground">
-                  on-demand by trigger
-                </span>
-              </Label>
-              <Input
-                id="agent-template-callable-skills"
-                disabled={isDefault}
-                placeholder="omni-boundary-review, omni-reuse-research"
-                value={shown.callableSkills}
-                onChange={(event) => setDraft({ ...shown, callableSkills: event.target.value })}
-              />
-            </div>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="agent-template-instructions">

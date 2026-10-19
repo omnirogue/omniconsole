@@ -16,7 +16,7 @@ const scope: ArtifactShareScope = {
   cloudUserId: 'user-a',
   cloudProfileId: 'cloud-a',
   cloudOrganizationId: 'org-a',
-  apiOrigin: 'https://app.omnisi.ai'
+  apiOrigin: 'https://console.example.com'
 }
 const PANE = 'tab-a:11111111-1111-4111-8111-111111111111'
 
@@ -31,7 +31,7 @@ function save(path: string, sourceKey: string, slug: string, extra: object = {})
     ...scope,
     slug,
     editToken: `edit-secret-${slug}`,
-    shareUrl: `https://app.omnisi.ai/a/${slug}`,
+    shareUrl: `https://console.example.com/a/${slug}`,
     ...extra
   })
 }
@@ -53,10 +53,10 @@ describe('listArtifactSessionRecordsForScope', () => {
     expect(records).toEqual([
       {
         slug: 'plan',
-        shareUrl: 'https://app.omnisi.ai/a/plan',
+        shareUrl: 'https://console.example.com/a/plan',
         sourceKey: '/repo/plan.html',
         savedAt: expect.any(Number),
-        contentUrl: 'https://app.omnisi.ai/a/plan/content',
+        contentUrl: 'https://console.example.com/a/plan/content',
         origin: { paneKey: PANE, worktreeId: 'wt-1' }
       }
     ])

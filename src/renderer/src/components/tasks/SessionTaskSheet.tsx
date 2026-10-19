@@ -67,7 +67,9 @@ export function SessionTaskSheet(
           </DialogDescription>
         </DialogHeader>
         <Button
-          onClick={() => void window.api.shell.openUrl(url ?? 'https://app.omnisi.ai/work/jira')}
+          onClick={() =>
+            void window.api.shell.openUrl(url ?? 'https://console.example.com/work/jira')
+          }
         >
           {translate('tasks.jira.openTask', 'Open Jira task')}
         </Button>

@@ -29,6 +29,8 @@ export type StewardDrivers = {
   chainBound: boolean
   /** A prompt held for it (`--when-idle`) is waiting or being delivered. */
   heldDelivery: boolean
+  /** The deliverable check asked it to finish something and that turn has not ended (W22-20). */
+  deliverableRepair?: boolean
 }
 
 /**
@@ -68,6 +70,9 @@ export function stewardSkipReason(
   }
   if (drivers.heldDelivery) {
     return 'a held prompt is waiting for it'
+  }
+  if (drivers.deliverableRepair) {
+    return 'the deliverable check asked it to finish something'
   }
   if (entry.state === 'awaiting-user') {
     return 'it is asking the person'

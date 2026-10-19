@@ -614,7 +614,7 @@ Expand **Decision evidence, candidate digest & rubric lineage** and confirm:
 | --- | --- |
 | **(Recommended) Promote winning version** | Records your choice in the card, shows *"Winning candidate … marked for promotion. Subsequent runs with --seed-from <target> will compound on this winner."*, and refreshes the run (`evolve.refresh`). |
 | **Keep current incumbent** | Records that choice and shows *"Current incumbent retained; candidate … will not be promoted."* |
-| **Open in Decisions** | Opens the published OmniOS Decision for this run, or `https://app.omnisi.ai/decisions/<decision id>` when no URL has been published yet. |
+| **Open in Decisions** | Opens the published OmniOS Decision for this run, or `https://console.example.com/decisions/<decision id>` when no URL has been published yet. |
 
 > **Important.** In this snapshot the card's choice is **local to the card**.
 > Clicking it does not call `POST /api/evolve/runs/{id}/promote` and does not

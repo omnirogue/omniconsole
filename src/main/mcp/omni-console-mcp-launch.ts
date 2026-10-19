@@ -1,3 +1,4 @@
+import { hasTeamLaunchConnection, prepareTeamConnectorForLaunch } from '../omnisi-team/launch'
 import { existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -23,6 +24,7 @@ export type OmniConsoleMcpProvider = (typeof OMNI_CONSOLE_MCP_PROVIDERS)[number]
 
 type LaunchOptions = {
   signedIn: boolean
+  excludeOmnisiTeam?: boolean
   provider: OmniConsoleMcpProvider
   env?: NodeJS.ProcessEnv
   cwd?: string
@@ -92,7 +94,7 @@ function workspaceConfigExists(options: LaunchOptions): boolean {
 
 /** Runs on the execution host after account selection, before the provider starts. */
 export function prepareOmniConsoleMcpForLaunch(options: LaunchOptions): void {
-  if (!options.signedIn) {
+  if (!options.signedIn && !hasTeamLaunchConnection()) {
     return
   }
   const env = { ...process.env, ...options.env }
@@ -107,6 +109,12 @@ export function prepareOmniConsoleMcpForLaunch(options: LaunchOptions): void {
           : options.provider === 'muse'
             ? join(env.XDG_CONFIG_HOME || join(home, '.config'), 'muse', 'settings.json')
             : new ClaudeRuntimePathResolver().getRuntimePaths(env, home).configPath
+  if (!options.excludeOmnisiTeam) {
+    prepareTeamConnectorForLaunch(options.provider, configPath, options.env)
+  }
+  if (!options.signedIn) {
+    return
+  }
   // Why: Muse makes this folder when it is installed and signed in; a host without it has no Muse.
   if (options.provider === 'muse' && !existsSync(dirname(configPath))) {
     return

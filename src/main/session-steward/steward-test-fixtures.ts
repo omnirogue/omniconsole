@@ -71,6 +71,8 @@ export function fakeSession(
       doneArchiveRevision: 'done',
       doneArchivePolicy: { revision: 'done', since: 1, delayMs: 2 * HOUR },
       emptyArchiveRevision: 'empty',
+      // The window vouches for cleanup only on an agent's session (Sal, 2026-10-19).
+      agentSession: true,
       ...row
     }),
     activity: { kind: 'idle' },

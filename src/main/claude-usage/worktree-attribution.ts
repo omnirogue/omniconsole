@@ -1,4 +1,5 @@
 import { realpath } from 'node:fs/promises'
+import { canonicalizeUsageWorktreePaths } from '../usage-worktree-canonicalizer'
 import type { ClaudeUsageAttributedTurn, ClaudeUsageParsedTurn } from './types'
 
 export type ClaudeUsageWorktreeRef = {
@@ -93,19 +94,45 @@ function localDayFromTimestamp(timestamp: string): string | null {
 export async function buildWorktreeLookup(
   worktrees: ClaudeUsageWorktreeRef[]
 ): Promise<Map<string, ClaudeUsageWorktreeRef>> {
+  const canonicalized = await canonicalizeUsageWorktreePaths(worktrees, canonicalizePath)
   const lookup = new Map<string, ClaudeUsageWorktreeRef>()
-  for (const worktree of worktrees) {
-    lookup.set(await canonicalizePath(worktree.path), worktree)
+  for (const worktree of canonicalized) {
+    lookup.set(worktree.canonicalPath, {
+      repoId: worktree.repoId,
+      worktreeId: worktree.worktreeId,
+      path: worktree.path,
+      displayName: worktree.displayName
+    })
   }
   return lookup
 }
 
+export function getClaudeUsageCwdAttribution(worktree: ClaudeUsageWorktreeRef | null): string | null {
+  return worktree
+    ? JSON.stringify([worktree.repoId, worktree.worktreeId, worktree.displayName])
+    : null
+}
+
+export async function resolveClaudeUsageCwdWorktree(
+  cwd: string,
+  worktreeLookup: Map<string, ClaudeUsageWorktreeRef>,
+  canonicalCwdByPath?: Map<string, string>
+): Promise<ClaudeUsageWorktreeRef | null> {
+  let canonicalCwd = canonicalCwdByPath?.get(cwd)
+  if (canonicalCwd === undefined) {
+    canonicalCwd = await canonicalizePath(cwd)
+    canonicalCwdByPath?.set(cwd, canonicalCwd)
+  }
+  return findContainingWorktree(canonicalCwd, worktreeLookup)
+}
+
 export async function attributeClaudeUsageTurns(
   turns: ClaudeUsageParsedTurn[],
-  worktreeLookup: Map<string, ClaudeUsageWorktreeRef>
+  worktreeLookup: Map<string, ClaudeUsageWorktreeRef>,
+  canonicalCwdByPath = new Map<string, string>(),
+  attributionByCwd?: Record<string, string | null>
 ): Promise<ClaudeUsageAttributedTurn[]> {
   const attributed: ClaudeUsageAttributedTurn[] = []
-  const canonicalCwdByPath = new Map<string, string>()
 
   for (const turn of turns) {
     const day = localDayFromTimestamp(turn.timestamp)
@@ -119,14 +146,16 @@ export async function attributeClaudeUsageTurns(
     let projectLabel = getDefaultProjectLabel(turn.cwd)
 
     if (turn.cwd) {
-      let canonicalCwd = canonicalCwdByPath.get(turn.cwd)
-      if (canonicalCwd === undefined) {
-        // Why: Claude transcripts repeat the same cwd for many consecutive
-        // turns. Cache realpath work so attribution scales with unique paths.
-        canonicalCwd = await canonicalizePath(turn.cwd)
-        canonicalCwdByPath.set(turn.cwd, canonicalCwd)
+      // Why: Claude transcripts repeat the same cwd for many consecutive
+      // turns. Cache realpath work so attribution scales with unique paths.
+      const worktree = await resolveClaudeUsageCwdWorktree(
+        turn.cwd,
+        worktreeLookup,
+        canonicalCwdByPath
+      )
+      if (attributionByCwd && !Object.hasOwn(attributionByCwd, turn.cwd)) {
+        attributionByCwd[turn.cwd] = getClaudeUsageCwdAttribution(worktree)
       }
-      const worktree = findContainingWorktree(canonicalCwd, worktreeLookup)
       if (worktree) {
         repoId = worktree.repoId
         worktreeId = worktree.worktreeId

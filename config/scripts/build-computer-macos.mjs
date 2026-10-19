@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { chmodSync, copyFileSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = path.resolve(import.meta.dirname, '../..')
@@ -15,6 +15,8 @@ const entitlementsPath = path.join(
   'entitlements.computer-use.mac.plist'
 )
 const bundleId = process.env.ORCA_COMPUTER_MACOS_BUNDLE_ID ?? 'com.omniconsole.ide.computer-use'
+// Why: LaunchServices re-reads the helper's icon only when its bundle version changes.
+const appVersion = JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version
 const displayName = 'OmniConsole Computer Use'
 const signingIdentity = resolveSigningIdentity()
 const universalTriples = ['arm64-apple-macosx', 'x86_64-apple-macosx']
@@ -124,9 +126,9 @@ function infoPlist() {
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>1.0</string>
+  <string>${escapePlist(appVersion)}</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>${escapePlist(appVersion)}</string>
   <key>LSMinimumSystemVersion</key>
   <string>14.0</string>
   <key>LSUIElement</key>

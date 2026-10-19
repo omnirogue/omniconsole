@@ -202,9 +202,7 @@ describe('LocalPtyProvider launch trigger', () => {
     const attributes = processSpawnAttributes()
     expect(attributes['launch.trigger']).toBe('person-reveal')
     expect(attributes['launch.visible']).toBe(true)
-    expect(attributes['launch.worktree']).toBe(
-      hashLaunchWorktreeId('repo::/Users/maintainer/Work/wt')
-    )
+    expect(attributes['launch.worktree']).toBe(hashLaunchWorktreeId('repo::/Users/maintainer/Work/wt'))
     expect(JSON.stringify(records)).not.toContain('/Users/maintainer/Work/wt')
   })
 

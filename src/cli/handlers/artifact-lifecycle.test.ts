@@ -31,7 +31,7 @@ function status(fields: Record<string, unknown> = {}): ArtifactReviewStatus {
       supersededAt: null,
       ...fields
     },
-    shareUrl: 'https://app.omnisi.ai/a/plan-1',
+    shareUrl: 'https://console.example.com/a/plan-1',
     status: 'approved',
     latest: null,
     decisions: [],
@@ -265,7 +265,7 @@ describe('artifact lifecycle CLI', () => {
       'artifacts supersede',
       [
         ['file', 'plan.html'],
-        ['by', 'https://app.omnisi.ai/a/plan-2']
+        ['by', 'https://console.example.com/a/plan-2']
       ],
       call
     )
@@ -404,9 +404,11 @@ describe('artifact status --wait on a closed page', () => {
 describe('artifactSlugFromReference', () => {
   it('takes a page id or the id from an https page link', () => {
     expect(artifactSlugFromReference('plan-2')).toBe('plan-2')
-    expect(artifactSlugFromReference('https://app.omnisi.ai/a/plan-2')).toBe('plan-2')
-    expect(artifactSlugFromReference('https://app.omnisi.ai/a/plan-2/?x=1')).toBe('plan-2')
-    expect(() => artifactSlugFromReference('http://app.omnisi.ai/a/plan-2')).toThrow(/--by takes/)
+    expect(artifactSlugFromReference('https://console.example.com/a/plan-2')).toBe('plan-2')
+    expect(artifactSlugFromReference('https://console.example.com/a/plan-2/?x=1')).toBe('plan-2')
+    expect(() => artifactSlugFromReference('http://console.example.com/a/plan-2')).toThrow(
+      /--by takes/
+    )
     expect(() => artifactSlugFromReference('../admin')).toThrow(/--by takes/)
   })
 })

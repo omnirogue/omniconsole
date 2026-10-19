@@ -120,7 +120,7 @@ function installApi(previewInstall: ReturnType<typeof vi.fn>) {
 
 async function inspectSkill(expectedDescription = 'A private skill'): Promise<void> {
   fireEvent.change(screen.getByLabelText('OmniConsole skill link'), {
-    target: { value: 'https://app.omnisi.ai/skills/share/share_1' }
+    target: { value: 'https://console.example.com/skills/share/share_1' }
   })
   fireEvent.click(screen.getByRole('button', { name: 'Inspect skill' }))
   await screen.findByText(expectedDescription)
@@ -419,9 +419,7 @@ describe('SkillInstallDialog', () => {
     })
     render(<SkillInstallDialog open onOpenChange={onOpenChange} />)
 
-    expect(document.activeElement).toBe(
-      screen.getByRole('textbox', { name: 'OmniConsole skill link' })
-    )
+    expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'OmniConsole skill link' }))
     // Why: the submit sits in the footer beside Close, so Enter in the field is
     // the keyboard path rather than tabbing past the back-out action.
     const footerButtons = screen
@@ -433,7 +431,7 @@ describe('SkillInstallDialog', () => {
     ])
     await user.type(
       screen.getByRole('textbox', { name: 'OmniConsole skill link' }),
-      'https://app.omnisi.ai/skills/share/share_1'
+      'https://console.example.com/skills/share/share_1'
     )
     await user.keyboard('{Enter}')
     await screen.findByText('A private skill')
@@ -450,7 +448,7 @@ describe('SkillInstallDialog', () => {
     render(<SkillInstallDialog open onOpenChange={() => undefined} />)
 
     fireEvent.change(screen.getByLabelText('OmniConsole skill link'), {
-      target: { value: 'https://app.omnisi.ai/skills/share/share_1' }
+      target: { value: 'https://console.example.com/skills/share/share_1' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Inspect skill' }))
 

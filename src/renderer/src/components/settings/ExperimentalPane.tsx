@@ -1,3 +1,4 @@
+import { OmnisiTeamSettings } from './OmnisiTeamSettings'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
 import { Label } from '../ui/label'
 import { Switch } from '../ui/switch'
@@ -71,6 +72,7 @@ export function ExperimentalPane({
 
   return (
     <div className="space-y-4">
+      <OmnisiTeamSettings />
       <CommandCenterExperimentalSetting settings={settings} updateSettings={updateSettings} />
       {showPet ? (
         <SearchableSetting
@@ -327,6 +329,28 @@ export function ExperimentalPane({
       <EphemeralVmsExperimentalSetting settings={settings} updateSettings={updateSettings} />
 
       <OmniSiPreviewsExperimentalSetting settings={settings} updateSettings={updateSettings} />
+
+      <SearchableSetting
+        title={translate('omniCredits.settingTitle', 'OmniOS team credits')}
+        description={translate(
+          'omniCredits.settingDescription',
+          'Show your team balance, credit usage and upgrade options from OmniOS.'
+        )}
+        keywords={['credits', 'wallet', 'omnios', 'omnisi', 'usage']}
+        id="omni-credits"
+      >
+        <SettingsSwitchRow
+          label={translate('omniCredits.settingTitle', 'OmniOS team credits')}
+          description={translate(
+            'omniCredits.settingDescription',
+            'Show your team balance, credit usage and upgrade options from OmniOS.'
+          )}
+          checked={settings.experimentalOmniCredits === true}
+          onChange={() =>
+            updateSettings({ experimentalOmniCredits: settings.experimentalOmniCredits !== true })
+          }
+        />
+      </SearchableSetting>
 
       <SearchableSetting
         title={translate('decisionsTitlebar.setting.title', 'Decisions badge in the titlebar')}

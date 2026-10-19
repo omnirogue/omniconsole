@@ -9,8 +9,7 @@ const RELEASE_URL = 'https://github.com/omnirogue/omniconsole/releases/tag/v1.4.
 const DIAGNOSTIC = 'pkexec: no polkit authentication agent found'
 const INSTALL_COMMAND = 'sudo apt-get install -y /tmp/omni-updates/orca_1.4.200_amd64.deb'
 const PACKAGE_FILE_NAME = 'orca_1.4.200_amd64.deb'
-const SUMMARY =
-  'OmniConsole downloaded the update but could not install the system package automatically.'
+const SUMMARY = 'OmniConsole downloaded the update but could not install the system package automatically.'
 const COPIED_NOTE =
   `Command copied. Run it in a system terminal to install ${PACKAGE_FILE_NAME}, ` +
   'then quit and reopen OmniConsole.'
@@ -438,9 +437,7 @@ describe('LinuxPackageInstallRecoveryCard details', () => {
     fireEvent.click(button('Show details'))
 
     // Why: the digest check is a point-in-time claim, not a standing guarantee about the file.
-    const detail = screen.getByText(
-      /OmniConsole checks the downloaded file against the release metadata/
-    )
+    const detail = screen.getByText(/OmniConsole checks the downloaded file against the release metadata/)
     expect(detail.textContent).toContain('at the moment it builds this command')
     expect(detail.textContent).toContain(
       'The system package itself is not signature-checked, and OmniConsole cannot vouch for the file ' +

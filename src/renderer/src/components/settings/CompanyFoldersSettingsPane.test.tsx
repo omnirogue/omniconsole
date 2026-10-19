@@ -40,9 +40,7 @@ describe('CompanyFoldersSettingsPane', () => {
     render(<CompanyFoldersSettingsPane />)
 
     expect(field('Work root').value).toBe('~/Work')
-    await waitFor(() =>
-      expect(field('OmniRogue').placeholder).toBe('/Users/maintainer/Work/OmniRogue')
-    )
+    await waitFor(() => expect(field('OmniRogue').placeholder).toBe('/Users/maintainer/Work/OmniRogue'))
   })
 
   it('saves a valid override and refuses a relative one', async () => {

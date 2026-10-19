@@ -10,6 +10,7 @@ import {
   normalizePromptQueue,
   normalizePromptQueueEntry,
   normalizePromptQueues,
+  isUnattendedPromptQueueEntry,
   promptQueuePausedBy,
   promptQueuePending,
   promptQueueWaitReason,
@@ -299,5 +300,31 @@ describe('a queue paused behind the person’s failed prompt', () => {
     expect(kept.filter((row) => row.state === 'delivered')).toHaveLength(
       PROMPT_QUEUE_MAX_SETTLED_ENTRIES
     )
+  })
+})
+
+describe('a deliverable check repair (automation)', () => {
+  const base = {
+    id: 'deliverable-repair:abc:1',
+    text: '[from Deliverable check 1/2 · dv-7f3a9c01] Before this is finished…',
+    createdAt: 1,
+    state: 'queued'
+  }
+  const automation = { kind: 'deliverable-repair', verificationId: 'v-1', attempt: 1 }
+
+  it('round-trips as its own optional field, never an origin, and is unattended', () => {
+    const entry = normalizePromptQueueEntry({ ...base, automation })
+    expect(entry).toEqual({ ...base, automation })
+    expect(entry).not.toHaveProperty('origin')
+    expect(isUnattendedPromptQueueEntry(entry!)).toBe(true)
+  })
+
+  it('drops an unreadable automation and keeps the entry', () => {
+    for (const bad of [
+      { kind: 'other', verificationId: 'v', attempt: 1 },
+      { ...automation, attempt: 0 }
+    ]) {
+      expect(normalizePromptQueueEntry({ ...base, automation: bad })).toEqual(base)
+    }
   })
 })

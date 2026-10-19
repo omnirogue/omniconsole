@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /**
  * Agent templates: reusable instructions a launcher can layer on top of whatever the
  * workspace already provides (AGENTS.md, CLAUDE.md, the global OpenCode rules).
@@ -12,8 +11,6 @@ import { sha256 } from './sha256'
 
 export const AGENT_TEMPLATE_DEFAULT_ID = 'default'
 
-export type PreferredAgent = 'claude' | 'codex' | 'grok' | 'gemini'
-
 export type AgentTemplate = {
   id: string
   name: string
@@ -22,16 +19,6 @@ export type AgentTemplate = {
   instructions: string | null
   /** `provider/model` OpenCode id, used when the workspace has no remembered model. */
   preferredModel?: string
-  /** Preferred agent provider (`claude`, `codex`, `grok`, `gemini`). */
-  preferredAgent?: PreferredAgent
-  /** Custom skills attached to this bot/template (union of defaultSkills and callableSkills). */
-  skills?: readonly string[]
-  /** Tier 1: Pinned skills auto-loaded into startup context for this bot/template. */
-  defaultSkills?: readonly string[]
-  /** Tier 2: Skills exposed by name + trigger description to be loaded on demand. */
-  callableSkills?: readonly string[]
-  /** Persistent memory or path to memory document for this bot/template. */
-  memory?: string
   builtin: boolean
   /** A built-in whose text or fields were changed in settings. */
   edited?: boolean
@@ -41,11 +28,6 @@ export type AgentTemplateOverride = {
   description?: string
   instructions?: string
   preferredModel?: string
-  preferredAgent?: PreferredAgent
-  skills?: readonly string[]
-  defaultSkills?: readonly string[]
-  callableSkills?: readonly string[]
-  memory?: string
 }
 
 export type CustomAgentTemplate = {
@@ -54,11 +36,6 @@ export type CustomAgentTemplate = {
   description: string
   instructions: string
   preferredModel?: string
-  preferredAgent?: PreferredAgent
-  skills?: readonly string[]
-  defaultSkills?: readonly string[]
-  callableSkills?: readonly string[]
-  memory?: string
 }
 
 export type AgentTemplateSettings = {
@@ -130,134 +107,13 @@ const BUILTIN_SEEDS: readonly BuiltinSeed[] = [
       "- When a Slite document in your context is marked as the project's notes, record there the decisions and facts a later session will need, with the date; threads only read it.\n" +
       "- `omni folder project <this project>` lists the project's Jira issues; name a thread's issue in its task. Create a Jira issue only when the person asks for one.\n" +
       '- Ask the person here, in this chat. Never create a project; `omni folder project-suggest` can suggest one.'
-  },
-  {
-    id: 'reverse-engineer',
-    name: 'Reverse Engineer',
-    description:
-      'Opus 5.5 1M reverse engineer (@zodchiii): map codebases, rebuild APIs from HAR, deobfuscate JS, decompile via Ghidra/rizin MCP, parse binary formats',
-    preferredModel: 'claude-opus-5-5',
-    preferredAgent: 'claude',
-    skills: ['reverse-engineer', 'omni-boundary-review', 'omni-reuse-research'],
-    defaultSkills: ['reverse-engineer'],
-    callableSkills: ['omni-boundary-review', 'omni-reuse-research', 'omni-typescript-review'],
-    memory: '~/Work/Shared/Reverse-Engineering/memory/LESSONS.md',
-    instructions:
-      '# Reverse Engineer (Opus 5.5 1M — @zodchiii Method)\n' +
-      'You are an expert reverse engineer operating in a dedicated workspace (`~/Work/Shared/Reverse-Engineering/re-workspace`).\n' +
-      '- Load the `reverse-engineer` skill (`~/.agents/skills/reverse-engineer/SKILL.md`).\n' +
-      '- Never guess when you can verify: read the actual file, run the tool, inspect the output.\n' +
-      '- Cite every claim with `file:line`, binary offset `0x...`, or packet index.\n' +
-      '- Maintain living notes in `notes/ARCHITECTURE.md`, `notes/renames.md`, and `notes/open-questions.md`.\n' +
-      '- Separate observed facts from hypotheses.\n' +
-      '- Workflows:\n' +
-      '  1. Map an Unknown Codebase (entry points -> request/data flow -> state & storage -> external boundaries -> sharp edges).\n' +
-      '  2. Rebuild an Undocumented API from Network Traffic (HAR/mitmproxy -> strip noise -> auth chain -> Pydantic/TS client).\n' +
-      '  3. Deobfuscate Minified/Bundled JS (Two-pass: `npx webcrack` structural pass -> Opus semantic rename pass with `notes/renames.md`).\n' +
-      '  4. Decompile Compiled Binaries via MCP (`rizin`/`rea-agents`, `GhidraMCP`, `cerberus-re-skill`).\n' +
-      '  5. Unknown Binary File Formats & Wire Protocols (magic/alignment/TLV -> Kaitai Struct `.ksy` + Python parser validated to 0 unparsed bytes).'
-  },
-  {
-    id: 'grok-bot',
-    name: 'Grok Bot',
-    description:
-      'Grok custom bot with X/web intelligence, reverse-engineering triage, and rapid verification skills',
-    preferredModel: 'grok-4',
-    preferredAgent: 'grok',
-    skills: ['reverse-engineer', 'omni-reuse-research', 'daily-ad-check'],
-    defaultSkills: ['reverse-engineer'],
-    callableSkills: ['omni-reuse-research', 'daily-ad-check'],
-    memory: '~/Work/Shared/Reverse-Engineering/memory/LESSONS.md',
-    instructions:
-      '# Grok Bot\n' +
-      'You are Grok Bot inside OmniConsole — fast, direct, evidence-first, with custom skills for X/web research, reverse-engineering triage, and cross-project verification.\n' +
-      '- Read project instructions and memory via the `omni-projects` MCP server (`list_projects`, `get_project`).\n' +
-      '- Verify claims with primary artifacts (code, HAR captures, API responses, or live metrics).\n' +
-      '- Keep outputs concise, structured, and immediately actionable.'
-  },
-  {
-    id: 'advertising',
-    name: 'Advertising',
-    description:
-      'Meta, Google & ChatGPT Ads buyer and creative strategist: daily checks, prune/scale, compliant launches, FunnelKit landers',
-    preferredModel: 'claude-opus-5-5',
-    preferredAgent: 'claude',
-    skills: [
-      'daily-ad-check',
-      'ad-campaign-create',
-      'ad-launch-compliant',
-      'ad-prune-decide',
-      'ad-funnel-diagnosis',
-      'ad-creative-checkout',
-      'google-ads-daily',
-      'funnelkit-lander-format',
-      'funnelkit-subid-enforce',
-      'revenue-truth-reconcile'
-    ],
-    defaultSkills: ['daily-ad-check', 'revenue-truth-reconcile', 'funnelkit-subid-enforce'],
-    callableSkills: [
-      'ad-campaign-create',
-      'ad-launch-compliant',
-      'ad-prune-decide',
-      'ad-funnel-diagnosis',
-      'ad-creative-checkout',
-      'google-ads-daily',
-      'funnelkit-lander-format'
-    ],
-    memory: '~/Work/Shared/Advertising/memory/LESSONS.md',
-    instructions:
-      '# Advertising\n' +
-      'You own paid acquisition across Meta, Google Ads, and ChatGPT Ads for OmniRogue, BetaCorp, and ApexLabs.\n' +
-      '- Always read `~/Work/Shared/Advertising/ACCOUNTS-AND-ACCESS.md` and `~/Work/Shared/Advertising/memory/LESSONS.md` first.\n' +
-      '- Reconcile ad platform conversions against real cash (`revenue-truth-reconcile`: Stripe + FunnelKit vs Meta pixel).\n' +
-      '- Enforce FunnelKit SubID and UTM tracking (`funnelkit-subid-enforce`) on every link before launch.\n' +
-      '- Launch new ads PAUSED unless Sal explicitly approves live spend in this session.'
-  },
-  {
-    id: 'cs',
-    name: 'Customer Service',
-    description:
-      'Support triage, GatewayOne cancellation audits, ER2-gated refunds, rebill rescues, and payment forensics',
-    preferredModel: 'claude-opus-5-5',
-    preferredAgent: 'claude',
-    skills: [
-      'cs-ticket-triage',
-      'cc-refund',
-      'cc-cancellation-audit',
-      'payment-forensics',
-      'rebill-schedule',
-      'alertguard-refund-loop',
-      'email-inbox-triage'
-    ],
-    defaultSkills: ['cs-ticket-triage', 'payment-forensics'],
-    callableSkills: [
-      'cc-refund',
-      'cc-cancellation-audit',
-      'rebill-schedule',
-      'alertguard-refund-loop',
-      'email-inbox-triage'
-    ],
-    memory: '~/Work/Shared/Email Operations/memory/LESSONS.md',
-    instructions:
-      '# Customer Service\n' +
-      'You handle customer support triage, billing forensics, and retention across Freshdesk, Zendesk, GatewayOne, Stripe, and AlertGuard.\n' +
-      '- Read `~/Work/Shared/Email Operations/AGENTS.md` and `~/Work/Shared/Email Operations/memory/LESSONS.md` before acting.\n' +
-      '- Read anything freely. Any write that touches money or customers (refunds, charges, cancellations, live replies) requires human authorization.\n' +
-      '- Verify every cancel/refund at the payment processor (`payment-forensics`), never trusting a local 200 status alone.\n' +
-      '- Enforce the $1,000/day refund cap and latest-order-only rule in `cc-refund`.'
   }
 ]
 
 export const BUILTIN_AGENT_TEMPLATE_IDS: readonly string[] = BUILTIN_SEEDS.map((seed) => seed.id)
 
 /** Built-ins added after people could name their own templates: one they already made keeps its id. */
-const LATER_BUILTIN_IDS: ReadonlySet<string> = new Set([
-  'coordinator',
-  'reverse-engineer',
-  'grok-bot',
-  'advertising',
-  'cs'
-])
+const LATER_BUILTIN_IDS: ReadonlySet<string> = new Set(['coordinator'])
 
 /** `custom`: the person's templates, when known; a later built-in steps aside for theirs. */
 export function isBuiltinAgentTemplateId(
@@ -308,23 +164,6 @@ function cleanModel(value: unknown): string | undefined {
   return model && /^[a-z0-9][\w.:/-]*$/i.test(model) ? model : undefined
 }
 
-function cleanAgent(value: unknown): PreferredAgent | undefined {
-  return value === 'claude' || value === 'codex' || value === 'grok' || value === 'gemini'
-    ? value
-    : undefined
-}
-
-function cleanSkills(value: unknown): string[] | undefined {
-  if (!Array.isArray(value)) {
-    return undefined
-  }
-  const skills = value
-    .map((item) => cleanText(item, 80))
-    .filter((item): item is string => Boolean(item && /^[a-z0-9][\w.-]*$/i.test(item)))
-    .slice(0, 32)
-  return skills.length ? Array.from(new Set(skills)) : undefined
-}
-
 function normalizeOverride(value: unknown): AgentTemplateOverride | null {
   if (!value || typeof value !== 'object') {
     return null
@@ -334,11 +173,6 @@ function normalizeOverride(value: unknown): AgentTemplateOverride | null {
   const description = cleanText(raw.description)
   const instructions = cleanInstructions(raw.instructions)
   const preferredModel = cleanModel(raw.preferredModel)
-  const preferredAgent = cleanAgent(raw.preferredAgent)
-  const skills = cleanSkills(raw.skills)
-  const defaultSkills = cleanSkills(raw.defaultSkills)
-  const callableSkills = cleanSkills(raw.callableSkills)
-  const memory = cleanText(raw.memory, 500)
   if (description) {
     override.description = description
   }
@@ -347,21 +181,6 @@ function normalizeOverride(value: unknown): AgentTemplateOverride | null {
   }
   if (preferredModel) {
     override.preferredModel = preferredModel
-  }
-  if (preferredAgent) {
-    override.preferredAgent = preferredAgent
-  }
-  if (skills) {
-    override.skills = skills
-  }
-  if (defaultSkills) {
-    override.defaultSkills = defaultSkills
-  }
-  if (callableSkills) {
-    override.callableSkills = callableSkills
-  }
-  if (memory) {
-    override.memory = memory
   }
   return Object.keys(override).length ? override : null
 }
@@ -384,22 +203,12 @@ function normalizeCustom(value: unknown, seen: Set<string>): CustomAgentTemplate
   }
   seen.add(id)
   const preferredModel = cleanModel(raw.preferredModel)
-  const preferredAgent = cleanAgent(raw.preferredAgent)
-  const skills = cleanSkills(raw.skills)
-  const defaultSkills = cleanSkills(raw.defaultSkills)
-  const callableSkills = cleanSkills(raw.callableSkills)
-  const memory = cleanText(raw.memory, 500)
   return {
     id,
     name,
     description: cleanText(raw.description) ?? '',
     instructions: cleanInstructions(raw.instructions) ?? `# ${name}\n`,
-    ...(preferredModel ? { preferredModel } : {}),
-    ...(preferredAgent ? { preferredAgent } : {}),
-    ...(skills ? { skills } : {}),
-    ...(defaultSkills ? { defaultSkills } : {}),
-    ...(callableSkills ? { callableSkills } : {}),
-    ...(memory ? { memory } : {})
+    ...(preferredModel ? { preferredModel } : {})
   }
 }
 
@@ -455,11 +264,6 @@ export function resolveAgentTemplates(
       description: override.description ?? seed.description,
       instructions: override.instructions ?? seed.instructions,
       ...(override.preferredModel ? { preferredModel: override.preferredModel } : {}),
-      ...(override.preferredAgent ? { preferredAgent: override.preferredAgent } : {}),
-      ...(override.skills ? { skills: override.skills } : {}),
-      ...(override.defaultSkills ? { defaultSkills: override.defaultSkills } : {}),
-      ...(override.callableSkills ? { callableSkills: override.callableSkills } : {}),
-      ...(override.memory ? { memory: override.memory } : {}),
       builtin: true,
       edited: true
     }

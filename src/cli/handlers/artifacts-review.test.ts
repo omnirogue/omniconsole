@@ -21,7 +21,7 @@ const item: ArtifactListItem = {
     byteSize: 12,
     deletedAt: null
   },
-  shareUrl: 'https://app.omnisi.ai/a/artifact-1'
+  shareUrl: 'https://console.example.com/a/artifact-1'
 }
 
 const reviewedItem: ArtifactListItem = {

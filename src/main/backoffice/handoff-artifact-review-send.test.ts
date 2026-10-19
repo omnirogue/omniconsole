@@ -14,7 +14,7 @@ const fetchMock = vi.fn<typeof fetch>()
 const PAGE = {
   slug: 'launch-plan',
   title: 'Launch plan',
-  url: 'https://app.omnisi.ai/a/launch-plan'
+  url: 'https://console.example.com/a/launch-plan'
 }
 const thread = {
   id: 'hth_page',

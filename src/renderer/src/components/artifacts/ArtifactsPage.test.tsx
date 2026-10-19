@@ -128,7 +128,7 @@ describe('ArtifactsPage', () => {
               updatedAt: '2026-08-02T12:00:00.000Z',
               version: 1
             },
-            shareUrl: 'https://app.omnisi.ai/a/report-123'
+            shareUrl: 'https://console.example.com/a/report-123'
           }
         ]
       }
@@ -177,17 +177,19 @@ describe('ArtifactsPage', () => {
     await waitFor(() => {
       const preview = document.querySelector('webview[aria-label="Artifact preview"]')
       expect(preview).toHaveAttribute('partition', 'persist:omni-default')
-      expect(preview).toHaveAttribute('src', 'https://app.omnisi.ai/a/report-123?embed=1')
+      expect(preview).toHaveAttribute('src', 'https://console.example.com/a/report-123?embed=1')
     })
 
     fireEvent.click(copyButton)
     await waitFor(() =>
-      expect(mocks.writeClipboardText).toHaveBeenCalledWith('https://app.omnisi.ai/a/report-123')
+      expect(mocks.writeClipboardText).toHaveBeenCalledWith(
+        'https://console.example.com/a/report-123'
+      )
     )
     expect(mocks.toastSuccess).toHaveBeenCalledWith('Artifact link copied')
 
     fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }))
-    expect(mocks.openUrl).toHaveBeenCalledWith('https://app.omnisi.ai/a/report-123')
+    expect(mocks.openUrl).toHaveBeenCalledWith('https://console.example.com/a/report-123')
   })
 
   it('shows a fallback when the desktop preview session is unavailable', async () => {
@@ -490,7 +492,7 @@ describe('ArtifactsPage', () => {
               updatedAt: '2026-08-02T12:00:00.000Z',
               version: 1
             },
-            shareUrl: 'https://app.omnisi.ai/a/account-a-secret'
+            shareUrl: 'https://console.example.com/a/account-a-secret'
           }
         ]
       }
@@ -647,6 +649,6 @@ function artifactListItem(title: string, slug: string): Record<string, unknown> 
       updatedAt: '2026-08-02T12:00:00.000Z',
       version: 1
     },
-    shareUrl: `https://app.omnisi.ai/a/${slug}`
+    shareUrl: `https://console.example.com/a/${slug}`
   }
 }

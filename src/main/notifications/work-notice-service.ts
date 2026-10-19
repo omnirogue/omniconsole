@@ -21,7 +21,7 @@ import {
 import { readWorkNoticeCursor, writeWorkNoticeCursor } from './work-notice-cursor'
 import { WorkNoticePoller, type WorkNoticeScope } from './work-notice-poller'
 
-const API = 'https://app.omnisi.ai'
+const API = 'https://console.example.com'
 let stop: (() => void) | null = null
 
 function signedInScope(): WorkNoticeScope | null {

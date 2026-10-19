@@ -17,7 +17,7 @@ describe('buildFolderWorkspaceLinkedStartupPlan', () => {
           type: 'issue',
           number: 0,
           title: 'Make a video',
-          url: 'https://app.omnisi.ai/work/btk_1234',
+          url: 'https://console.example.com/work/btk_1234',
           hubTaskId: 'btk_1234'
         },
         note: '',
@@ -71,7 +71,7 @@ it('submits a person handoff in a plain folder with explicit Codex settings and 
       type: 'issue',
       number: 0,
       title: 'Handoff',
-      url: 'https://app.omnisi.ai/work/btk_1234',
+      url: 'https://console.example.com/work/btk_1234',
       hubTaskId: 'btk_1234'
     },
     note: 'PERSON-FOLDER-CONTEXT',
@@ -96,7 +96,7 @@ describe('folder workspace agent template', () => {
     type: 'issue' as const,
     number: 0,
     title: 'Make a video',
-    url: 'https://app.omnisi.ai/work/btk_1234',
+    url: 'https://console.example.com/work/btk_1234',
     hubTaskId: 'btk_1234'
   }
   const reviewer = { name: 'Reviewer', instructions: '# Reviewer' }

@@ -17,7 +17,7 @@ describe('providing Notion to every agent', () => {
 
   it('keeps the servers already configured', () => {
     const merged = mergeNotionMcpConfig({
-      mcpServers: { 'omni-console': { type: 'http', url: 'https://console.omnisi.ai/mcp' } }
+      mcpServers: { 'omni-console': { type: 'http', url: 'https://console.example.com/mcp' } }
     })
 
     expect(Object.keys(merged.mcpServers as object).sort()).toEqual(['notion', 'omni-console'])

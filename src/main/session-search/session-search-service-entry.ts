@@ -8,10 +8,18 @@ if (!process.send) {
   throw new Error('Session search service requires a parent IPC channel.')
 }
 let engine: ReturnType<typeof createSessionSearchEngine> | null = null
+let shuttingDown = false
 function shutdown(): void {
+  if (shuttingDown) {
+    return
+  }
+  shuttingDown = true
   engine?.shutdown()
   engine = null
-  process.disconnect?.()
+  if (process.connected) {
+    process.disconnect?.()
+  }
+  process.exit(0)
 }
 process.on('message', (message: SessionSearchServiceParentMessage) => {
   if (message?.type === 'init') {
@@ -42,4 +50,4 @@ process.on('message', (message: SessionSearchServiceParentMessage) => {
     }
   }
 })
-process.on('disconnect', () => engine?.shutdown())
+process.on('disconnect', shutdown)

@@ -57,11 +57,7 @@ it('opens the native chooser on this computer and reports only a real pick', asy
   const onPick = vi.fn()
   const pickDirectory = vi.mocked(window.api.shell.pickDirectory)
   render(
-    <NextStepFolderPickButton
-      hostId="local"
-      currentFolder="/Users/maintainer/work"
-      onPick={onPick}
-    />
+    <NextStepFolderPickButton hostId="local" currentFolder="/Users/maintainer/work" onPick={onPick} />
   )
   pickDirectory.mockResolvedValueOnce('/Users/maintainer/picked')
   fireEvent.click(screen.getByRole('button', { name: 'Choose folder…' }))

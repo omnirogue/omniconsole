@@ -1,6 +1,14 @@
 [
   {
     "method": "GET",
+    "path": "/api/credits",
+    "kind": "bff-native",
+    "sensitivity": "money",
+    "activated": true,
+    "note": "Read-only OmniSI wallet via OmniOS; experimentalOmniCredits defaults off. Server filters member usage by role."
+  },
+  {
+    "method": "GET",
     "path": "/api/gtd/hub/api/actions/capabilities",
     "kind": "hub-relay",
     "sensitivity": "money",

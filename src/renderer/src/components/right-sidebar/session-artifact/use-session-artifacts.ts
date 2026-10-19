@@ -126,11 +126,29 @@ export function useSessionArtifacts(): SessionArtifactsState {
   const plans = artifacts.filter((item) => item.kind === 'slite').length
   useEffect(() => setAvailable(pages, plans), [pages, plans, setAvailable])
 
-  // Only a person's click reaches this: a tab, "Open in panel", or the collapsed indicator.
+  // Only a person's click or a newly published OmniOS session artifact reaches this.
   const selectArtifactMode = useCallback(() => {
     setPreferred(true)
     setRightSidebarOpen(true)
   }, [setPreferred, setRightSidebarOpen])
+
+  const autoOpenedArtifactKeysRef = useRef<Set<string>>(new Set())
+  const latestArtifactKey = useMemo(
+    () => artifacts.find((item) => item.kind === 'artifact')?.key ?? null,
+    [artifacts]
+  )
+  useEffect(() => {
+    if (!latestArtifactKey || !hasSession) {
+      return
+    }
+    const scopedKey = `${sessionKey ?? ''}:${latestArtifactKey}`
+    if (autoOpenedArtifactKeysRef.current.has(scopedKey)) {
+      return
+    }
+    autoOpenedArtifactKeysRef.current.add(scopedKey)
+    selectArtifactMode()
+  }, [hasSession, latestArtifactKey, selectArtifactMode, sessionKey])
+
   const pick = useCallback(
     (key: string) => {
       if (sessionKey) {

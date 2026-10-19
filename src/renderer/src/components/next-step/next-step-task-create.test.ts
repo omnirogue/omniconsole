@@ -73,14 +73,14 @@ describe('createNextStepCard', () => {
     store.filing.mockResolvedValue({
       refusal: {
         reason: "Complete the task's company, goal and department before dispatching.",
-        actionUrl: 'https://app.omnisi.ai/work'
+        actionUrl: 'https://console.example.com/work'
       }
     })
     const result = await createNextStepCard(session, 'Build landing page')
     expect(createTask).not.toHaveBeenCalled()
     expect(result).toEqual({
       refusal: "Complete the task's company, goal and department before dispatching.",
-      actionUrl: 'https://app.omnisi.ai/work'
+      actionUrl: 'https://console.example.com/work'
     })
   })
 })

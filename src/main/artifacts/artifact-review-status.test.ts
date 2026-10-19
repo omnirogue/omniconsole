@@ -25,7 +25,7 @@ async function userDataPathWithRecord(): Promise<string> {
     ...scope,
     slug: 'artifact-plan',
     editToken: 'edit-secret',
-    shareUrl: `https://app.omnisi.ai/a/artifact-plan`
+    shareUrl: `https://console.example.com/a/artifact-plan`
   })
   return path
 }

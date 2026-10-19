@@ -72,14 +72,6 @@ export function artifactKindLabel(kind: string | undefined): string | null {
 
 function artifactKindLabelFor(kind: string): string | null {
   switch (kind) {
-    case 'decision':
-      return translate('auto.components.artifacts.kind.decision', 'Decision')
-    case 'approval':
-      return translate('auto.components.artifacts.kind.approval', 'Approval')
-    case 'review':
-      return translate('auto.components.artifacts.kind.review', 'Review')
-    case 'study':
-      return translate('auto.components.artifacts.kind.study', 'Study')
     case 'plan':
       return translate('auto.components.artifacts.kind.plan', 'Plan')
     case 'customer_send':

@@ -10,7 +10,7 @@ import {
 } from './work-delivery-transcript-receipt'
 
 const SLUG = '1a1463cfb969aad9b'
-const TEXT = `[OmniOS decision] Sal approved “Launch plan” (https://app.omnisi.ai/a/${SLUG}). Comment: ship it on Monday.`
+const TEXT = `[OmniOS decision] Sal approved “Launch plan” (https://console.example.com/a/${SLUG}). Comment: ship it on Monday.`
 const DELIVERY = { text: TEXT, eventAt: '2026-10-16T20:00:00Z', createdAt: null }
 
 const at = (minute: number) => `2026-10-16T20:${String(minute).padStart(2, '0')}:00Z`
@@ -55,7 +55,9 @@ function publisherLines(): string[] {
     lines.push(claudeToolUse(`w${i}`, `~/Work/Ops/bin/work-decision wait ${SLUG}`))
     lines.push(claudeToolResult(`w${i}`, `[choices] ${SLUG} still pending`))
   }
-  lines.push(claudeAssistant(`Waiting on https://app.omnisi.ai/a/${SLUG} (work-decision wait).`))
+  lines.push(
+    claudeAssistant(`Waiting on https://console.example.com/a/${SLUG} (work-decision wait).`)
+  )
   lines.push(
     JSON.stringify({
       type: 'attachment',

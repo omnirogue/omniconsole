@@ -28,7 +28,7 @@ import {
 } from './session-outcome-reconcile'
 import { verifySessionOutcomeOnRequest } from './session-outcome-verify-request'
 import type { OrcaRuntimeService } from './omni-runtime'
-import { advanceSessionOutcomes } from './session-outcome-tick'
+import { advanceSessionOutcomes, installDeliverableRepairs } from './session-outcome-tick'
 import {
   mergeSessionOutcomeAttempt,
   SessionOutcomeLaunches,
@@ -68,6 +68,7 @@ export class SessionOutcomeService {
     if (this.timer || this.suspended) {
       return
     }
+    installDeliverableRepairs()
     const run = (): void => void this.tick().catch((error) => console.warn('[outcomes]', error))
     this.timer = setInterval(run, 2_000).unref()
     // The startup reconciliation: the first pass runs now, in this turn, not at the first cadence.

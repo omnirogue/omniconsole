@@ -3,8 +3,12 @@ import type { Components } from 'react-markdown'
 import { NATIVE_CHAT_FILE_HREF_PREFIX } from '../../../../shared/native-chat-href-routing'
 import { isMermaidFence, isMermaidPre, renderMermaidFence } from './comment-mermaid-fence'
 import {
+  DirectMediaAudio,
+  DocumentMarkdownImage,
   GitHubUserAttachmentImage,
   GitHubUserAttachmentVideo,
+  isDirectAudioLink,
+  isDirectVideoLink,
   isGitHubUserAttachmentUrl,
   isGitHubUserAttachmentVideoLink
 } from './comment-markdown-github-attachment-media'
@@ -51,18 +55,6 @@ function handleMarkdownAnchorAuxClick(
   if (event.button === 1) {
     handleMarkdownAnchorClick(event, href, onLinkClick)
   }
-}
-
-function handleMarkdownImageClick(
-  event: React.MouseEvent<HTMLImageElement>,
-  src: string | undefined,
-  onLinkClick: CommentMarkdownLinkClickHandler | undefined
-): void {
-  if (!onLinkClick) {
-    return
-  }
-  event.stopPropagation()
-  onLinkClick(event, src)
 }
 
 export function createCompactCommentMarkdownComponents(
@@ -223,15 +215,18 @@ export function createCompactCommentMarkdownComponents(
 }
 
 export function createDocumentCommentMarkdownComponents(
-  onLinkClick?: CommentMarkdownLinkClickHandler
+  onLinkClick?: CommentMarkdownLinkClickHandler,
+  allowFileUriLinks = false
 ): Components {
   return {
     p: ({ children }) => <p className="my-2 first:mt-0 last:mb-0">{children}</p>,
     a: ({ href, children }) =>
-      isGitHubUserAttachmentVideoLink(href, children) ? (
+      isGitHubUserAttachmentVideoLink(href, children) || isDirectVideoLink(href) ? (
         // Why: GitHub's API returns uploaded videos as bare attachment links;
-        // GitHub.com upgrades them to media embeds in its own renderer.
+        // direct .mp4/.webm/.mov links in chat also upgrade to inline video players.
         <GitHubUserAttachmentVideo href={href}>{children}</GitHubUserAttachmentVideo>
+      ) : isDirectAudioLink(href) ? (
+        <DirectMediaAudio href={href}>{children}</DirectMediaAudio>
       ) : (
         <a
           href={href || undefined}
@@ -297,28 +292,16 @@ export function createDocumentCommentMarkdownComponents(
       if (!src) {
         return alt ? <span>{alt}</span> : null
       }
-      // Why: Jira/Linear/GitHub document bodies often embed screenshots; open a
-      // viewport-centered lightbox so the preview is not trapped in the drawer.
-      if (onLinkClick) {
-        const imageClassName = [
-          'my-3 max-h-96 max-w-full rounded-md object-contain',
-          'outline outline-1 outline-black/10 dark:outline-white/10',
-          'cursor-pointer'
-        ].join(' ')
-        return (
-          <img
-            src={src}
-            alt={alt ?? ''}
-            className={imageClassName}
-            onClick={(e) => handleMarkdownImageClick(e, src, onLinkClick)}
-          />
-        )
-      }
+      // Why: Jira/Linear/GitHub/Chat document bodies embed remote and local
+      // screenshots; resolve local paths via IPC only when allowFileUriLinks
+      // is enabled, let onLinkClick intercept relative/file paths, and open
+      // the viewport-centered lightbox when not intercepted.
       return (
-        <ExpandableMarkdownImage
+        <DocumentMarkdownImage
           src={src}
           alt={alt}
-          className="max-h-96 max-w-full rounded-md object-contain outline outline-1 outline-black/10 dark:outline-white/10"
+          allowLocalFiles={allowFileUriLinks}
+          onImageClick={onLinkClick ? (e) => onLinkClick(e, src) : undefined}
         />
       )
     },

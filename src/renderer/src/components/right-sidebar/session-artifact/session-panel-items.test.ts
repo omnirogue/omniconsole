@@ -5,7 +5,7 @@ import type { ArtifactSessionTarget } from './session-artifact-association'
 import { sessionPanelItems } from './session-panel-items'
 
 const LEAF_A = '11111111-1111-4111-8111-111111111111'
-const API = 'https://app.omnisi.ai'
+const API = 'https://console.example.com'
 const target: ArtifactSessionTarget = { worktreeId: 'wt-1', tabId: 'tab-a', leafId: null }
 
 function published(slug: string, savedAt: number): ArtifactSessionRecord {

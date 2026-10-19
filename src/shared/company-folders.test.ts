@@ -69,9 +69,7 @@ describe('resolveCompanyFolder', () => {
   })
 
   it('falls back to the slug when the company has no display name', () => {
-    expect(resolveCompanyFolder({ company: { slug: 'acme' }, home })).toBe(
-      '/Users/maintainer/Work/acme'
-    )
+    expect(resolveCompanyFolder({ company: { slug: 'acme' }, home })).toBe('/Users/maintainer/Work/acme')
   })
 })
 

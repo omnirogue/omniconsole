@@ -115,9 +115,37 @@ export function discoverOmniosKey(finding: Pick<DiscoverOmniosFinding, 'n' | 'ti
   return `${finding.n}. ${title}`
 }
 
+/** Strip inline Markdown formatting (**bold**, `code`, bullet prefixes) so summaries read as plain English. */
+export function stripInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/`([^`\n]+)`/g, '$1')
+    .replace(/(?:^|\s)-\s+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Extract a concise plain-English sentence from a target's detail when rank.why and impact.why are absent. */
+function fallbackWhyFromDetail(detail: string | undefined): string {
+  if (!detail) {
+    return ''
+  }
+  const cleaned = stripInlineMarkdown(
+    detail
+      .replace(/^(?:what\s+it\s+is|what|why\s+it\s+matters|evidence|problem|summary)\s*:\s*/i, '')
+      .trim()
+  )
+  if (!cleaned) {
+    return ''
+  }
+  const firstSentence = cleaned.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? cleaned
+  return firstSentence.length > 200 ? `${firstSentence.slice(0, 197).trimEnd()}…` : firstSentence
+}
+
 /** The report's opening, cut at a sentence end: the lines a person decides from. */
 export function discoverOmniosSummary(markdown: string | null, limit = 600): string {
-  const opening =
+  const opening = stripInlineMarkdown(
     (markdown ?? '')
       // A fenced block may hold blank lines; it is never the opening.
       .replace(/(`{3,}|~{3,})[^\n]*\n[\s\S]*?\n\1[^\n]*/g, '')
@@ -129,6 +157,7 @@ export function discoverOmniosSummary(markdown: string | null, limit = 600): str
           .trim()
       )
       .find((block) => block.length > 0 && !block.startsWith('|') && !block.startsWith('```')) ?? ''
+  )
   // Code points, so a cut never splits a character in two.
   const chars = Array.from(opening)
   if (chars.length <= limit) {
@@ -172,7 +201,7 @@ export function discoverOmniosOrderedTargets(result: Pick<WorkflowRunResult, 're
       const rank = ranks.get(target.key)
       return {
         target,
-        why: rank?.why ?? '',
+        why: rank?.why || target.impact?.why || fallbackWhyFromDetail(target.detail),
         next: rank?.next ?? '',
         independent: rank?.independent
       }
@@ -191,11 +220,16 @@ export function discoverOmniosRun(
     ...new Map(result.results.targets.map((target) => [target.key, target])).values()
   ]
   const eligible = latestTargets.filter((target) => statusOf(target))
+  const eligibleKeys = new Set(eligible.map((target) => target.key))
+  const confirmedTargets = eligible.filter((target) => statusOf(target) === 'confirmed')
+  const requiredForRanking = confirmedTargets.length > 0 ? confirmedTargets : eligible
   const ranking = result.results.ranking ?? []
   const ranks = new Map(ranking.map((rank) => [rank.key, rank]))
   const rankingComplete =
     eligible.length > 0 &&
-    eligible.every((target) => ranks.has(target.key)) &&
+    ranking.length > 0 &&
+    requiredForRanking.every((target) => ranks.has(target.key)) &&
+    ranking.every((rank) => eligibleKeys.has(rank.key)) &&
     ranks.size === ranking.length &&
     new Set(ranking.map((rank) => rank.rank)).size === ranking.length &&
     ranking.every((rank) => Number.isSafeInteger(rank.rank) && rank.rank > 0)
@@ -210,11 +244,11 @@ export function discoverOmniosRun(
     return {
       n: index + 1,
       key: target.key,
-      title: target.title,
+      title: stripInlineMarkdown(target.title),
       status,
       severity: target.severity ?? '',
       location: target.location,
-      why: rank?.why ?? '',
+      why: rank?.why || target.impact?.why || fallbackWhyFromDetail(target.detail),
       next: rank?.next ?? '',
       ...(rank?.independent !== undefined ? { independent: rank.independent } : {}),
       ...(rank?.effort ? { effort: rank.effort } : {}),

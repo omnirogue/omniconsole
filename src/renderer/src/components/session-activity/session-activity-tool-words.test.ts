@@ -36,9 +36,7 @@ describe('plainToolActivity', () => {
   it('names the file a read or edit touches', () => {
     expect(plainToolActivity('Read', 'src/main/index.ts')).toBe('Reading index.ts')
     expect(plainToolActivity('Edit', 'src/renderer/src/App.tsx')).toBe('Editing App.tsx')
-    expect(plainToolActivity('Write', '/Users/maintainer/Desktop/plan.html')).toBe(
-      'Writing plan.html'
-    )
+    expect(plainToolActivity('Write', '/Users/maintainer/Desktop/plan.html')).toBe('Writing plan.html')
     expect(plainToolActivity('apply_patch', '*** Begin Patch\n*** Update File: a.ts')).toBe(
       'Editing files'
     )

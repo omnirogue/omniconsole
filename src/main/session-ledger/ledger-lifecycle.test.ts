@@ -50,11 +50,7 @@ describe('Claude lifecycle → ledger events', () => {
       ledgerEventsFor('claude', {
         hook_event_name: 'PreToolUse',
         tool_name: 'Edit',
-        tool_input: {
-          file_path: '/Users/maintainer/repo/src/a.ts',
-          old_string: 'x',
-          new_string: 'y'
-        }
+        tool_input: { file_path: '/Users/maintainer/repo/src/a.ts', old_string: 'x', new_string: 'y' }
       })
     ).toEqual([{ kind: 'file_write', detail: { path: '~/repo/src/a.ts', op: 'edit' } }])
     expect(

@@ -96,7 +96,7 @@ describe('skill sharing CLI handlers', () => {
         result: {
           status: 'ok',
           value: {
-            share: { id: 'shr_public', url: 'https://app.omnisi.ai/skills/share/shr_public' },
+            share: { id: 'shr_public', url: 'https://console.example.com/skills/share/shr_public' },
             version: {
               packageId: 'pkg_public',
               versionId: 'ver_public',
@@ -155,7 +155,7 @@ describe('skill sharing CLI handlers', () => {
         result: {
           status: 'ok',
           value: {
-            share: { id: 'shr_public', url: 'https://app.omnisi.ai/skills/share/shr_public' },
+            share: { id: 'shr_public', url: 'https://console.example.com/skills/share/shr_public' },
             version: {
               packageId: 'pkg_public',
               versionId: 'ver_public',

@@ -1,4 +1,5 @@
 import type { AutomaticSessionCleanupProtectionConfig } from './automatic-session-cleanup-protection'
+import type { DeliverableVerifierSettings } from './deliverable-verifier-settings'
 import type { SessionHostControlSettings } from './session-host-control-settings'
 import type { SessionQuestionsSettings } from './session-questions-settings'
 import type { SessionStewardSettings } from './session-steward-settings'
@@ -29,6 +30,8 @@ export type SessionAutomationSettings = {
   openProjectsOnStart?: boolean
   /** Questions sessions ask, answered from Needs you. Optional for older profiles. */
   sessionQuestions?: SessionQuestionsSettings
+  /** The turn-end deliverable check (W22-20); missing reads as Watch only, malformed as off. */
+  deliverableVerifier?: DeliverableVerifierSettings
   /** The restore flood guard (2026-09-30). A finished slept agent (origin 'worktree-sleep',
    *  state 'done'), an idle 'quit'/'live' checkpoint, a tab-open-only record or an archived pane
    *  resumes only for a person (its tab revealed or on screen, a live interactive ask, a touch in

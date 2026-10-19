@@ -1,3 +1,4 @@
+vi.mock('../../omnisi-team/handlers', () => ({ registerOmnisiTeamHandlers: vi.fn(), setTrustedOmnisiTeamRenderer: vi.fn() }))
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {

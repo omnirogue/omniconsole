@@ -518,6 +518,21 @@ describe('Done auto-archive requires an explicit disposable session', () => {
     }
   })
 
+  it("archives an agent's session after completion with no finish choice (Sal, 2026-10-19)", () => {
+    const agent = { ...emptySessionFolderMetadata(), agentSessions: { 'session-done': 1 } }
+    expect(sessionDoneArchiveRevision(doneRow(), app, agent, view, true)).not.toBeNull()
+    // Saved, it is the person's again.
+    expect(
+      sessionDoneArchiveRevision(
+        doneRow(),
+        app,
+        { ...agent, membership: { 'session-done': SAVED_SESSIONS_FOLDER_ID } },
+        view,
+        true
+      )
+    ).toBeNull()
+  })
+
   it('allows an explicitly disposable worker never opened in this window to archive after completion', () => {
     expect(revision(doneRow({ unreadCompletion: true }))).not.toBeNull()
     expect(revision(doneRow({ unreadCompletion: true }))).toBe(revision(doneRow()))

@@ -85,8 +85,10 @@ export class ClaudeUsageStore extends UsageProviderStoreLifecycle<
       normalizeState: normalizePersistedState,
       sourceKey: 'processedFiles',
       dataPresenceKey: 'hasAnyClaudeData',
-      jsonIndent: 2,
-      scan: scanClaudeUsageFiles
+      scan: scanClaudeUsageFiles,
+      // Why: Claude history spans thousands of transcripts; discarding it on every worktree
+      // change re-reads gigabytes of JSONL on the main thread and stalls the UI.
+      scanRevalidatesWorktreeAttribution: true
     })
   }
 

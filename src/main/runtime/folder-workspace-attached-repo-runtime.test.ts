@@ -127,7 +127,9 @@ describe('resolveFolderWorkspaceJobRepo', () => {
 
   it('returns null when that repository is not attached to the folder', () => {
     const store = fakeStore([remoteRepo])
-    expect(resolveFolderWorkspaceJobRepo(store, 'ops', 'github.com/omnirogue/omni-ide')).toBeNull()
+    expect(
+      resolveFolderWorkspaceJobRepo(store, 'ops', 'github.com/omnirogue/omni-ide')
+    ).toBeNull()
     attachRepoOnFolderWorktreeCreate(store, 'folder:ops', remoteRepo)
     expect(resolveFolderWorkspaceJobRepo(store, 'ops', 'github.com/other/repo')).toBeNull()
   })

@@ -34,11 +34,7 @@ const SetParams = z
     id: z.string().min(1).max(64),
     name: z.string().optional(),
     description: z.string().optional(),
-    instructions: z.string(),
-    preferredModel: z.string().optional(),
-    preferredAgent: z.enum(['claude', 'codex', 'grok', 'gemini']).optional(),
-    skills: z.array(z.string().min(1).max(80)).max(32).optional(),
-    memory: z.string().max(500).optional()
+    instructions: z.string()
   })
   .strict()
 

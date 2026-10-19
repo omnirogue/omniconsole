@@ -49,8 +49,8 @@ use warnings;
 use File::Find;
 my ($root, @files) = @ARGV;
 my @patterns = (
-  ['tailnet-hostname', qr/(?<![a-z0-9-])[a-z0-9-]+\.tail(?!1234\.)[0-9a-f]{4,}\.ts\.net/i, 0],
-  ['tunnel-hostname', qr/(?<![a-z0-9-])[a-z0-9-]+\.(?:trycloudflare|cfargotunnel)\.com/i, 0],
+  ['tailnet-hostname', qr/[a-z0-9-]+\.tail(?!1234\.)[0-9a-f]{4,}\.ts\.net/i],
+  ['tunnel-hostname', qr/[a-z0-9-]+\.(?:trycloudflare|cfargotunnel)\.com/i],
 );
 for my $file (@files) {
   open my $fh, '<', $file or die "cannot read $file: $!\n";
@@ -58,10 +58,11 @@ for my $file (@files) {
     chomp $line;
     $line =~ s/\r$//;
     next if $line =~ /^\s*(?:#|$)/;
-    my $text_only = ($line =~ s/^text://) ? 1 : 0;
-    push @patterns, ["$file:$.", qr/$line/i, $text_only];
+    push @patterns, ["$file:$.", qr/$line/i];
   }
 }
+my $any = join '|', map { "(?:$_->[1])" } @patterns;
+$any = qr/$any/;
 my ($scanned, @hits) = (0);
 find({ no_chdir => 1, wanted => sub {
   if (-d $_ && $_ ne $root && /\/\.git$/) { $File::Find::prune = 1; return; }
@@ -70,13 +71,10 @@ find({ no_chdir => 1, wanted => sub {
   open my $fh, '<:raw', $_ or die "cannot read $_: $!\n";
   local $/;
   my $bytes = <$fh>;
-  return unless defined $bytes;
-  my $is_bin = index(substr($bytes, 0, 8192), "\0") >= 0;
-  my $rel;
+  return unless defined $bytes && $bytes =~ $any;
+  my $rel = substr($_, length($root) + 1);
   for my $p (@patterns) {
-    next if $is_bin && $p->[2];
     next unless $bytes =~ $p->[1];
-    $rel //= substr($_, length($root) + 1);
     my $start = $-[0] > 30 ? $-[0] - 30 : 0;
     (my $excerpt = substr($bytes, $start, 90)) =~ s/[^\x20-\x7e]/ /g;
     push @hits, "$rel [$p->[0]] ...$excerpt...";
@@ -129,6 +127,8 @@ while (my $line = <$sf>) {
   die "substitution line $. needs <regex><TAB><replacement>\n" unless defined $rep;
   push @rules, { line => $., re => qr/$re/, rep => $rep, hits => 0 };
 }
+my $any = join '|', map { "(?:$_->{re})" } @rules;
+$any = qr/$any/;
 
 my @paths;
 find({ no_chdir => 1, wanted => sub {
@@ -154,9 +154,11 @@ for my $path (sort @paths) {
   my $text = $bytes;
   my $omitted = ($text =~ s{[ \t]*<!-- oss-export:omit -->.*?<!-- /oss-export:omit -->[ \t]*(?:\r?\n(?:[ \t]*\r?\n)?|\z)}{}gs);
   $stripped++ if $omitted;
-  for my $rule (@rules) {
-    my $count = ($text =~ s/$rule->{re}/$rule->{rep}/g);
-    $rule->{hits} += $count if $count;
+  if ($text =~ $any) {
+    for my $rule (@rules) {
+      my $count = ($text =~ s/$rule->{re}/$rule->{rep}/g);
+      $rule->{hits} += $count if $count;
+    }
   }
   next if $text eq $bytes;
   if ($rel =~ $pinned) {

@@ -206,7 +206,7 @@ function shareScope(cloudOrganizationId: string): ArtifactShareScope {
     cloudUserId: 'user-a',
     cloudProfileId: 'cloud-profile-a',
     cloudOrganizationId,
-    apiOrigin: 'https://app.omnisi.ai'
+    apiOrigin: 'https://console.example.com'
   }
 }
 

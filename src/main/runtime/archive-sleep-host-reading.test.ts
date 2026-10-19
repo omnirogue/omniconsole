@@ -163,9 +163,9 @@ describe('the host reading before an archive sleeps an agent', () => {
   })
 
   it('keeps an agent up next still holds (a prompt the queue just typed in, a plan, Keep going)', async () => {
-    expect(await readArchiveSleepHost(deps({ nothingPending: async () => false }), target)).toEqual(
-      { clear: false, keep: 'pending', state: 'idle' }
-    )
+    expect(
+      await readArchiveSleepHost(deps({ nothingPending: async () => false }), target)
+    ).toEqual({ clear: false, keep: 'pending', state: 'idle' })
   })
 
   it.each<[string, Partial<SessionManageSidebarRow>]>([

@@ -25,7 +25,8 @@ export function SessionFilesTab({
   hostId,
   visible,
   pickedKey,
-  selectionRevision
+  selectionRevision,
+  deliverables
 }: {
   files: readonly SessionPanelFile[]
   links: readonly FilesAndLinksCard[]
@@ -36,6 +37,8 @@ export function SessionFilesTab({
   /** A file link clicked in the conversation opens straight into its preview. */
   pickedKey: string | null
   selectionRevision: number
+  /** The deliverable check's block for this session, above the files (W22-20). */
+  deliverables?: React.ReactNode
 }): React.JSX.Element {
   const pickedFile = pickedKey?.startsWith('file:') ? pickedKey : null
   const [open, setOpen] = useState<{ key: string | null; revision: number }>({
@@ -63,6 +66,7 @@ export function SessionFilesTab({
   }
   return (
     <div className="scrollbar-sleek min-h-0 flex-1 overflow-auto p-2" data-session-files="">
+      {deliverables}
       {files.length > 0 ? (
         <ul className="space-y-0.5">
           {files.map((file) => (

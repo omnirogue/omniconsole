@@ -26,10 +26,9 @@ import { taskFileRoutes } from './console-task-file-routes'
 import { advertisingActionRoutes } from './console-advertising-actions-routes'
 import { advertisingReadRoutes } from './console-advertising-read-routes'
 
-export type { AllowedRoute } from './console-workflow-route-helper'
-
 export const routes: Record<'GET' | 'POST' | 'PATCH' | 'DELETE', AllowedRoute[]> = {
   GET: [
+    route('/api/credits', /^\/api\/credits$/),
     route(
       '/api/customer-service/session-launches/{launch_id}',
       /^\/api\/customer-service\/session-launches\/csl_[a-f0-9]{32}$/

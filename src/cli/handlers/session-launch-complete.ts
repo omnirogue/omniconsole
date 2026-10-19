@@ -54,6 +54,12 @@ async function finishLaunchPostSteps(
   if (unbound) {
     warnings.push(unbound)
   }
+  // Why: every `session launch` is an agent's; its host lists it in Agent sessions (Sal, 2026-10-19).
+  try {
+    await client.call('agentSession.markAgentSession', { terminal: terminal.handle })
+  } catch {
+    // An older host has no Agent sessions note; the session lists as before.
+  }
   if (ctx.input.ephemeral || record.post.ephemeral) {
     try {
       await client.call('agentSession.scheduleFinish', {

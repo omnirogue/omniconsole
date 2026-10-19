@@ -199,7 +199,9 @@ describe('omni session launch', () => {
       'status.get',
       'worktree.list',
       'terminal.agentLaunchReadiness',
-      'terminal.createAgentSession'
+      'terminal.createAgentSession',
+      // Every `session launch` is an agent's: its host lists it in Agent sessions.
+      'agentSession.markAgentSession'
     ])
     expect(call).toHaveBeenCalledWith(
       'terminal.agentLaunchReadiness',

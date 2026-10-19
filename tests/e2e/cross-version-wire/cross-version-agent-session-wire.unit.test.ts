@@ -281,12 +281,13 @@ function legacyClientCapabilities(): string[] {
 }
 
 /** The structured methods the baseline release actually registers, read from it. */
-// Why: `agentSession.attachContractVerify` and `agentSession.scheduleFinish` belong to dispatched-work
-// contracts (session launch --contract / --ephemeral), registered whatever the structured capability
-// says; they share only the prefix.
+// Why: `agentSession.attachContractVerify`, `agentSession.scheduleFinish` and
+// `agentSession.markAgentSession` belong to dispatched work (session launch --contract / --ephemeral,
+// Agent sessions), registered whatever the structured capability says; they share only the prefix.
 const NON_STRUCTURED_AGENT_SESSION_METHODS = new Set([
   'agentSession.attachContractVerify',
-  'agentSession.scheduleFinish'
+  'agentSession.scheduleFinish',
+  'agentSession.markAgentSession'
 ])
 
 function isStructuredAgentSessionMethod(name: string): boolean {

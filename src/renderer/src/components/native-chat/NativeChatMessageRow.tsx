@@ -1,7 +1,7 @@
 // One transcript row, lifted out of NativeChatMessageList.tsx so that file stays
 // inside its line budget. Upstream keeps the same split under the same filename.
 
-import { useCallback, useMemo, useRef } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 import CommentMarkdown from '@/components/sidebar/CommentMarkdown'
 import type { CommentMarkdownLinkClickHandler } from '@/components/sidebar/CommentMarkdown'
 import { cn } from '@/lib/utils'
@@ -28,7 +28,7 @@ import type { NativeChatDiffReveal } from './native-chat-turn-diffs'
 /** One message: its prose first, then a collapsible run folding all of the
  *  turn's tool activity. Monochrome per STYLEGUIDE: user prompts read as a
  *  lifted card, assistant prose as body copy, reasoning de-emphasized. */
-export function MessageRow({
+export const MessageRow = memo(function MessageRow({
   message,
   previousTodoWrite,
   previousUpdatePlan,
@@ -111,10 +111,9 @@ export function MessageRow({
 
   if (isUser) {
     return (
-      <div ref={rowRef} className="flex flex-col items-end gap-0.5">
-        {/* User turns get a distinct muted fill (not the card/canvas color) so
-            the prompt reads apart from the assistant's body copy. */}
-        <div className="max-w-[85%] rounded-lg rounded-tr-sm bg-muted px-3.5 py-2.5 text-sm text-foreground">
+      <div ref={rowRef} className="flex w-full flex-col gap-1">
+        {/* Full-width rounded card matching the clean Antigravity / OmniOS chat layout. */}
+        <div className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground shadow-2xs">
           {markdown ? (
             <>
               <NativeChatImageAttachments blocks={prose} />
@@ -131,7 +130,7 @@ export function MessageRow({
           )}
         </div>
         {deliveryFailed ? (
-          <div className="max-w-[85%] text-[11px] text-destructive/80">
+          <div className="w-full text-[11px] text-destructive/80">
             {translate(
               'components.native-chat.launchPromptNotDelivered',
               'Not delivered — your message is kept here'
@@ -152,20 +151,43 @@ export function MessageRow({
       className={cn(
         'group relative max-w-full select-text text-sm leading-relaxed text-foreground',
         // Reasoning is the agent thinking aloud — quieter, italic, like an aside.
-        isReasoning && 'border-l-2 border-border/60 pl-3 italic text-muted-foreground',
+        isReasoning &&
+          activeTurnIsWorking &&
+          'border-l-2 border-border/60 pl-3 italic text-muted-foreground',
         isSystem && 'text-xs text-muted-foreground'
       )}
     >
       <NativeChatImageAttachments blocks={prose} />
       {markdown ? (
-        <CommentMarkdown
-          content={markdown}
-          variant="document"
-          className="text-sm"
-          onLinkClick={onLinkClick}
-          allowFileUriLinks={allowFileUriLinks}
-          linkifyFilePaths={onLinkClick !== undefined}
-        />
+        isReasoning && structuredActivityUi && !activeTurnIsWorking ? (
+          <details
+            open={activityExpandOverride === true || undefined}
+            className="text-xs text-muted-foreground"
+          >
+            <summary className="cursor-pointer select-none py-0.5 font-medium hover:text-foreground">
+              {translate('components.native-chat.status.thinking', 'Thinking')}
+            </summary>
+            <div className="mt-1 border-l-2 border-border/60 pl-3 italic">
+              <CommentMarkdown
+                content={markdown}
+                variant="document"
+                className="text-sm"
+                onLinkClick={onLinkClick}
+                allowFileUriLinks={allowFileUriLinks}
+                linkifyFilePaths={onLinkClick !== undefined}
+              />
+            </div>
+          </details>
+        ) : (
+          <CommentMarkdown
+            content={markdown}
+            variant="document"
+            className="text-sm"
+            onLinkClick={onLinkClick}
+            allowFileUriLinks={allowFileUriLinks}
+            linkifyFilePaths={onLinkClick !== undefined}
+          />
+        )
       ) : null}
       {tools.length > 0 || subagentGroups.length > 0 ? (
         <NativeChatToolRun
@@ -185,9 +207,9 @@ export function MessageRow({
         <NativeChatAgentControls
           markdown={markdown}
           onScrollToTop={scrollToTop}
-          className="pointer-events-none mt-1 -mb-5 w-fit select-none opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+          className="pointer-events-none mt-1 -mb-5 w-fit select-none opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 pointer-coarse:pointer-events-auto pointer-coarse:opacity-100"
         />
       ) : null}
     </div>
   )
-}
+})

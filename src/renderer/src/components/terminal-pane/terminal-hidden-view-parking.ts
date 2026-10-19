@@ -21,6 +21,12 @@ export const TERMINAL_WORKTREE_PARK_DELAY_MS = TERMINAL_WORKTREE_COLD_PARK_DELAY
 export const TERMINAL_TAB_COLD_PARK_DELAY_MS = 30_000
 export const TERMINAL_TAB_HOT_RETAIN_MS = 5 * 60_000
 export const TERMINAL_TAB_HOT_RETAIN_LIMIT = 6
+// Why: a parked pane gives back its xterm + WebGL context; this inert text
+// tail is all the renderer keeps for background previews. Restore truth stays
+// the host snapshot, so the budget is sized for a glance, not a screen.
+export const TERMINAL_PARKED_PREVIEW_TAIL_MAX_LINES = 64
+export const TERMINAL_PARKED_PREVIEW_TAIL_MAX_BYTES = 8 * 1024
+export const TERMINAL_PARKED_PREVIEW_TAIL_AGGREGATE_MAX_BYTES = 1024 * 1024
 
 // Why: tests override these per call (instead of process.env reads inside the
 // module) to shrink the 30s hysteresis to test-friendly durations.

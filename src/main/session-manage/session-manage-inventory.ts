@@ -68,6 +68,7 @@ export function toSessionManageEntry(observed: ObservedSession): SessionManageEn
     ...(row.transcriptPath !== undefined ? { transcriptPath: row.transcriptPath } : {}),
     ...(row.archiveKind !== undefined ? { archiveKind: row.archiveKind } : {}),
     ...(row.agentTemplate !== undefined ? { agentTemplate: row.agentTemplate } : {}),
+    ...(row.agentSession !== undefined ? { agentSession: row.agentSession } : {}),
     ...(row.projectThread ? { projectStatus: row.projectThread.status } : {}),
     ...(row.projectThread?.coordinator ? { projectCoordinator: true as const } : {}),
     ...(observed.workflow ? { workflow: observed.workflow } : {}),

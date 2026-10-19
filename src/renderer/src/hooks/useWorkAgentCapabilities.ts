@@ -187,7 +187,7 @@ export function useWorkAgentCapabilities(
             admitUncheckedUsage:
               usageUnreadable || (mode === 'build-review' && hasUsageFeed(entry.id)),
             openrouterRouting: entry.id === 'omp',
-            installed: (ids?.includes(entry.id) ?? false) || entry.id === 'deepseek',
+            installed: ids?.includes(entry.id) ?? false,
             disabled: currentSettings?.disabledTuiAgents?.includes(entry.id) ?? false,
             models: skipUsageGating
               ? (probedModels ?? getAgentSessionOptionCatalog(entry.id)?.models ?? [])

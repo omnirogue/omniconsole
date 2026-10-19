@@ -240,10 +240,21 @@ export class SessionSearchService {
       clearTimeout(this.restartTimer)
     }
     const child = this.child
-    if (child?.connected) {
-      child.send({ type: 'shutdown' })
-    }
     this.child = null
+    if (!child) {
+      return
+    }
+    if (child.connected) {
+      child.send({ type: 'shutdown' })
+      const killTimer = setTimeout(() => {
+        if (child.exitCode === null && child.signalCode === null) {
+          child.kill()
+        }
+      }, 2_000)
+      killTimer.unref?.()
+    } else if (child.exitCode === null && child.signalCode === null) {
+      child.kill()
+    }
   }
 }
 

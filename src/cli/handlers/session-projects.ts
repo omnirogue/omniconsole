@@ -15,7 +15,7 @@ import {
 } from '../../shared/session-project-cli'
 import type { SessionProjectThreadStatus } from '../../shared/session-project-thread-status'
 import type { CommandHandler } from '../dispatch'
-import { getOptionalStringFlag, getRequiredStringFlag } from '../flags'
+import { getRequiredStringFlag } from '../flags'
 import { printResult } from '../format'
 import { RuntimeClientError, type RuntimeClient } from '../runtime-client'
 import { PROJECT_STATUS_LABEL } from '../session-manage-format'
@@ -185,21 +185,11 @@ export const SESSION_PROJECT_HANDLERS: Record<string, CommandHandler> = {
     })
     printResult(response, json, (value) => `Suggested to the person: ${value.summary}`)
   },
-  'folder project-create': async ({ client, flags, json }) => {
+  'folder project-create': async ({ client, flags }) => {
     refuseRemote(client)
-    const settingsRaw = getOptionalStringFlag(flags, 'settings')
-    let settings: unknown
-    if (settingsRaw !== undefined) {
-      try {
-        settings = JSON.parse(settingsRaw)
-      } catch {
-        throw new RuntimeClientError('invalid_argument', '--settings must be valid JSON.')
-      }
-    }
-    const response = await client.call<SessionProjectReadResult>(SESSION_PROJECTS_RPC.create, {
-      folder: getRequiredStringFlag(flags, 'folder'),
-      ...(settings !== undefined ? { settings } : {})
+    // Why call main: its caller detection names who was refused; it never creates one.
+    await client.call(SESSION_PROJECTS_RPC.create, {
+      folder: getRequiredStringFlag(flags, 'folder')
     })
-    printResult(response, json, formatProject)
   }
 }

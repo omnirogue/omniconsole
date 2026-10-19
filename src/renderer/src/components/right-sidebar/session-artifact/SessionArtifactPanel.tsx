@@ -9,6 +9,7 @@ import { sessionFileContext } from '@/lib/session-files-and-links-actions'
 import type { ConversationSource } from '../../../../../shared/conversation-source'
 import { SessionDocumentTab } from './SessionDocumentTab'
 import { SessionFilesTab, type SessionPanelFile } from './SessionFilesTab'
+import { SessionDeliverables } from './SessionDeliverables'
 import { SessionNextSteps } from './SessionNextSteps'
 import { SessionWorkLog } from './SessionWorkLog'
 import type { SessionPanelItem } from './session-panel-items'
@@ -202,6 +203,7 @@ export function SessionArtifactPanel({
           visible={visible}
           pickedKey={pickedKey}
           selectionRevision={selectionRevision}
+          deliverables={<SessionDeliverables session={session} active={visible} />}
         />
       ) : null}
       {tab === 'work-log' && session ? (

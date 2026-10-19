@@ -7,6 +7,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { dirname, relative, resolve, sep } from 'node:path'
 import { readFile, realpath, stat } from 'node:fs/promises'
 import { runProcess } from '../../shared/child-process/run-process'
+import { readDeliveredFile } from './delivered-file-read'
 import {
   sessionOutcomeConditionKey,
   type SessionOutcome,
@@ -159,26 +160,17 @@ export async function verifySessionOutcomeCondition(
     if (condition.version && !/^[a-f0-9]{64}$/.test(condition.version)) {
       return { verified: false, reason: 'Pin the expected file SHA-256 before verifying delivery.' }
     }
-    let delivered: { path: string; hash: string }
-    try {
-      const path = await realpath(resolve(workspacePath, condition.target))
-      const info = await stat(path)
-      if (!info.isFile() || info.size > 64 * 1024 * 1024) {
-        return {
-          verified: false,
-          reason: 'The expected file is missing or exceeds the verification size limit.'
-        }
-      }
-      delivered = {
-        path,
-        hash: createHash('sha256')
-          .update(await readFile(path))
-          .digest('hex')
-      }
-    } catch {
+    const delivered = await readDeliveredFile(resolve(workspacePath, condition.target))
+    if (delivered.status === 'unreadable') {
       return {
         verified: false,
         reason: 'The execution host cannot read the expected delivered file.'
+      }
+    }
+    if (delivered.status !== 'file') {
+      return {
+        verified: false,
+        reason: 'The expected file is missing or exceeds the verification size limit.'
       }
     }
     if (condition.version && delivered.hash !== condition.version) {

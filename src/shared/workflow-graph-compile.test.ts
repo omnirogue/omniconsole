@@ -352,11 +352,7 @@ describe('compiling a change to Find the best', () => {
         : []
     const built = compileWorkflowAnswer(answer, WORKFLOW_ROUTES)
     // A named family wins over the step's tier; Gemini is in Cheap but never reviews.
-    expect(models(built, 'research')).toEqual([
-      'claude:claude-haiku-5-5',
-      'codex:gpt-6-luna',
-      'grok:'
-    ])
+    expect(models(built, 'research')).toEqual(['claude:claude-haiku-5-5', 'codex:gpt-6-luna', 'grok:'])
     expect(models(built, 'critics')).toEqual(['claude:claude-haiku-5-5', 'codex:gpt-6-astra'])
     expect(models(built, 'final')).toEqual(['claude:opus'])
     const own = compileWorkflowAnswer(answer, WORKFLOW_ROUTES, {

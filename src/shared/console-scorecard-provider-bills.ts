@@ -34,10 +34,7 @@ export const providerBillsDay = z
   .object({
     date: z.string().min(1),
     /** Today so far; a day whose completeness is not stated counts as partial. */
-    partial: z
-      .unknown()
-      .optional()
-      .transform((value) => value !== false),
+    partial: z.unknown().optional().transform((value) => value !== false),
     /** Per vendor meter (`openrouter_app`, `openrouter_other`, `fal`, …); null = no read. */
     billed: moneyMap.catch({}),
     /** PiAPI is prepaid: top-ups, not usage, so it is kept out of `billed_known_usd`. */

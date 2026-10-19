@@ -77,6 +77,9 @@ export type ClaudeUsagePersistedFile = ClaudeUsageProcessedFile & {
    *  owner disappears, only deferred files need reparse to reclaim — not the
    *  entire transcript corpus. */
   hasDeferredClaims: boolean
+  /** Per-cwd worktree attribution recorded when the file was parsed, so unrelated
+   *  worktree additions/removals do not invalidate the entire transcript corpus. */
+  attributionByCwd?: Record<string, string | null>
 }
 
 export type ClaudeUsageParsedTurn = {

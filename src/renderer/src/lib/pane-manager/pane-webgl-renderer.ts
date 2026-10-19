@@ -1,7 +1,7 @@
 import { WebglAddon } from '@xterm/addon-webgl'
 import type { ManagedPane, ManagedPaneInternal } from './pane-manager-types'
 import { recordTerminalWebglDiagnostic } from '../../../../shared/terminal-webgl-diagnostics'
-import { getLivePaneCensus } from './pane-manager-registry'
+import { getLivePaneCensus, recordTerminalWebglContextRelease } from './pane-manager-registry'
 import { isManagedPaneDisplayNone } from './pane-display-visibility'
 import {
   forceFullViewportPresent,
@@ -104,6 +104,7 @@ export function disposeWebgl(
     /* ignore */
   }
   pane.webglAddon = null
+  recordTerminalWebglContextRelease()
   if (options?.refreshDimensions) {
     // Why: DOM and WebGL renderer cell metrics differ after teardown. Without
     // a refit, Linux DOM scrollbars can desync and trigger visible reflow jitter.

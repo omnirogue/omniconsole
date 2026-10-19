@@ -25,7 +25,7 @@ function progress(over: Partial<ArtifactReviewProgress> = {}): ArtifactReviewPro
 const PAGE = {
   slug: 'abc',
   title: 'Which hook works?',
-  shareUrl: 'https://app.omnisi.ai/a/abc'
+  shareUrl: 'https://console.example.com/a/abc'
 }
 
 describe('responses in message', () => {
@@ -34,7 +34,7 @@ describe('responses in message', () => {
       artifactResponsesInMessage({ ...PAGE, progress: progress(), study: false }).split('\n')
     ).toEqual([
       '[OmniOS responses] Responses in: 3 of 3 answered on revision 2 of "Which hook works?"',
-      'https://app.omnisi.ai/a/abc',
+      'https://console.example.com/a/abc',
       'This is not an approval: nobody decided anything, and the ask stays open until it is closed.',
       'Do now: read the answers (omni artifacts status abc --json, the "responses" field) and sum up their common themes and disagreements in one comment on the page (OmniConsole artifact_comment; without that tool, in your reply to the owner).',
       'If you were told to act on the answers and the ask is still open, act, then close it with the conclusion: omni artifacts close abc --done --revision 2 --note "<conclusion, at most 500 characters>". Otherwise the decision and the close are the owner\'s.',

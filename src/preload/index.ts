@@ -20,6 +20,7 @@ import type {
   SessionPullRequestRef
 } from '../shared/session-pull-request-facts'
 import { createRoomsApi } from './api/rooms-api'
+import { createOmniCreditsApi } from './api/omni-credits-api'
 import { createOmniRogueApi } from './api/omnirogue-api'
 import { isSessionSidebarDrag } from '../shared/session-sidebar-drag-types'
 /* eslint-disable max-lines -- Why: preload is the audited renderer/Electron IPC contract; co-locating the surface eases security and type-drift review. */
@@ -670,6 +671,12 @@ ipcRenderer.on('ui:findInBrowserPage', (_event, source: unknown) => {
 
 // Custom APIs for renderer
 const api = {
+  omnisiTeam: {
+    status: () => ipcRenderer.invoke('omnisiTeam:status'),
+    enable: (enabled) => ipcRenderer.invoke('omnisiTeam:enable', enabled),
+    connect: (server, key) => ipcRenderer.invoke('omnisiTeam:connect', server, key),
+    disconnect: () => ipcRenderer.invoke('omnisiTeam:disconnect')
+  } satisfies NonNullable<PreloadApi['omnisiTeam']>,
   mcpConnectors: createMcpConnectorsApi(),
   deliverablesHub: {
     search: (query: string, refresh?: boolean) =>
@@ -2730,6 +2737,7 @@ const api = {
     }
   },
 
+  omniCredits: createOmniCreditsApi(ipcRenderer),
   omnirogue: createOmniRogueApi(ipcRenderer),
 
   onboarding: {

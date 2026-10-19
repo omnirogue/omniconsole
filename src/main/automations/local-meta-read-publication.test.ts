@@ -39,7 +39,7 @@ const DESCRIPTOR = 42
 const grant = {
   version: 1,
   enabled: true,
-  origin: 'https://app.omnisi.ai',
+  origin: 'https://console.example.com',
   clerkUserId: 'user_reviewed123',
   employeeId: 'emp_sal',
   company: OLDACS_COMPANY,

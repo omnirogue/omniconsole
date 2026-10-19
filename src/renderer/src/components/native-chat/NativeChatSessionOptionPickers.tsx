@@ -336,7 +336,37 @@ function NativeChatSessionOptionPickersInner({
       : null
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-end gap-0.5">
+    <div className="flex min-w-0 flex-wrap items-center gap-0.5">
+      <DropdownMenu
+        key={`model:${requestedModelSequence ?? 'idle'}`}
+        defaultOpen={requestedModelSequence !== null}
+      >
+        <PickerTrigger
+          label={sessionOptionParityPillLabel(model) ?? nativeChatModelPillLabel(model)}
+          tooltipLabel={modelTooltip}
+          disabled={isWorking || pendingId !== null || relaunchInFlight}
+          disabledReason={modelReason}
+          dispatched={model.valueSource === 'dispatched'}
+          relaunchLine={relaunchLine}
+          parityLines={modelParityLines}
+        />
+        <DropdownMenuContent align="start" side="top" collisionPadding={8} className="w-64">
+          {modelReason && !model.settable ? (
+            <DropdownMenuLabel className="font-normal">{modelReason}</DropdownMenuLabel>
+          ) : null}
+          <NativeChatSessionOptionParityNotice
+            descriptor={model}
+            disabled={pendingId !== null}
+            {...(acceptApplied ? { onAcceptApplied: () => keepApplied(model) } : {})}
+          />
+          <DescriptorMenuRows
+            descriptor={model}
+            pending={pendingId !== null}
+            setValue={(value) => setOption(model, value)}
+            invokeAction={() => invokeAction(model)}
+          />
+        </DropdownMenuContent>
+      </DropdownMenu>
       {options.length > 0 ? (
         <DropdownMenu
           key={`options:${requestedOptionsSequence ?? 'idle'}`}
@@ -381,36 +411,6 @@ function NativeChatSessionOptionPickersInner({
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}
-      <DropdownMenu
-        key={`model:${requestedModelSequence ?? 'idle'}`}
-        defaultOpen={requestedModelSequence !== null}
-      >
-        <PickerTrigger
-          label={sessionOptionParityPillLabel(model) ?? nativeChatModelPillLabel(model)}
-          tooltipLabel={modelTooltip}
-          disabled={isWorking || pendingId !== null || relaunchInFlight}
-          disabledReason={modelReason}
-          dispatched={model.valueSource === 'dispatched'}
-          relaunchLine={relaunchLine}
-          parityLines={modelParityLines}
-        />
-        <DropdownMenuContent align="start" side="top" collisionPadding={8} className="w-64">
-          {modelReason && !model.settable ? (
-            <DropdownMenuLabel className="font-normal">{modelReason}</DropdownMenuLabel>
-          ) : null}
-          <NativeChatSessionOptionParityNotice
-            descriptor={model}
-            disabled={pendingId !== null}
-            {...(acceptApplied ? { onAcceptApplied: () => keepApplied(model) } : {})}
-          />
-          <DescriptorMenuRows
-            descriptor={model}
-            pending={pendingId !== null}
-            setValue={(value) => setOption(model, value)}
-            invokeAction={() => invokeAction(model)}
-          />
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   )
 }

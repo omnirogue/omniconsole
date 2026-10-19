@@ -37,11 +37,7 @@ afterEach(() => {
 describe('session ledger service', () => {
   it('stamps a pane with both env vars and reports the repo once git answers', async () => {
     const h = harness()
-    const env = h.service.stampPaneEnv({
-      paneKey: PANE,
-      ptyId: 'pty-1',
-      cwd: '/Users/maintainer/repo'
-    })
+    const env = h.service.stampPaneEnv({ paneKey: PANE, ptyId: 'pty-1', cwd: '/Users/maintainer/repo' })
     expect(env[OMNI_LEDGER_SESSION_ID_ENV]).toMatch(/^als_[a-f0-9]{24}$/)
     expect(env[OMNI_LEDGER_ATTEMPT_ID_ENV]).toMatch(/^att_[a-f0-9]{16}$/)
     await vi.advanceTimersByTimeAsync(0)
@@ -70,11 +66,7 @@ describe('session ledger service', () => {
     h.hook({ hookEventName: 'UserPromptSubmit' })
     h.hook({
       hookEventName: 'PreToolUse',
-      payload: {
-        agentType: 'claude',
-        toolName: 'Edit',
-        toolInput: '/Users/maintainer/repo/src/a.ts'
-      }
+      payload: { agentType: 'claude', toolName: 'Edit', toolInput: '/Users/maintainer/repo/src/a.ts' }
     })
     h.hook({ hookEventName: 'Stop' })
     await vi.advanceTimersByTimeAsync(0)
@@ -424,11 +416,7 @@ describe('session ledger service', () => {
     h.account.current = 'principal-b'
     h.hook({
       hookEventName: 'PreToolUse',
-      payload: {
-        agentType: 'claude',
-        toolName: 'Edit',
-        toolInput: '/Users/maintainer/repo/src/a.ts'
-      }
+      payload: { agentType: 'claude', toolName: 'Edit', toolInput: '/Users/maintainer/repo/src/a.ts' }
     })
     h.hook({ hookEventName: 'Stop' })
     await vi.advanceTimersByTimeAsync(60_000)
@@ -486,11 +474,7 @@ describe('session ledger service', () => {
     h.hook({ hookEventName: 'SessionStart' })
     h.hook({
       hookEventName: 'PreToolUse',
-      payload: {
-        agentType: 'claude',
-        toolName: 'Edit',
-        toolInput: '/Users/maintainer/repo/src/a.ts'
-      }
+      payload: { agentType: 'claude', toolName: 'Edit', toolInput: '/Users/maintainer/repo/src/a.ts' }
     })
     await vi.advanceTimersByTimeAsync(60_000)
     expect(h.client.events).not.toHaveBeenCalled()
@@ -583,19 +567,11 @@ describe('session ledger service', () => {
 
   it('delivers a row opened and ended while signed out once the sole principal signs in and spawns again (C1)', async () => {
     const h = harness({ account: null })
-    const first = h.service.stampPaneEnv({
-      paneKey: PANE,
-      ptyId: 'pty-1',
-      cwd: '/Users/maintainer/repo'
-    })
+    const first = h.service.stampPaneEnv({ paneKey: PANE, ptyId: 'pty-1', cwd: '/Users/maintainer/repo' })
     h.hook({ hookEventName: 'SessionStart' })
     h.hook({
       hookEventName: 'PreToolUse',
-      payload: {
-        agentType: 'claude',
-        toolName: 'Edit',
-        toolInput: '/Users/maintainer/repo/src/a.ts'
-      }
+      payload: { agentType: 'claude', toolName: 'Edit', toolInput: '/Users/maintainer/repo/src/a.ts' }
     })
     h.teardown(PANE)
     await vi.advanceTimersByTimeAsync(60_000)
@@ -603,11 +579,7 @@ describe('session ledger service', () => {
 
     // A signs in and immediately spawns again in the same pane, before any flush ran.
     h.account.current = 'principal-a'
-    const again = h.service.stampPaneEnv({
-      paneKey: PANE,
-      ptyId: 'pty-2',
-      cwd: '/Users/maintainer/repo'
-    })
+    const again = h.service.stampPaneEnv({ paneKey: PANE, ptyId: 'pty-2', cwd: '/Users/maintainer/repo' })
     expect(again[OMNI_LEDGER_SESSION_ID_ENV]).toBe(first[OMNI_LEDGER_SESSION_ID_ENV])
     h.hook({ hookEventName: 'SessionStart' })
     await vi.advanceTimersByTimeAsync(60_000)

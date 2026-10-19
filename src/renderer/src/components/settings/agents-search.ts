@@ -15,6 +15,11 @@ import {
   getAgentStatusHooksTitle
 } from './agent-status-hooks-copy'
 import { getAgentCacheTimerSearchEntries } from './agent-cache-timer-search'
+import {
+  getDeliverableCheckDescription,
+  getDeliverableCheckSearchKeywords,
+  getDeliverableCheckTitle
+} from './deliverable-check-copy'
 import { translate } from '@/i18n/i18n'
 import { searchKeywords, translateSearchKeyword, uniqueKeywords } from './settings-search-keywords'
 import { createLocalizedCatalog } from '@/i18n/localized-catalog'
@@ -177,6 +182,11 @@ const getAllAgentsPaneSearchEntries = createLocalizedCatalog(() => [
     title: getAgentGeneratedTabTitlesTitle(),
     description: getAgentGeneratedTabTitlesDescription(),
     keywords: getAgentGeneratedTabTitlesSearchKeywords()
+  },
+  {
+    title: getDeliverableCheckTitle(),
+    description: getDeliverableCheckDescription(),
+    keywords: getDeliverableCheckSearchKeywords()
   },
   {
     title: getAgentAwakeTitle(),

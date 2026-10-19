@@ -43,7 +43,6 @@ export const ROW_HOVER_REVEAL = cn(
  */
 export const ROW_NAME_FLOOR = cn(
   '[--row-name-give:0rem] [--row-name-reserve:5.125rem]',
-  'group-hover:[--row-name-give:3rem]',
   'group-has-[[data-session-row-expand]]:[--row-name-reserve:6.625rem]',
   'group-has-[[data-session-row-start]]:[--row-name-reserve:6.625rem]',
   'group-has-[[data-session-row-start]]:group-has-[[data-session-row-expand]]:[--row-name-reserve:8.125rem]',

@@ -152,12 +152,7 @@ describe('sessionProjects.resolveLaunch', () => {
     ])
     expect(launch.attachments[0]).toMatchObject({ uri: '/home/sal/omni-ide', hostId: 'ssh:box' })
     expect(launch.notOnHost).toEqual([
-      {
-        id: 'file:local:/Users/maintainer/brief.md',
-        kind: 'file',
-        title: 'brief.md',
-        hostId: 'local'
-      }
+      { id: 'file:local:/Users/maintainer/brief.md', kind: 'file', title: 'brief.md', hostId: 'local' }
     ])
     // Why unverified: skills.discover cannot read an SSH host's skills.
     expect(launch.inherited.find((item) => item.id === 'skill-name:jira')?.state).toBe('unverified')

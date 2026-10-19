@@ -30,6 +30,8 @@ export type MirroredSidebarConversation = {
   /** The owner's definition of that folder, shown read-only until account sync brings it. */
   folderByOwner?: SessionConversationLedgerFolder
   hidden?: boolean
+  /** The owner noted an agent launched it: it lists in Agent sessions here too. */
+  agentSessionByOwner?: boolean
   /** False: the owner holds it as passive evidence and does not list it (bucket heldByOwner). */
   listed: boolean
   /** Restored from the durable snapshot and not confirmed live since: "as of", never retires. */

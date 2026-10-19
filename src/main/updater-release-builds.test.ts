@@ -184,7 +184,7 @@ describe('listReleaseBuilds', () => {
     const [build] = await listReleaseBuilds('hourly', 'win32')
 
     expect(build.installerUrl).toBe(
-      'https://app.omnisi.ai/updates/v1.4.163-hourly.202607312054/omni-windows-setup.exe'
+      'https://console.example.com/updates/v1.4.163-hourly.202607312054/omni-windows-setup.exe'
     )
   })
 
@@ -225,7 +225,8 @@ describe('resolveTargetBuild', () => {
     expect(resolveTargetBuild('hourly', 'v1.4.160-hourly.202607281400')).toEqual({
       tag: 'v1.4.160-hourly.202607281400',
       version: '1.4.160-hourly.202607281400',
-      feedUrl: 'https://app.omnisi.ai/updates/v1.4.160-hourly.202607281400'
+      feedUrl:
+        'https://console.example.com/updates/v1.4.160-hourly.202607281400'
     })
   })
 
@@ -233,13 +234,14 @@ describe('resolveTargetBuild', () => {
     expect(resolveTargetBuild('daily', 'v1.4.160-daily.202607281300')).toEqual({
       tag: 'v1.4.160-daily.202607281300',
       version: '1.4.160-daily.202607281300',
-      feedUrl: 'https://app.omnisi.ai/updates/v1.4.160-daily.202607281300'
+      feedUrl:
+        'https://console.example.com/updates/v1.4.160-daily.202607281300'
     })
   })
 
   it('pins a stable tag at the main repo download path', () => {
     expect(resolveTargetBuild('stable', 'v1.4.159').feedUrl).toBe(
-      'https://app.omnisi.ai/updates/v1.4.159'
+      'https://console.example.com/updates/v1.4.159'
     )
   })
 

@@ -53,6 +53,9 @@ describe('who the steward leaves alone', () => {
     expect(skip({}, {}, { chainBound: false, heldDelivery: true })).toBe(
       'a held prompt is waiting for it'
     )
+    expect(skip({}, {}, { ...drivers, deliverableRepair: true } as typeof drivers)).toBe(
+      'the deliverable check asked it to finish something'
+    )
     expect(skip({ pinned: true })).toBe('pinned')
     expect(skip({ state: 'awaiting-user' })).toBe('it is asking the person')
     expect(skip({ state: 'provider-limited' })).toBe('a provider limit holds it')

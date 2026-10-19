@@ -116,7 +116,9 @@ describe('finance stats', () => {
         }
       ]
     })
-    expect(financeStats(document.companies[0], undefined)[0].caption).toContain('GatewayOne $400')
+    expect(financeStats(document.companies[0], undefined)[0].caption).toContain(
+      'GatewayOne $400'
+    )
   })
 
   it('withholds a margin over no revenue and explains a partial window', () => {

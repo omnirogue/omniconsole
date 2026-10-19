@@ -499,7 +499,9 @@ describe('the session transcript as a handoff deliverable', () => {
 
   it('attaches the verified transcript at its fixed target path', async () => {
     const result = await prepareConversationFleetInputs(withTranscript)
-    const pin = result.sourceFiles.find((file) => file.target_path === 'handoff/transcript.md')
+    const pin = result.sourceFiles.find(
+      (file) => file.target_path === 'handoff/transcript.md'
+    )
     expect(pin).toBeDefined()
     expect(pin?.file.sha256).toBe(sha(TRANSCRIPT_BODY))
     expect(result.sourceTranscript).toEqual({ file: pin, messageCount: 12 })

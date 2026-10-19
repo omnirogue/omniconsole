@@ -845,5 +845,12 @@
     "text": "Approximate text input cost in USD. Excludes conversation history, system instructions, attachments, output, tools, and cache discounts. Actual usage may differ.",
     "dynamic": false,
     "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/status-bar/OmniCreditsPill.tsx",
+    "kind": "object-property:error",
+    "text": "credits_exhausted",
+    "dynamic": false,
+    "count": 1
   }
 ]

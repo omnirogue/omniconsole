@@ -1,4 +1,55 @@
 import React from 'react'
+import { useLocalImageSrc } from '@/components/editor/useLocalImageSrc'
+import { fileUriToFilesystemPath } from '../../../../shared/file-uri-path'
+import { ExpandableMarkdownImage } from './MarkdownImageLightbox'
+
+const DIRECT_VIDEO_EXT_RE = /\.(?:mp4|webm|mov)(?:[?#].*)?$/i
+const DIRECT_AUDIO_EXT_RE = /\.(?:mp3|wav|m4a|ogg)(?:[?#].*)?$/i
+
+export function isDirectVideoLink(href: string | undefined): href is string {
+  if (!href) {
+    return false
+  }
+  return DIRECT_VIDEO_EXT_RE.test(href.trim())
+}
+
+export function isDirectAudioLink(href: string | undefined): href is string {
+  if (!href) {
+    return false
+  }
+  return DIRECT_AUDIO_EXT_RE.test(href.trim())
+}
+
+function toLocalFilesystemPath(rawUrl: string | undefined): string | null {
+  if (!rawUrl) {
+    return null
+  }
+  const trimmed = rawUrl.trim()
+  if (trimmed.startsWith('/')) {
+    return trimmed
+  }
+  if (trimmed.toLowerCase().startsWith('file:')) {
+    try {
+      return fileUriToFilesystemPath(new URL(trimmed))
+    } catch {
+      return null
+    }
+  }
+  return null
+}
+
+function useLocalMediaSrc(
+  rawSrc: string | undefined,
+  allowLocalFiles: boolean
+): string | undefined {
+  const detectedLocalPath = toLocalFilesystemPath(rawSrc)
+  const localPath = allowLocalFiles ? detectedLocalPath : null
+  const resolvedLocalSrc = useLocalImageSrc(localPath ?? undefined, localPath ?? '/')
+  if (detectedLocalPath !== null) {
+    return allowLocalFiles ? resolvedLocalSrc : undefined
+  }
+  return rawSrc
+}
 
 export function isGitHubUserAttachmentUrl(href: string | undefined): href is string {
   if (!href) {
@@ -59,7 +110,7 @@ export function GitHubUserAttachmentVideo({
 }): React.ReactElement {
   const [failed, setFailed] = React.useState(false)
 
-  if (failed) {
+  if (failed || !href || toLocalFilesystemPath(href) !== null) {
     return <AttachmentFallbackLink href={href}>{children}</AttachmentFallbackLink>
   }
 
@@ -77,6 +128,60 @@ export function GitHubUserAttachmentVideo({
         {children}
       </a>
     </video>
+  )
+}
+
+export function DirectMediaAudio({
+  href,
+  children
+}: {
+  href: string
+  children: React.ReactNode
+}): React.ReactElement {
+  const [failed, setFailed] = React.useState(false)
+
+  if (failed || !href || toLocalFilesystemPath(href) !== null) {
+    return <AttachmentFallbackLink href={href}>{children}</AttachmentFallbackLink>
+  }
+
+  return (
+    <audio
+      src={href}
+      controls
+      preload="metadata"
+      className="my-2 block w-full max-w-md"
+      onClick={(e) => e.stopPropagation()}
+      onError={() => setFailed(true)}
+    >
+      <a href={href} target="_blank" rel="noreferrer">
+        {children}
+      </a>
+    </audio>
+  )
+}
+
+export function DocumentMarkdownImage({
+  src,
+  alt,
+  allowLocalFiles = false,
+  onImageClick
+}: {
+  src: string
+  alt: string | undefined
+  allowLocalFiles?: boolean
+  onImageClick?: (event: React.MouseEvent<HTMLElement>) => void
+}): React.ReactElement {
+  const mediaSrc = useLocalMediaSrc(src, allowLocalFiles)
+  if (!mediaSrc) {
+    return <span className="text-xs text-muted-foreground">{alt || src}</span>
+  }
+  return (
+    <ExpandableMarkdownImage
+      src={mediaSrc}
+      alt={alt}
+      onImageClick={onImageClick}
+      className="max-h-96 max-w-full rounded-md object-contain outline outline-1 outline-black/10 dark:outline-white/10"
+    />
   )
 }
 

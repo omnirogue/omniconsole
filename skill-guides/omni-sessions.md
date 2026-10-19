@@ -54,6 +54,10 @@ States: `working`, `queued`, `provider-limited`, `awaiting-user` (a permission p
 question for the person), `waiting-for-yes` (the session proposed a next step and waits),
 `idle`, `exited`, `unknown`. Each row also has an execution verdict (`live`,
 `unverifiable`, `exited`), its folder, last activity, pending next steps and queue.
+`agentSession: true` marks a session an agent launched (`session launch`, OmniOS/MCP, a
+worker): the sidebar lists it under the folded **Agent sessions**, below the person's own
+sessions and projects, and only such sessions are archived or closed unasked. A session a person
+started (`agentSession: false`) stays until the person closes it.
 
 **Never treat silence as dead.** `unknown` and `unverifiable` mean _keep_: a host you can't
 reach, or a pane whose agent isn't confirmed, is not a finished session.
@@ -308,10 +312,12 @@ they approve, or what is clearly safe and in scope.
 this rule to every session and archives only on request.
 
 1. `omni session tidy --json` (a dry run). Each row has `action` `archive`, `hold` or `skip`
-   and a plain `reason`. Archive candidates: `exited`, or `idle` with no pending steps, no queue
-   and nothing awaiting the person. It skips `unknown`, `unverifiable`, remote/SSH, pinned,
-   Saved, `working`, `queued`, `provider-limited`, `awaiting-user` and `waiting-for-yes`; it holds
-   sessions whose recorded commitment is not finished.
+   and a plain `reason`. Archive candidates: agent sessions (`agentSession: true` in
+   `session list`: launched by `session launch`, OmniOS/MCP or a worker) that are `exited`, or
+   `idle` with no pending steps, no queue and nothing awaiting the person. It skips `unknown`,
+   `unverifiable`, remote/SSH, pinned, Saved, `working`, `queued`, `provider-limited`,
+   `awaiting-user` and `waiting-for-yes`; it holds sessions whose recorded commitment is not
+   finished, and every session a person started: those stay until the person closes them.
 2. Show the person the summary and the rows grouped by action (and any `titleFlags`; tidy
    never renames).
 3. Apply only what they asked for:
@@ -352,7 +358,7 @@ sessions this computer runs are deleted; another computer's or an SSH host's are
 3. Report from `report.deleted` and `notArchived` (kept, by reason). It exits non-zero when it
    deletes nothing.
 4. Other computers: run the same command on each one (for example `ssh studio omni session tidy
-   --delete --unverified --apply --request "…"`). Their rows mirrored on this computer go once
+--delete --unverified --apply --request "…"`). Their rows mirrored on this computer go once
    that computer deletes them; `omni session hide` hides one here meanwhile.
 
 **Clean up now** in Work starts a one-off session whose brief starts `[Session cleanup · Clean up

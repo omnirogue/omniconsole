@@ -111,7 +111,8 @@ export function stewardEmptySessionVouched(
   if (!row.emptyArchiveRevision) {
     return {
       ok: false,
-      reason: 'the window does not show it idle and unprompted, or it is on screen'
+      reason:
+        'a person started it, or the window does not show it idle and unprompted, or it is on screen'
     }
   }
   return {

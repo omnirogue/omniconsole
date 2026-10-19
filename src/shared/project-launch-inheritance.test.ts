@@ -43,8 +43,7 @@ function host(overrides: Partial<ProjectLaunchHost> = {}): ProjectLaunchHost {
     label: 'This computer',
     repoCheckout: (identity) =>
       identity === 'github.com/omnirogue/omni-ide' ? '/Users/maintainer/omni-ide' : null,
-    skill: (name) =>
-      name === 'jira' ? { path: '/Users/maintainer/.claude/skills/jira/SKILL.md' } : null,
+    skill: (name) => (name === 'jira' ? { path: '/Users/maintainer/.claude/skills/jira/SKILL.md' } : null),
     ...overrides
   }
 }
@@ -104,11 +103,7 @@ describe('resolveProjectLaunch', () => {
 
   it('resolves a repo by identity to that host checkout', () => {
     const repo = resolveProjectLaunch(input()).attachments[0]!
-    expect(repo).toMatchObject({
-      kind: 'folder',
-      uri: '/Users/maintainer/omni-ide',
-      hostId: 'local'
-    })
+    expect(repo).toMatchObject({ kind: 'folder', uri: '/Users/maintainer/omni-ide', hostId: 'local' })
   })
 
   it('resolves a skill by name to the target host copy', () => {

@@ -260,7 +260,7 @@ export function createUpdaterMocks(): UpdaterMocks {
           ? { tags: result, state: result.length > 0 ? 'ready' : 'no-newer' }
           : result
       },
-      getReleaseDownloadUrl: (tag: string) => `https://app.omnisi.ai/updates/${tag}`
+      getReleaseDownloadUrl: (tag: string) => `https://console.example.com/updates/${tag}`
     }),
     localBuildSwitch: () => ({ chooseLocalBuild: chooseLocalBuildMock }),
     localBuildFeedServer: () => ({ startLocalBuildFeed: startLocalBuildFeedMock })

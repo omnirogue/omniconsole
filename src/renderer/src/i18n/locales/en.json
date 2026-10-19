@@ -1,4 +1,68 @@
 {
+  "omnisiTeam": {
+    "title": "OmniSI team",
+    "description": "Experimental · connect your AI team on this computer.",
+    "searchDescription": "Experimental connection to your team server and tools.",
+    "enabledLabel": "OmniSI team (experimental)",
+    "readError": "Could not read the OmniSI connection.",
+    "actionError": "Could not finish. Check your server, team key and OS keychain. Disconnect to clean up a partial connection.",
+    "connectedTeam": "Connected team: {{team}}",
+    "connectedHint": "Open AI panes can receive work sent from OmniSI. Reopen existing panes to load the team's tools. Human approval steps remain in each request.",
+    "stepOne": "1. In OmniSI, open your team's connection card and copy its connection.",
+    "enterSeparately": "Enter URL and key separately",
+    "pasteConnection": "Paste connection",
+    "connectionJson": "Connection JSON",
+    "serverUrl": "Server URL",
+    "pastePlaceholder": "Paste the connection from OmniSI",
+    "serverPlaceholder": "https://app.omnisi.ai/mcp",
+    "teamKey": "Team key",
+    "keyPlaceholder": "osc1.…",
+    "stepTwo": "2. Connect team",
+    "toolsNote": "Team tools: Claude, Codex, Gemini and Grok on this computer. Muse, WSL and remote hosts need separate setup; their credentials are never copied.",
+    "disconnect": "Disconnect",
+    "keywordOmnisi": "omnisi",
+    "keywordTeam": "team",
+    "keywordConnection": "connection",
+    "keywordServer": "server",
+    "keywordKey": "key",
+    "keywordSend": "send",
+    "keywordBlueprint": "blueprint"
+  },
+  "omniCredits": {
+    "settingTitle": "OmniOS team credits",
+    "settingDescription": "Show your team balance, credit usage and upgrade options from OmniOS.",
+    "unknownDate": "Not available",
+    "freeTitle": "Choose a plan to keep going",
+    "freeBody": "Your team has no credits on the Free plan. Pick a plan to make images, videos and reviews.",
+    "choosePlan": "Choose a plan",
+    "exhaustedTitle": "You're out of credits",
+    "exhaustedBody": "This needs {{needed}} credits and you have {{balance}}. Your credits refill on {{date}}.",
+    "askAdmin": "Ask an admin on your team to upgrade.",
+    "topPlan": "Your credits refill on {{date}}. Need more sooner? Contact us.",
+    "notNow": "Not now",
+    "talkToUs": "Talk to us about {{plan}}",
+    "talkToUsShort": "Talk to us",
+    "upgradeOnce": "Upgrade to {{plan}} — {{price}} one-time",
+    "upgradeSetup": "Upgrade to {{plan}} — {{setup}} setup + {{price}}/month",
+    "upgradePlan": "Upgrade to {{plan}} — {{price}}/month, {{credits}} credits a month",
+    "balance": "{{balance}} credits",
+    "pillLabel": "OmniOS team: {{balance}}",
+    "title": "OmniOS team credits",
+    "refill": "Refills on {{date}}",
+    "you": "You used {{usage}} credits this month",
+    "low": "{{balance}} credits left this month.",
+    "teamUsage": "Team usage this month",
+    "member": "Member",
+    "used": "Credits used",
+    "upgrade": "Upgrade",
+    "agreementBody": "This needs {{needed}} credits and you have {{balance}}.",
+    "agreementContact": "Contact us to add credits to your agreement.",
+    "keywordCredits": "credits",
+    "keywordWallet": "wallet",
+    "keywordOmnios": "omnios",
+    "keywordOmnisi": "omnisi",
+    "keywordUsage": "usage"
+  },
   "omnirogueDiagnostics": {
     "latency": "{{milliseconds}} ms",
     "linkingHint": "Complete account linking, then retry the check.",
@@ -17844,7 +17908,9 @@
         "agent": "This computer cannot run a structured Claude session.",
         "unavailable": "The Claude Agent SDK did not answer on this computer.",
         "fallback": "Claude is opening in terminal chat: {{reason}}"
-      }
+      },
+      "stopReadAloud": "Stop reading aloud",
+      "readAloud": "Read message aloud"
     },
     "tab": {
       "bar": {
@@ -18201,11 +18267,7 @@
         "delete": "Delete",
         "preferredModelPlaceholder": "ollama/qwen3-coder:30b",
         "saveFailed": "Could not save the template.",
-        "limitReached": "You already have {{max}} custom templates. Delete one to add another.",
-        "preferredAgent": "Preferred agent",
-        "memory": "Memory file",
-        "defaultSkills": "Default-loaded skills (Tier 1)",
-        "callableSkills": "Callable skills (Tier 2)"
+        "limitReached": "You already have {{max}} custom templates. Delete one to add another."
       },
       "instructionFiles": {
         "saved": "Saved {{path}}.",
@@ -26729,7 +26791,7 @@
     "defaultDescription": "Project and global instructions only",
     "agentTitle": "Agent · applies to every model",
     "newAgent": "New agent…",
-    "customize": "Create Project",
+    "customize": "Customize workspace…",
     "customizeSummary": "In {{target}} · {{agent}}",
     "notAppliedToCustomModel": "Agent templates are not applied to custom-model launches yet; this session starts without one.",
     "unknownTarget": "Selected workspace",
@@ -27048,9 +27110,7 @@
       "searchRepos": "Search repos…",
       "reposChosen": "{{count}} chosen",
       "noReposMatch": "No repos match “{{query}}”.",
-      "addedRepoNoRemote": "{{names}} added, but without a remote other computers cannot find it. Add a remote, then tick it here.",
-      "universalBundleTitle": "Universal Project Format (.omni-project/ v0.1.0)",
-      "universalBundleHelp": "Projects materialize canonical .omni-project/ bundles (project.json, instructions/project.md, context/brief.md, memory/records/*.json, pinned skills & bots) plus native AGENTS.md, CLAUDE.md, and GEMINI.md projections. Use omni-projects MCP tools (import_project, export_project, transfer_project, transfer_skill, context_resolve) or omni-cross-sync to share across OmniConsole, Claude, Codex, Grok Bot, Kimi, and Gemini."
+      "addedRepoNoRemote": "{{names}} added, but without a remote other computers cannot find it. Add a remote, then tick it here."
     },
     "suggestion": {
       "open": "Set up project",
@@ -28069,5 +28129,65 @@
     "arena": "Model Arena",
     "brandKits": "Brand Kits",
     "assets": "Assets"
+  },
+  "deliverableCheck": {
+    "settings": {
+      "title": "Deliverable check",
+      "description": "When a session finishes, check that the files it was asked for, and the files and links it says it made, exist where they should.",
+      "mode": {
+        "off": "Off",
+        "shadow": "Watch only",
+        "on": "Check and ask to finish"
+      },
+      "detail": {
+        "shadow": "Check what each session was asked for and says it produced. Nothing is sent.",
+        "on_one": "If something is missing, ask the same agent to finish it, up to {{count}} time per request.",
+        "on_other": "If something is missing, ask the same agent to finish it, up to {{count}} times per request.",
+        "off": "Sessions are not checked.",
+        "on": "If something is missing, ask the same agent to finish it, up to {{count}} times per request."
+      },
+      "repairs": "Times to ask per request"
+    },
+    "search": {
+      "deliverable": "deliverable",
+      "verify": "verify",
+      "missing": "missing",
+      "retry": "retry",
+      "files": "files",
+      "finish": "finish"
+    },
+    "panel": {
+      "title": "Deliverables",
+      "asking": "Asking the agent to finish ({{n}} of {{max}})",
+      "wouldAsk_one": "Would ask the agent to finish {{count}} item",
+      "wouldAsk_other": "Would ask the agent to finish {{count}} items",
+      "noProgress": "Stopped: the last repair changed nothing",
+      "exhausted_one": "{{count}} deliverable still missing",
+      "exhausted_other": "{{count}} deliverables still missing",
+      "skipped_one": "{{count}} missing; not asked ({{why}})",
+      "skipped_other": "{{count}} missing; not asked ({{why}})",
+      "checked": "Checked: {{found}} of {{total}} found",
+      "checkedOn": "checked on {{host}}",
+      "notAProblem": "Not a problem",
+      "verdict": {
+        "verified": "Verified",
+        "missing": "Missing",
+        "declined": "Declined",
+        "unverifiable": "Can't check"
+      },
+      "source": {
+        "request": "asked for",
+        "prep": "Done when",
+        "mission": "mission",
+        "claim": "reply says {{claim}}"
+      },
+      "host": {
+        "local": "this computer",
+        "ssh": "SSH host"
+      },
+      "wouldAsk": "Would ask the agent to finish {{count}} item",
+      "exhausted": "{{count}} deliverables still missing",
+      "skipped": "{{count}} missing; not asked ({{why}})"
+    }
   }
 }

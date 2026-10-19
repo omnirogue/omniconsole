@@ -10,9 +10,7 @@ const MANAGED =
 
 describe('conversationProfileOf', () => {
   it('reads the profile a transcript lives under', () => {
-    expect(
-      conversationProfileOf('claude', `/Users/maintainer/.claude/projects/-w/${ID}.jsonl`)
-    ).toEqual({
+    expect(conversationProfileOf('claude', `/Users/maintainer/.claude/projects/-w/${ID}.jsonl`)).toEqual({
       variable: 'CLAUDE_CONFIG_DIR',
       path: '/Users/maintainer/.claude',
       isDefault: true

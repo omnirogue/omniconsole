@@ -22,7 +22,7 @@ function decision(over: Partial<ArtifactReviewDecision> = {}): ArtifactReviewDec
 const PAGE = {
   slug: 'abc',
   title: 'Build this session lifecycle?',
-  shareUrl: 'https://app.omnisi.ai/a/abc'
+  shareUrl: 'https://console.example.com/a/abc'
 }
 
 describe('artifact decision message', () => {
@@ -30,7 +30,7 @@ describe('artifact decision message', () => {
     const text = artifactDecisionMessage({ ...PAGE, decision: decision({ comment: 'go ahead' }) })
     expect(text.split('\n')).toEqual([
       '[OmniOS decision] Approved: revision 2 of "Build this session lifecycle?"',
-      'By Uma Ozkan (uma@example.edu) at 2026-10-05 14:03 ET · https://app.omnisi.ai/a/abc',
+      'By Uma Ozkan (uma@example.edu) at 2026-10-05 14:03 ET · https://console.example.com/a/abc',
       'Comment: "go ahead"',
       'Do now: carry out the plan exactly as approved in revision 2. This approval covers only what revision 2 says.',
       'Anything that moves money, reaches a customer, changes ad budgets or grants access still needs its own approval.',

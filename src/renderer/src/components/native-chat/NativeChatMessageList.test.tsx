@@ -48,12 +48,48 @@ describe('NativeChatMessageList assistant messages', () => {
     const prose = screen.getByText('Selectable agent response.')
     const row = prose.closest('.group')
     const copyButton = screen.getByRole('button', { name: 'Copy message' })
+    const readAloudButton = screen.getByRole('button', { name: 'Read message aloud' })
     const controls = copyButton.parentElement
 
+    expect(readAloudButton).toBeInTheDocument()
     expect(row).toHaveClass('select-text')
-    expect(controls).toHaveClass('select-none', 'pointer-events-none', 'mt-1')
+    expect(controls).toHaveClass(
+      'select-none',
+      'pointer-events-none',
+      'mt-1',
+      'pointer-coarse:opacity-100'
+    )
     expect(controls).not.toHaveClass('absolute')
     expect(prose.compareDocumentPosition(controls!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+  })
+
+  it('renders sent or received image-ref attachments with an expandable lightbox preview', () => {
+    render(
+      <NativeChatMessageList
+        session={{
+          ...session,
+          messages: [
+            {
+              id: 'user-image-1',
+              role: 'user',
+              blocks: [
+                { type: 'image-ref', url: 'data:image/png;base64,abc123', alt: 'mockup.png' },
+                { type: 'text', text: 'Check this screenshot' }
+              ],
+              timestamp: 1,
+              source: 'transcript'
+            }
+          ]
+        }}
+        isWorking={false}
+        expandSignal={false}
+        fontScale={1}
+      />
+    )
+
+    expect(screen.getByText('mockup.png')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Expand image' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'mockup.png' })).toBeInTheDocument()
   })
 
   it('keeps a running tool live when transcript lifecycle metadata is absent', () => {

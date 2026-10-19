@@ -71,10 +71,9 @@ describe('HostResourceReader', () => {
       let resolve!: (answer: HostResourceAnswer) => void
       const { reader: r, readRemote } = reader({
         now: Date.now,
-        readRemote: () =>
-          new Promise((done) => {
-            resolve = done
-          })
+        readRemote: () => new Promise((done) => {
+          resolve = done
+        })
       })
       const first = r.read(['ssh:slow'])
       await vi.advanceTimersByTimeAsync(40)

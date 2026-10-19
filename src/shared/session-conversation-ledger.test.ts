@@ -105,10 +105,7 @@ describe('conversation identity (F1: the full owner claim, opaque on the wire, h
   it('tells two Pi (or Prime Agent) conversations apart by transcript when they share a session id', () => {
     const other = {
       ...pi,
-      providerSession: {
-        ...pi.providerSession,
-        transcriptPath: '/Users/maintainer/.pi/other.jsonl'
-      }
+      providerSession: { ...pi.providerSession, transcriptPath: '/Users/maintainer/.pi/other.jsonl' }
     }
     expect(sessionConversationIdentity(other)).not.toBe(sessionConversationIdentity(pi))
     expect(
@@ -265,6 +262,13 @@ describe('readSessionConversationRecord', () => {
     expect(unknown).not.toHaveProperty('hidden')
     expect(unknown).not.toHaveProperty('saved')
     expect(unknown).not.toHaveProperty('interrupted')
+    // Agent sessions (Sal, 2026-10-19): only an explicit true crosses.
+    expect(readSessionConversationRecord(record('a', { agentSession: true }))).toMatchObject({
+      agentSession: true
+    })
+    expect(readSessionConversationRecord(record('b', { agentSession: 'yes' }))).not.toHaveProperty(
+      'agentSession'
+    )
     // Why: a missing flag must not hide a conversation the owner shows.
     expect(unknown!.listed).toBe(true)
   })

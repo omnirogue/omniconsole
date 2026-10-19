@@ -41,32 +41,24 @@ describe('username stripping', () => {
   it('fails closed when a home-shaped segment survives stripping', () => {
     expect(publishablePath('/Users/maintainer/Users/other/x.ts')).toBe(REDACTED_PATH)
     expect(publishablePath('/srv/home/sal/x.ts')).toBe(REDACTED_PATH)
-    expect(
-      publishablePath('/Users/maintainer/repo/home/other/x.ts', '/Users/maintainer/repo')
-    ).toBe(REDACTED_PATH)
-    expect(publishablePath('/Users/maintainer/repo/src/home.ts', '/Users/maintainer/repo')).toBe(
-      'src/home.ts'
+    expect(publishablePath('/Users/maintainer/repo/home/other/x.ts', '/Users/maintainer/repo')).toBe(
+      REDACTED_PATH
     )
+    expect(publishablePath('/Users/maintainer/repo/src/home.ts', '/Users/maintainer/repo')).toBe('src/home.ts')
   })
 })
 
 describe('publishable paths', () => {
   it('is repo-relative inside the workspace root', () => {
-    expect(publishablePath('/Users/maintainer/repo/src/a.ts', '/Users/maintainer/repo')).toBe(
-      'src/a.ts'
-    )
-    expect(publishablePath('/Users/maintainer/repo/src/a.ts', '/Users/maintainer/repo/')).toBe(
-      'src/a.ts'
-    )
+    expect(publishablePath('/Users/maintainer/repo/src/a.ts', '/Users/maintainer/repo')).toBe('src/a.ts')
+    expect(publishablePath('/Users/maintainer/repo/src/a.ts', '/Users/maintainer/repo/')).toBe('src/a.ts')
     expect(publishablePath('C:\\Users\\sal\\repo\\src\\a.ts', 'C:\\Users\\sal\\repo')).toBe(
       'src/a.ts'
     )
   })
 
   it('does not treat a sibling directory prefix as inside the root', () => {
-    expect(publishablePath('/Users/maintainer/repo-two/a.ts', '/Users/maintainer/repo')).toBe(
-      '~/repo-two/a.ts'
-    )
+    expect(publishablePath('/Users/maintainer/repo-two/a.ts', '/Users/maintainer/repo')).toBe('~/repo-two/a.ts')
   })
 
   it('caps the published length at the contract limit, keeping the tail', () => {

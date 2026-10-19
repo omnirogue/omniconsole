@@ -1,4 +1,5 @@
 import { toast } from 'sonner'
+import { NeedSpeedDialog } from '@/components/work/NeedSpeedDialog'
 import { NewWorkflowMenu } from '@/components/local-workflows/NewWorkflowMenu'
 import { workflowOpensOutsideLocalWorkspace } from '@/components/local-workflows/workflow-presets'
 import { createLocalWorkflowConversation } from '@/lib/local-workflow-conversation'
@@ -86,6 +87,8 @@ export function NewConversationButton({
     : (projectWorkspace ??
       (defaultToWorkRoot ? null : runtimeId ? computerWorkspace : effectiveWorktreeId))
   const [open, setOpen] = useState(false)
+  const [needSpeedOpen, setNeedSpeedOpen] = useState(false)
+  const [needSpeedSource, setNeedSpeedSource] = useState<string | undefined>()
   const [reviewing, setReviewing] = useState(false)
   // Why `open`: the menu is when someone is about to choose a model, so that is when it re-lists.
   const availability = useWorkAgentCapabilities(
@@ -213,104 +216,140 @@ export function NewConversationButton({
     start: (pick) => reviewed(pick)
   })
   const menu = (
-    <DropdownMenu open={open} onOpenChange={handleOpenChange} modal={false}>
-      <NewConversationTrigger
-        starting={launch.starting}
-        onStart={() => {
-          handleOpenChange(false)
-          useLaunchProject.getState().open(folder?.id ?? null)
-          reviewed(undefined)
-        }}
-        hover={anchorProps}
-        folderName={folder?.name}
+    <>
+      <NeedSpeedDialog
+        open={needSpeedOpen}
+        onOpenChange={setNeedSpeedOpen}
+        sourceWorktreeId={needSpeedSource}
+        project={folder ? { folderId: folder.id, name: folder.name } : undefined}
+        unavailableReason={
+          runtimeId
+            ? translate(
+                'needSpeed.localRequired',
+                'Need Speed is available from this computer’s Work folder or a local or SSH project. Select this computer to continue.'
+              )
+            : undefined
+        }
       />
-      <DropdownMenuContent side="right" align="start" className="w-80" {...hover.contentProps}>
-        <NewWorkflowMenu
-          hover={hover.contentProps}
-          onRoutine={() => {
+      <DropdownMenu open={open} onOpenChange={handleOpenChange} modal={false}>
+        <NewConversationTrigger
+          starting={launch.starting}
+          onStart={() => {
             handleOpenChange(false)
-            // Why: the routine dialog picks an eligible workspace itself; a seeded one could be unsavable.
-            const state = useAppStore.getState()
-            state.setPendingRoutineDraftSeed({ cron: '*/30 * * * *' })
-            state.setActiveView('automations')
+            useLaunchProject.getState().open(folder?.id ?? null)
+            reviewed(undefined)
           }}
-          unavailableReason={
-            folder
-              ? translate(
-                  'conversations.folderWorkflowsUnavailable',
-                  'Workflows cannot be kept in a folder yet. Start one from the + at the top.'
-                )
-              : !local || activeTarget?.kind !== 'local' || !effectiveWorktreeId
-                ? translate(
-                    'localWorkflow.menu.localOrSshBuildReview',
-                    'Workflows need a local workspace. Build + Review also opens in an SSH workspace, and asks for a workspace anywhere else.'
-                  )
-                : undefined
-          }
-          onWorkflow={(preset) => {
-            const anywhere = workflowOpensOutsideLocalWorkspace(preset)
-            if (folder && !anywhere) {
-              return
-            }
-            if (!anywhere && (!effectiveWorktreeId || !local || activeTarget?.kind !== 'local')) {
-              return
-            }
-            try {
-              // Why: Build + Review decides for itself between a tab (local or SSH) and its dialog.
-              if (preset === 'build-review') {
-                openBuildReview(effectiveWorktreeId)
-              } else if (effectiveWorktreeId) {
-                createLocalWorkflowConversation(effectiveWorktreeId, preset)
-              } else {
-                throw new Error(
-                  translate('localWorkflow.chooseWorkspace', 'Open a workspace for this workflow.')
-                )
-              }
-              handleOpenChange(false)
-            } catch (error) {
-              toast.error(error instanceof Error ? error.message : String(error))
+          hover={anchorProps}
+          folderName={folder?.name}
+        />
+        <DropdownMenuContent
+          side="right"
+          align="start"
+          className="w-80"
+          {...hover.contentProps}
+          onCloseAutoFocus={(event) => {
+            if (needSpeedOpen) {
+              event.preventDefault()
+            } else {
+              hover.contentProps.onCloseAutoFocus(event)
             }
           }}
         >
-          <NewConversationMenu
-            starting={launch.starting}
-            launchError={
-              missingComputerWorkspace
-                ? translate(
-                    'computerPicker.needsWorkspace',
-                    'Add a workspace on this computer to start a session.'
-                  )
-                : launch.launchError || accountsError
-            }
-            refreshCapabilities={availability.refresh}
-            capabilities={missingComputerWorkspace ? [] : availability.capabilities}
-            rows={{ claude, codex }}
-            local={local}
-            accountEnvironmentId={accountEnvironmentId}
+          <NewWorkflowMenu
+            onNeedSpeed={() => {
+              setNeedSpeedSource(launchWorktreeId ?? undefined)
+              handleOpenChange(false)
+              setNeedSpeedOpen(true)
+            }}
             hover={hover.contentProps}
-            start={(pick, selectedCompany) =>
-              // Why: a company chosen after "target required" must replay the pending pick untouched.
-              pick === undefined && selectedCompany
-                ? void launch.start(undefined, selectedCompany)
-                : reviewed(pick, selectedCompany)
+            onRoutine={() => {
+              handleOpenChange(false)
+              // Why: the routine dialog picks an eligible workspace itself; a seeded one could be unsavable.
+              const state = useAppStore.getState()
+              state.setPendingRoutineDraftSeed({ cron: '*/30 * * * *' })
+              state.setActiveView('automations')
+            }}
+            unavailableReason={
+              folder
+                ? translate(
+                    'conversations.folderWorkflowsUnavailable',
+                    'Workflows cannot be kept in a folder yet. Start one from the + at the top.'
+                  )
+                : !local || activeTarget?.kind !== 'local' || !effectiveWorktreeId
+                  ? translate(
+                      'localWorkflow.menu.localOrSshBuildReview',
+                      'Workflows need a local workspace. Build + Review also opens in an SSH workspace, and asks for a workspace anywhere else.'
+                    )
+                  : undefined
             }
-            needsCompany={!runtimeId && !launchWorktreeId && !defaultToWorkRoot}
-            company={company}
-            loading={availability.loading}
-            companies={
-              companies.data?.companies.flatMap((entry) =>
-                entry.name ? [{ name: entry.name, slug: entry.slug }] : []
-              ) ?? []
-            }
-            companiesLoading={companies.loading}
-            companiesError={companies.error}
-            onClose={() => handleOpenChange(false)}
-            launchWorktreeId={launchWorktreeId}
-            onLaunched={folder ? (tabId) => fileLaunchInFolder(tabId, folder.id) : undefined}
-          />
-        </NewWorkflowMenu>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            onWorkflow={(preset) => {
+              const anywhere = workflowOpensOutsideLocalWorkspace(preset)
+              if (folder && !anywhere) {
+                return
+              }
+              if (!anywhere && (!effectiveWorktreeId || !local || activeTarget?.kind !== 'local')) {
+                return
+              }
+              try {
+                // Why: Build + Review decides for itself between a tab (local or SSH) and its dialog.
+                if (preset === 'build-review') {
+                  openBuildReview(effectiveWorktreeId)
+                } else if (effectiveWorktreeId) {
+                  createLocalWorkflowConversation(effectiveWorktreeId, preset)
+                } else {
+                  throw new Error(
+                    translate(
+                      'localWorkflow.chooseWorkspace',
+                      'Open a workspace for this workflow.'
+                    )
+                  )
+                }
+                handleOpenChange(false)
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : String(error))
+              }
+            }}
+          >
+            <NewConversationMenu
+              starting={launch.starting}
+              launchError={
+                missingComputerWorkspace
+                  ? translate(
+                      'computerPicker.needsWorkspace',
+                      'Add a workspace on this computer to start a session.'
+                    )
+                  : launch.launchError || accountsError
+              }
+              refreshCapabilities={availability.refresh}
+              capabilities={missingComputerWorkspace ? [] : availability.capabilities}
+              rows={{ claude, codex }}
+              local={local}
+              accountEnvironmentId={accountEnvironmentId}
+              hover={hover.contentProps}
+              start={(pick, selectedCompany) =>
+                // Why: a company chosen after "target required" must replay the pending pick untouched.
+                pick === undefined && selectedCompany
+                  ? void launch.start(undefined, selectedCompany)
+                  : reviewed(pick, selectedCompany)
+              }
+              needsCompany={!runtimeId && !launchWorktreeId && !defaultToWorkRoot}
+              company={company}
+              loading={availability.loading}
+              companies={
+                companies.data?.companies.flatMap((entry) =>
+                  entry.name ? [{ name: entry.name, slug: entry.slug }] : []
+                ) ?? []
+              }
+              companiesLoading={companies.loading}
+              companiesError={companies.error}
+              onClose={() => handleOpenChange(false)}
+              launchWorktreeId={launchWorktreeId}
+              onLaunched={folder ? (tabId) => fileLaunchInFolder(tabId, folder.id) : undefined}
+            />
+          </NewWorkflowMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   )
   // Why: dropping a conversation on the top + starts a routine from it. A folder's header is
   // already where a dropped conversation gets filed, so its + must not catch that drop.

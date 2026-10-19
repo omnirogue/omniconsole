@@ -1,4 +1,4 @@
-const WORK_PAGE = 'https://app.omnisi.ai/work'
+const WORK_PAGE = 'https://console.example.com/work'
 
 export function workNoticeClickUrl(value?: string): string {
   try {
@@ -8,7 +8,7 @@ export function workNoticeClickUrl(value?: string): string {
       !url.username &&
       !url.password &&
       !url.port &&
-      (url.hostname === 'app.omnisi.ai' || url.hostname === 'example-team.atlassian.net')
+      (url.hostname === 'console.example.com' || url.hostname === 'example-team.atlassian.net')
     ) {
       return url.href
     }

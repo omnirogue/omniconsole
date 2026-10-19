@@ -99,7 +99,7 @@ export async function createDocsOgImage({ title, url }: { title: string; url: st
             background: ogColors.secondary
           }}
         >
-          <img src={logoSrc} width={32} height={20} alt="" />
+          <img src={logoSrc} width={24} height={24} alt="" />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

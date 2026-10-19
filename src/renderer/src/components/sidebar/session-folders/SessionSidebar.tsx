@@ -38,7 +38,6 @@ import { SessionFocusView } from './SessionFocusView'
 import { useSessionFocusView } from './use-session-focus-view'
 import { sessionSidebarViewChoice } from '@/lib/session-sidebar-view-choice'
 import { flatConversationSidebar } from '@/lib/flat-conversation-sidebar'
-import { SidebarProjectsSection, filterNonProjectFlatGroups } from '../SidebarProjectsSection'
 import { SessionFolderLoadError } from './SessionFolderLoadError'
 import { rememberFirstSeen } from './session-first-seen'
 import { useQueuedSessionRowKeys } from './session-queue-state'
@@ -61,6 +60,7 @@ import { SessionSidebarToolbar } from './SessionSidebarToolbar'
 import { NewConversationButton } from './NewConversationButton'
 import { sidebarFolderEdits } from './session-sidebar-folder-edits'
 import { fileDroppedSession } from './use-session-folder-auto-collapse'
+import type { SessionFolder } from '@/lib/session-folders'
 import { useSelectionFollowsRow } from './use-selection-follows-screen'
 import { visibleSessionSelection } from './session-multi-selection'
 import {
@@ -240,12 +240,9 @@ export default function SessionSidebar({ technical = false }: { technical?: bool
   const shownGroups = useMemo(
     () =>
       flat
-        ? flatConversationSidebar(
-            filterNonProjectFlatGroups([...(searchGroups ?? groups)], folders.metadata, query),
-            viewStore.view
-          )
+        ? flatConversationSidebar(searchGroups ?? groups, viewStore.view)
         : (searchGroups ?? focus.listGroups),
-    [flat, searchGroups, groups, folders.metadata, query, viewStore.view, focus.listGroups]
+    [flat, searchGroups, groups, viewStore.view, focus.listGroups]
   )
   const visible = useMemo(() => visibleSessionSelection(shownGroups), [shownGroups])
   useSelectionFollowsRow(currentKey, currentKey !== null && visible.order.includes(currentKey))
@@ -304,12 +301,7 @@ export default function SessionSidebar({ technical = false }: { technical?: bool
           <SessionFolderLoadError folders={folders} />
         </div>
         <SessionFocusView focus={focus} listRef={listRef} onKeyDown={selection.handleKeyDown}>
-          {technical || focus.mode === 'focus' ? null : (
-            <>
-              <SidebarProjectsSection {...{ query, showArchived, archivedKeys }} />
-              <TeamRoutinesGroup query={query} quiet />
-            </>
-          )}
+          {technical || focus.mode === 'focus' ? null : <TeamRoutinesGroup query={query} quiet />}
           <SessionSearchRowsScope
             {...{ query, hiddenCount }}
             empty={!shownGroups.length}
@@ -374,9 +366,7 @@ export default function SessionSidebar({ technical = false }: { technical?: bool
                 onOpen: openSessionRow,
                 onRename: renameSidebarSession,
                 onMoveSessionKey: fileDroppedSession,
-                folderLauncher: (folder, label) => (
-                  <NewConversationButton folder={{ id: folder.id, name: label }} />
-                ),
+                folderLauncher: renderFolderLauncher,
                 onCancelQueue: cancelSessionRowQueue
               }}
             />
@@ -398,12 +388,18 @@ export default function SessionSidebar({ technical = false }: { technical?: bool
           />
         ) : null}
         <SessionSidebarFooter
-          {...{ hiddenCount, archivedCount, showArchived }}
+          hiddenCount={hiddenCount}
           showHidden={viewStore.showHidden}
           onShowHidden={viewStore.setShowHidden}
+          archivedCount={archivedCount}
+          showArchived={showArchived}
           onShowArchived={setShowArchived}
         />
       </section>
     </FleetDispatchSummaryProvider>
   )
+}
+
+function renderFolderLauncher(folder: SessionFolder, label: string): React.ReactNode {
+  return <NewConversationButton folder={{ id: folder.id, name: label }} />
 }

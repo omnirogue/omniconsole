@@ -21,7 +21,7 @@ const result = (id: string, text: string) =>
   })
 const published = [
   call('p1', 'Bash', { command: '~/Work/Ops/bin/work-decision ask --title Plan' }),
-  result('p1', `published https://app.omnisi.ai/a/${SLUG}`)
+  result('p1', `published https://console.example.com/a/${SLUG}`)
 ].join('\n')
 /** A coordinator that only read and waited on the page. */
 const readerOnly = [

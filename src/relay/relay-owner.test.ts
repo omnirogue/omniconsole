@@ -231,9 +231,7 @@ describe('what a relay reports and advertises', () => {
         payload: { state: 'done', prompt: '', agentType: 'codex', interactivePrompt: asyncAsk }
       })
     )
-    expect(relayOwnerSessions(relay.facts, relay.turns)[0]).toMatchObject({
-      state: 'awaiting-user'
-    })
+    expect(relayOwnerSessions(relay.facts, relay.turns)[0]).toMatchObject({ state: 'awaiting-user' })
   })
 
   it('reports a working agent silent for 10 minutes as stalled, and changes nothing', async () => {

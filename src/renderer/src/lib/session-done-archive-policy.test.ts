@@ -11,7 +11,12 @@ vi.mock('./session-folders', () => ({ isSessionSaved: () => false }))
 
 const { sessionEmptyArchiveRevision } = await import('./session-done-archive-policy')
 
-const metadata = { folders: [], membership: {} } as unknown as SessionFolderMetadata
+// An agent launched it: only an agent's blank session is cleaned up (Sal, 2026-10-19).
+const metadata = {
+  folders: [],
+  membership: {},
+  agentSessions: { 'session-1': 1 }
+} as unknown as SessionFolderMetadata
 const view = { version: 1, collapsed: [], hidden: [], order: [] } as unknown as SessionSidebarView
 
 function row(overrides: Partial<PursuitSidebarTreeRow> = {}): PursuitSidebarTreeRow {
@@ -44,6 +49,11 @@ function appState(overrides: Partial<AppState> = {}): AppState {
 }
 
 describe('sessionEmptyArchiveRevision', () => {
+  it('never vouches for a blank session a person started: it stays until they close it', () => {
+    const person = { folders: [], membership: {} } as unknown as SessionFolderMetadata
+    expect(sessionEmptyArchiveRevision(row(), appState(), person, view, true)).toBeNull()
+  })
+
   it('vouches for an untouched pane, including one whose SessionStart alone reported done', () => {
     expect(sessionEmptyArchiveRevision(row(), appState(), metadata, view, true)).not.toBeNull()
     const started = appState({

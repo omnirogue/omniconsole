@@ -95,6 +95,7 @@ import { AGENT_LAUNCH_READINESS_METHODS } from './agent-launch-readiness'
 import { STRUCTURED_AGENT_SESSION_METHODS } from './structured-agent-session'
 import { ARTIFACT_METHODS } from './artifacts'
 import { SPEC_PR_BATCH_METHODS } from './spec-pr-batch'
+import { DELIVERABLE_METHODS } from './deliverables'
 import { AGENT_HOOK_METHODS } from './agent-hooks'
 
 // Why: a flat manifest keeps registration order explicit and provides one
@@ -107,6 +108,7 @@ export const ALL_RPC_METHODS: readonly RpcAnyMethod[] = [
   ...SESSION_SEARCH_METHODS,
   ...ARTIFACT_METHODS,
   ...SPEC_PR_BATCH_METHODS,
+  ...DELIVERABLE_METHODS,
   ...AUTOMATION_METHODS,
   ...STRUCTURED_DECISION_METHODS,
   ...JEV_CONTROL_RPC_METHODS,

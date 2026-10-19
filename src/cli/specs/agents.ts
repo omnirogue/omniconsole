@@ -25,23 +25,18 @@ export const AGENT_TEMPLATE_COMMAND_SPECS: CommandSpec[] = [
   },
   {
     path: ['agents', 'set'],
-    summary: 'Create or update a custom template/bot, or override a built-in',
+    summary: 'Create or update a custom template, or override a built-in',
     usage:
-      'omni agents set --id <id> [--name <name>] [--description <text>] [--skills <csv>] [--memory <path|text>] [--model <model>] [--agent <claude|codex|grok|gemini>] (--instructions-file <path> | --instructions <text>) [--json]',
+      'omni agents set --id <id> [--name <name>] [--description <text>] (--instructions-file <path> | --instructions <text>) [--json]',
     allowedFlags: [
       ...GLOBAL_FLAGS,
       'id',
       'name',
       'description',
-      'skills',
-      'memory',
-      'model',
-      'agent',
       'instructions',
       'instructions-file'
     ],
     examples: [
-      'omni agents set --id reverse-engineer --name "Reverse Engineer" --skills "reverse-engineer,omni-boundary-review" --memory "~/Work/Shared/Reverse-Engineering/memory/LESSONS.md" --instructions-file ./re.md',
       'omni agents set --id advertising --instructions-file ./advertising.md',
       'omni agents set --id qa --name "QA" --description "Tests before it claims done" --instructions "Run the targeted tests first."',
       'omni agents set --id reviewer --instructions-file ./reviewer.md --json'

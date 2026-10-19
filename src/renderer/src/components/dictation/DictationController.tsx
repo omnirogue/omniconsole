@@ -114,7 +114,18 @@ export function DictationController() {
     }
 
     if (!settings?.voice?.enabled) {
-      toast('Voice dictation is disabled. Enable it in Settings > Voice.')
+      toast('Voice dictation is disabled. Enable it in Settings > Voice.', {
+        action: {
+          label: translate(
+            'auto.components.dictation.DictationController.bb7f599ee7',
+            'Open Settings'
+          ),
+          onClick: () => {
+            useAppStore.getState().openSettingsTarget({ pane: 'voice', repoId: null })
+            useAppStore.getState().openSettingsPage()
+          }
+        }
+      })
       return
     }
 
@@ -312,9 +323,8 @@ export function DictationController() {
   ])
 
   useEffect(() => {
-    const canDictate = (): boolean => Boolean(settings?.voice?.enabled && settings.voice.sttModel)
     const handleControl = (event: Event): void => {
-      if (!canDictate() || dictationStateRef.current === 'stopping') {
+      if (dictationStateRef.current === 'stopping') {
         return
       }
       const action = (event as CustomEvent<DictationControlAction>).detail
@@ -338,7 +348,7 @@ export function DictationController() {
     }
     document.addEventListener(DICTATION_CONTROL_EVENT, handleControl)
     return () => document.removeEventListener(DICTATION_CONTROL_EVENT, handleControl)
-  }, [settings?.voice?.enabled, settings?.voice?.sttModel, startDictation, stopDictation])
+  }, [startDictation, stopDictation])
 
   useHoldDictationGesture({
     dictationStateRef,

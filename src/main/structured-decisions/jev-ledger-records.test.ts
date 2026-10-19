@@ -75,30 +75,37 @@ describe('omni jev records list', () => {
 
 describe('omni jev records export', () => {
   it('pages every call row, then every outcome row, across a rotation under the cursor', async () => {
-    const ledger = await ledgerWith(9, 2_000)
-    await appendJevOutcome(ledger, { record_key: key(2), outcome: label }, async () => false)
-    const exported: Record<string, unknown>[] = []
-    let cursor: string | undefined
-    let rotatedUnderCursor = false
-    do {
-      const page = await exportJevRecords(ledger, cursor ? { cursor } : {}, 1_000)
-      exported.push(...(page.rows as Record<string, unknown>[]))
-      cursor = page.cursor ?? undefined
-      const at = cursor && JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8'))
-      if (at?.segment === JEV_CALLS_FILE && !rotatedUnderCursor) {
-        const before = (await readdir(ledger.directory)).length
-        for (let n = 10; n <= 13; n++) {
-          await ledger.appendCall(call(n, `2026-10-04T00:00:0${n - 10}.000Z`))
+    vi.useFakeTimers({ toFake: ['Date'] }).setSystemTime(new Date('2026-10-05T00:00:00Z'))
+    try {
+      const ledger = await ledgerWith(9, 2_000)
+      await appendJevOutcome(ledger, { record_key: key(2), outcome: label }, async () => false)
+      const exported: Record<string, unknown>[] = []
+      let cursor: string | undefined
+      let rotatedUnderCursor = false
+      do {
+        const page = await exportJevRecords(ledger, cursor ? { cursor } : {}, 1_000)
+        exported.push(...(page.rows as Record<string, unknown>[]))
+        cursor = page.cursor ?? undefined
+        const at = cursor && JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8'))
+        if (at?.segment === JEV_CALLS_FILE && !rotatedUnderCursor) {
+          const before = (await readdir(ledger.directory)).length
+          // Both new rotations share one tick, after the initial segments.
+          vi.setSystemTime(Date.now() + 1)
+          for (let n = 10; n <= 13; n++) {
+            await ledger.appendCall(call(n, `2026-10-04T00:00:0${n - 10}.000Z`))
+          }
+          rotatedUnderCursor = (await readdir(ledger.directory)).length > before
         }
-        rotatedUnderCursor = (await readdir(ledger.directory)).length > before
-      }
-    } while (cursor)
-    expect(rotatedUnderCursor).toBe(true)
-    const calls = exported.filter((row) => row.schema === 'jev-call/1')
-    expect(calls.map((row) => row.record_key).toSorted()).toEqual(
-      Array.from({ length: 13 }, (_, n) => key(n + 1)).toSorted()
-    )
-    expect(exported.at(-1)).toMatchObject({ schema: 'jev-outcome/1', record_key: key(2) })
+      } while (cursor)
+      expect(rotatedUnderCursor).toBe(true)
+      const calls = exported.filter((row) => row.schema === 'jev-call/1')
+      expect(calls.map((row) => row.record_key).toSorted()).toEqual(
+        Array.from({ length: 13 }, (_, n) => key(n + 1)).toSorted()
+      )
+      expect(exported.at(-1)).toMatchObject({ schema: 'jev-outcome/1', record_key: key(2) })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('keeps rows at or after --since and refuses a cursor that names another file', async () => {

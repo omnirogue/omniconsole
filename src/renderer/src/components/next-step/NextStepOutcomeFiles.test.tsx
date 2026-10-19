@@ -14,9 +14,7 @@ vi.mock('@/i18n/i18n', () => ({
       fallback
     )
 }))
-vi.mock('@/lib/company-folder-home', () => ({
-  getCompanyFolderHome: async () => '/Users/maintainer'
-}))
+vi.mock('@/lib/company-folder-home', () => ({ getCompanyFolderHome: async () => '/Users/maintainer' }))
 vi.mock('./NextStepFolderPickButton', () => ({
   NextStepFolderPickButton: ({ onPick }: { onPick: (path: string) => void }) => (
     <button type="button" onClick={() => onPick('/picked/folder')}>

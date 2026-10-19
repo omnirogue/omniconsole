@@ -110,9 +110,9 @@ describe('working candidate artifacts', () => {
     expect(() => anonymousCandidatePacket('I am Claude.', artifacts, 'Response A')).toThrow(
       'identifying metadata'
     )
-    expect(() =>
-      anonymousCandidatePacket('/Users/maintainer/project', artifacts, 'Response A')
-    ).toThrow('identifying metadata')
+    expect(() => anonymousCandidatePacket('/Users/maintainer/project', artifacts, 'Response A')).toThrow(
+      'identifying metadata'
+    )
     expect(() => anonymousCandidatePacket('Fine', artifacts, 'seat-1')).toThrow('invalid')
     expect(() =>
       anonymousCandidatePacket('Fine', { ...artifacts, diff: 'tampered' }, 'Response A')

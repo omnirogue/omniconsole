@@ -121,7 +121,9 @@ function tier2(check: StewardTier2Check): void {
 beforeEach(() => {
   state.dir = mkdtempSync(join(tmpdir(), 'tidy-unattended-'))
   state.actor = { kind: 'pane', paneKey: CLEANUP_PANE, title: 'Session cleanup' }
-  state.rows = [sidebarRow({ paneKey: 'tab-1:leaf-1', tabId: 'tab-1', rowKey: 'row-1' })]
+  state.rows = [
+    sidebarRow({ paneKey: 'tab-1:leaf-1', tabId: 'tab-1', rowKey: 'row-1', agentSession: true })
+  ]
   state.entries = new Map([
     [
       'tab-1:leaf-1',

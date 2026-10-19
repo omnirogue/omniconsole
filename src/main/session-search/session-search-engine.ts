@@ -46,6 +46,8 @@ export function createSessionSearchEngine(init: SessionSearchServiceInit) {
   let wake: (() => void) | null = null
   // A transcript's origin never changes; read its head once per file.
   const origins = new Map<string, { path: string; origin: TranscriptOrigin }>()
+  // Why: `lastConversationTs` scans the session's FTS5 chunk range; cache by `(lastTs, textBytes)`.
+  const conversationTsCache = new Map<number, { key: string; ts: number | null }>()
   const status: SessionSearchServiceStatus = {
     indexedSessions: 0,
     pendingFiles: 0,
@@ -83,6 +85,8 @@ export function createSessionSearchEngine(init: SessionSearchServiceInit) {
         const files = await listTranscriptFiles(roots)
         status.pendingFiles = files.length
         let changed = false
+        const duty = Math.min(1, Math.max(0.05, config.dutyCycle))
+        let sliceStarted = performance.now()
         index.writes.begin()
         try {
           for (const file of files) {
@@ -90,12 +94,19 @@ export function createSessionSearchEngine(init: SessionSearchServiceInit) {
               return
             }
             try {
-              changed = (await indexer.indexFile(file)) !== 'unchanged' || changed
+              const fileChanged = (await indexer.indexFile(file)) !== 'unchanged'
+              changed = fileChanged || changed
+              sliceStarted = fileChanged ? performance.now() : sliceStarted
             } catch (error) {
               process.stderr.write(`[session-search] ${file.path}: ${String(error)}\n`)
             }
             status.pendingFiles -= 1
             index?.writes.roll()
+            const workedMs = performance.now() - sliceStarted
+            if (duty < 1 && workedMs >= 15) {
+              await sleep(Math.max(1, Math.round((workedMs * (1 - duty)) / duty)))
+              sliceStarted = performance.now()
+            }
           }
         } finally {
           index?.writes.end()
@@ -203,6 +214,12 @@ export function createSessionSearchEngine(init: SessionSearchServiceInit) {
           known = { path: session.path, origin: readTranscriptOrigin(session.path, session.agent) }
           origins.set(session.sessionKey, known)
         }
+        const tsKey = `${session.lastTs ?? 0}:${session.textBytes}`
+        let cachedTs = conversationTsCache.get(session.sid)
+        if (!cachedTs || cachedTs.key !== tsKey) {
+          cachedTs = { key: tsKey, ts: current.lastConversationTs(session.sid) }
+          conversationTsCache.set(session.sid, cachedTs)
+        }
         return {
           sessionKey: session.sessionKey,
           agent: session.agent,
@@ -210,7 +227,7 @@ export function createSessionSearchEngine(init: SessionSearchServiceInit) {
           title: session.title,
           cwd: session.cwd,
           firstTs: session.firstTs,
-          lastTs: current.lastConversationTs(session.sid) ?? session.lastTs,
+          lastTs: cachedTs.ts ?? session.lastTs,
           userTurns: session.userTurns,
           textBytes: session.textBytes,
           firstAsk: clip(session.firstAsk),

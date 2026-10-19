@@ -1,4 +1,4 @@
-import { ArrowUp, AtSign, Plus, Square } from 'lucide-react'
+import { ArrowRight, AtSign, Plus, Square } from 'lucide-react'
 import { DictationMicButton } from '@/components/dictation/DictationMicButton'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -64,7 +64,32 @@ export function NativeChatComposerActions({
 }: NativeChatComposerActionsProps): React.JSX.Element {
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-2">
-      <div className="flex min-w-0 items-center gap-0.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={translate('components.native-chat.composer.attach', 'Attach file')}
+              disabled={attachDisabled}
+              onClick={onAttach}
+              className="pointer-coarse:size-11"
+            >
+              <Plus className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={4}>
+            {translate('components.native-chat.composer.attach', 'Attach file')}
+          </TooltipContent>
+        </Tooltip>
+        <NativeChatSessionOptionPickers
+          surface={sessionOptionsSurface}
+          snapshot={sessionOptionsSnapshot}
+          isWorking={isWorking}
+          pickerRequest={sessionOptionsPickerRequest}
+          applyStatus={sessionOptionsApplyStatus}
+        />
         {onTag && (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -84,37 +109,10 @@ export function NativeChatComposerActions({
             </TooltipContent>
           </Tooltip>
         )}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={translate('components.native-chat.composer.attach', 'Attach file')}
-              disabled={attachDisabled}
-              onClick={onAttach}
-              className="pointer-coarse:size-11"
-            >
-              <Plus className="size-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={4}>
-            {translate('components.native-chat.composer.attach', 'Attach file')}
-          </TooltipContent>
-        </Tooltip>
         {promptEngineer}
         <ChatUsageButton agent={agent} />
       </div>
       <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-1.5">
-        {/* Why: keep session controls beside the actions they affect; the
-        model trigger is ordered last so it sits directly next to dictation. */}
-        <NativeChatSessionOptionPickers
-          surface={sessionOptionsSurface}
-          snapshot={sessionOptionsSnapshot}
-          isWorking={isWorking}
-          pickerRequest={sessionOptionsPickerRequest}
-          applyStatus={sessionOptionsApplyStatus}
-        />
         <DictationMicButton
           isDictating={isDictating}
           holdMode={isDictationHoldMode}
@@ -140,7 +138,7 @@ export function NativeChatComposerActions({
               : 'size-8 rounded-full pointer-coarse:size-10'
           }
         >
-          <ArrowUp className="size-4" />
+          <ArrowRight className="size-4" />
           {sendLabel}
         </Button>
         {isWorking ? (

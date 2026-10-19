@@ -124,6 +124,7 @@ export function readSessionConversationRecord(
     ...(folderId !== undefined ? { folderId } : {}),
     ...(typeof raw.saved === 'boolean' ? { saved: raw.saved } : {}),
     ...(typeof raw.hidden === 'boolean' ? { hidden: raw.hidden } : {}),
+    ...(raw.agentSession === true ? { agentSession: true as const } : {}),
     // Why default listed: an owner that publishes a row lists it unless it says otherwise; a missing
     // flag must not hide a conversation the owner shows.
     listed: raw.listed !== false,

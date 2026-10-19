@@ -65,7 +65,9 @@ describe('team roster search', () => {
       'emp_iris'
     ])
     expect(searchRoster(pagesWithRepeat, 'josh', 1)).toMatchObject({ total: 2 })
-    expect(searchRoster(pagesWithRepeat, 'iris', 10).people.map((p) => p.id)).toEqual(['emp_iris'])
+    expect(searchRoster(pagesWithRepeat, 'iris', 10).people.map((p) => p.id)).toEqual([
+      'emp_iris'
+    ])
   })
 
   it('names duplicates and shows what the roster carries about each person', () => {

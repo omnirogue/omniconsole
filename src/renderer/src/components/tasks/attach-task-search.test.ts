@@ -31,7 +31,9 @@ describe('attachTaskRowMatches', () => {
   })
 
   it('matches a resolved company name whose words are not all in the slug', () => {
-    expect(attachTaskRowMatches(row, 'ApexLabs Inc', { companyName: 'ApexLabs Inc' })).toBe(true)
+    expect(attachTaskRowMatches(row, 'ApexLabs Inc', { companyName: 'ApexLabs Inc' })).toBe(
+      true
+    )
     expect(attachTaskRowMatches(row, 'ApexLabs Inc', {})).toBe(false)
   })
 

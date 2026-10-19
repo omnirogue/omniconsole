@@ -117,12 +117,12 @@ describe('WorkCompaniesSection', () => {
     expect(omnirogue.textContent).toContain('$414')
     const apexlabs = document.querySelector('[data-work-company="apexlabs"]') as HTMLElement
     // Why: ApexLabs has no API-cost tenant and reported no ad spend — both stay unknown, not $0.
-    expect(apexlabs.querySelector('[data-money="API cost"][data-money-empty]')?.textContent).toBe(
-      'n/a'
-    )
-    expect(apexlabs.querySelector('[data-money="Ad spend"][data-money-empty]')?.textContent).toBe(
-      'Unknown'
-    )
+    expect(
+      apexlabs.querySelector('[data-money="API cost"][data-money-empty]')?.textContent
+    ).toBe('n/a')
+    expect(
+      apexlabs.querySelector('[data-money="Ad spend"][data-money-empty]')?.textContent
+    ).toBe('Unknown')
     expect(document.querySelector('[data-work-portfolio]')?.textContent).toContain('$6,123')
     expect(screen.getByText('Your access covers 2 companies.')).toBeTruthy()
     expect(screen.getByText(/updated 5 min ago/)).toBeTruthy()

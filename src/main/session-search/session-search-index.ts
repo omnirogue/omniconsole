@@ -109,6 +109,14 @@ export class SessionSearchIndex {
     return row ? toSessionRow(row) : null
   }
 
+  /** Lightweight path lookup used before full session hydration when checking hardlink aliases. */
+  sessionPathByKey(sessionKey: string): string | null {
+    const row = this.db
+      .prepare('SELECT path FROM sessions WHERE session_key = ?')
+      .get(sessionKey) as Row | undefined
+    return typeof row?.path === 'string' ? row.path : null
+  }
+
   sessionsBySid(sids: readonly number[]): Map<number, SessionRow> {
     const out = new Map<number, SessionRow>()
     for (let start = 0; start < sids.length; start += 200) {

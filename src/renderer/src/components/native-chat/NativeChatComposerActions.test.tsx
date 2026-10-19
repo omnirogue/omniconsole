@@ -37,7 +37,7 @@ import { NativeChatComposerActions } from './NativeChatComposerActions'
 afterEach(() => cleanup())
 
 describe('NativeChatComposerActions', () => {
-  it('places session option pickers immediately beside dictation', () => {
+  it('places session option pickers right after attach, apart from dictation and send', () => {
     render(
       <NativeChatComposerActions
         attachDisabled={false}
@@ -56,9 +56,15 @@ describe('NativeChatComposerActions', () => {
       />
     )
 
+    // Why: since 85b625668b the pickers lead the left group beside Attach; dictation, Send and
+    // Stop form the right group.
     const pickers = screen.getByTestId('session-option-pickers')
+    const attach = screen.getByRole('button', { name: 'Attach file' })
     const dictation = screen.getByRole('button', { name: 'Start dictation' })
-    expect(pickers.nextElementSibling).toBe(dictation)
+    const leftGroup = pickers.parentElement!
+    expect(leftGroup.contains(attach)).toBe(true)
+    expect(attach.compareDocumentPosition(pickers) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(leftGroup.contains(dictation)).toBe(false)
   })
 
   it('marks the streaming Stop control as the critical hit target', () => {

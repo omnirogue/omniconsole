@@ -169,9 +169,13 @@ describe('session tidy --delete', () => {
     ).toContain('shares a tab')
   })
 
-  it('archive mode is unchanged', () => {
-    expect(classify({}, { archived: true }).action).toBe('skip')
-    expect(classify({}).action).toBe('archive')
+  it("archive mode is unchanged for an agent's session, and holds a person's", () => {
+    const agent = { row: { agentSession: true } }
+    expect(classify({}, { archived: true }, agent).action).toBe('skip')
+    expect(classify({}, {}, agent).action).toBe('archive')
+    expect(classify({})).toMatchObject({ action: 'hold', group: 'held' })
+    // A person's delete request is theirs: --delete deletes what qualifies, whoever started it.
+    expect(classify(DELETE).action).toBe('delete')
   })
 })
 

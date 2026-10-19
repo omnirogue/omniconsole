@@ -43,6 +43,8 @@ const metadataSchema = z.object({
       })
     )
     .optional(),
+  /** Sessions an agent launched, by session key: epoch ms (agent-session-note.ts). */
+  agentSessions: z.record(z.string(), z.number().finite()).optional(),
   /** Project settings by project folder id; each record is checked on its own (project-settings.ts). */
   projects: z.record(z.string(), z.unknown()).optional()
 })
@@ -257,6 +259,11 @@ export function migrateSessionFolderKey(
     finishActions[toKey] ??= finishActions[fromKey]!
     delete finishActions[fromKey]
   }
+  const agentSessions = { ...metadata.agentSessions }
+  if (Object.hasOwn(agentSessions, fromKey)) {
+    agentSessions[toKey] ??= agentSessions[fromKey]!
+    delete agentSessions[fromKey]
+  }
   // Why here: a project's coordinator is bound by the key its folder membership moves under.
   const projects = { ...metadata.projects }
   let coordinatorMoved = false
@@ -270,6 +277,7 @@ export function migrateSessionFolderKey(
     ...metadata,
     membership,
     ...(metadata.finishActions ? { finishActions } : {}),
+    ...(metadata.agentSessions ? { agentSessions } : {}),
     ...(coordinatorMoved ? { projects } : {})
   }
 }
@@ -279,6 +287,7 @@ export function holdsSessionFolderKey(metadata: SessionFolderMetadata, key: stri
   return (
     Object.hasOwn(metadata.membership, key) ||
     Object.hasOwn(metadata.finishActions ?? {}, key) ||
+    Object.hasOwn(metadata.agentSessions ?? {}, key) ||
     Object.values(metadata.projects ?? {}).some(
       (project) => project.coordinator?.sessionKey === key
     )

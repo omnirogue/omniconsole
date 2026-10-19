@@ -153,9 +153,7 @@ it('tells an ad-pause stop apart from an ad-spend stop', () => {
   expect(keepGoingStopWords('needs-you-ad-pause')).toBe(
     'the next step pauses ads — you asked to approve pauses'
   )
-  expect(keepGoingStopWords('needs-you-ad-spend')).toBe(
-    'the next step changes ad spend — needs you'
-  )
+  expect(keepGoingStopWords('needs-you-ad-spend')).toBe('the next step changes ad spend — needs you')
   expect(keepGoingStopWords('needs-you-ad-campaign-pause')).toBe(
     'the next step pauses a whole campaign — campaigns stay on; pause ad sets instead'
   )

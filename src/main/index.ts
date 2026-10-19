@@ -34,6 +34,7 @@ import { paneForLedgerId } from './session-ledger/ledger-lookup'
 import { configureStewardSwitches } from './session-steward/steward-switches'
 import { startSessionCleanupRuns } from './session-steward/cleanup-runs-runtime'
 import { startSessionSteward } from './session-steward/steward-runtime'
+import { startDeliverableVerifier } from './deliverable-verifier/deliverable-verifier-wiring'
 import { startSessionHostOwner } from './session-host-owner/session-host-owner-runtime'
 import { peekRemoteConversationLedgerStore } from './session-host-remote/remote-conversation-ledger-runtime'
 import { startRemoteSessionHosts } from './session-host-remote/remote-session-hosts-runtime'
@@ -561,6 +562,7 @@ let isQuitting = false
 let store: Store | null = null
 let stats: StatsCollector | null = null
 let stopNextStepSuggestions: (() => Promise<void>) | null = null
+let stopDeliverableVerifier: (() => Promise<void>) | null = null
 let stopMainLatencyTelemetry: (() => void) | null = null
 let stopSessionDecisions: (() => Promise<void>) | null = null
 let stopSessionWrittenFiles: (() => Promise<void>) | null = null
@@ -3333,6 +3335,12 @@ void app.whenReady().then(async () => {
     onReplyDocuments: (paneKey, reply, apiOrigin) =>
       sessionLedgerService.workLinks.noteReply(paneKey, reply, apiOrigin)
   })
+  // Why after suggestions: it listens to the same finished turns (W22-20; Watch only by default).
+  stopDeliverableVerifier = startDeliverableVerifier({
+    store,
+    runtime: runtimeService,
+    userDataPath: getProfileUserDataPath()
+  })
   // Why: a question a session asks outlives its terminal until it is answered (Work › Questions),
   // and OmniOS holds the same questions so the person can answer them there.
   const stopDecisionStore = startSessionDecisions({ userDataPath: getProfileUserDataPath() })
@@ -4400,6 +4408,8 @@ app.on('will-quit', (e) => {
   const statsFlush = stats?.flushAsync() ?? Promise.resolve()
   const nextStepSuggestionsFlush = stopNextStepSuggestions?.() ?? Promise.resolve()
   stopNextStepSuggestions = null
+  const deliverableVerifierFlush = stopDeliverableVerifier?.() ?? Promise.resolve()
+  stopDeliverableVerifier = null
   const sessionDecisionsFlush = stopSessionDecisions?.() ?? Promise.resolve()
   stopSessionDecisions = null
   const sessionWrittenFilesFlush = stopSessionWrittenFiles?.() ?? Promise.resolve()
@@ -4514,6 +4524,7 @@ app.on('will-quit', (e) => {
     { name: 'usage-cache', promise: usageCacheFlush },
     { name: 'stats', promise: statsFlush },
     { name: 'next-step-suggestions', promise: nextStepSuggestionsFlush },
+    { name: 'deliverable-verifications', promise: deliverableVerifierFlush },
     { name: 'session-decisions', promise: sessionDecisionsFlush },
     { name: 'session-written-files', promise: sessionWrittenFilesFlush },
     { name: 'session-organization', promise: sessionOrganizationFlush },

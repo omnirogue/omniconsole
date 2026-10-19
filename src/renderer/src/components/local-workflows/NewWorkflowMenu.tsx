@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Clock, MoreHorizontal, MessageSquare, Workflow } from 'lucide-react'
+import { Clock, MoreHorizontal, MessageSquare, Workflow, Zap } from 'lucide-react'
 import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
@@ -63,7 +63,8 @@ export function NewWorkflowMenu({
   unavailableReason,
   hover,
   onWorkflow,
-  onRoutine
+  onRoutine,
+  onNeedSpeed
 }: {
   children: ReactNode
   /** Why workflows cannot open here; Build + Review falls back to its dialog, Evolve opens anyway. */
@@ -79,6 +80,18 @@ export function NewWorkflowMenu({
       <DropdownMenuLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {translate('conversations.newConversation', 'New conversation')}
       </DropdownMenuLabel>
+      {onNeedSpeed ? (
+        <DropdownMenuItem className="items-start gap-2.5 py-2" onSelect={onNeedSpeed}>
+          <Zap aria-hidden="true" className="mt-0.5 size-3.5" />
+          <MenuRow
+            title={translate('needSpeed.title', 'Need Speed?')}
+            description={translate(
+              'needSpeed.menuDescription',
+              'Route one or more prompts · Experimental'
+            )}
+          />
+        </DropdownMenuItem>
+      ) : null}
       <DropdownMenuSub>
         <DropdownMenuSubTrigger
           aria-label={translate('localWorkflow.modelMenu', 'Model')}

@@ -77,9 +77,7 @@ export async function requestDeviceToken(
   endpoint: 'token' | 'refresh',
   body: unknown
 ): Promise<z.infer<typeof tokenResponse>> {
-  const value = await roomRequest(fetcher, `${apiOrigin}/api/omniconsole/device/${endpoint}`, {
-    body
-  })
+  const value = await roomRequest(fetcher, `${apiOrigin}/api/omniconsole/device/${endpoint}`, { body })
   const parsed = tokenResponse.safeParse(value)
   if (parsed.success) {
     return parsed.data

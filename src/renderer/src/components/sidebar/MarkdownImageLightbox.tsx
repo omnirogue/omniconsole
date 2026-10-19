@@ -16,6 +16,7 @@ type ExpandableMarkdownImageProps = {
   alt?: string
   className?: string
   triggerClassName?: string
+  onImageClick?: (event: React.MouseEvent<HTMLElement>) => void
 }
 
 /**
@@ -26,7 +27,8 @@ export function ExpandableMarkdownImage({
   src,
   alt,
   className,
-  triggerClassName
+  triggerClassName,
+  onImageClick
 }: ExpandableMarkdownImageProps): React.JSX.Element {
   const [open, setOpen] = React.useState(false)
   const label =
@@ -43,8 +45,10 @@ export function ExpandableMarkdownImage({
           )}
           onClick={(event) => {
             // Why: prevent parent row/card handlers from treating the zoom click
-            // as selection/navigation.
+            // as selection/navigation; Radix DialogTrigger skips opening when
+            // onImageClick calls event.preventDefault().
             event.stopPropagation()
+            onImageClick?.(event)
           }}
           aria-label={translate(
             'auto.components.sidebar.MarkdownImageLightbox.expand',

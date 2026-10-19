@@ -10,6 +10,7 @@ import { reportAppHealth } from '../app-health/app-health'
 import { sanitizeCrashReportString } from '../../shared/crash-report-redaction'
 
 export function prepareOmniConsoleMcpForPty(input: {
+  internalSignedIn?: boolean
   env: NodeJS.ProcessEnv
   cwd?: string
   launchAgent?: TuiAgent
@@ -48,7 +49,8 @@ export function prepareOmniConsoleMcpForPty(input: {
   for (const provider of providers) {
     try {
       prepareOmniConsoleMcpForLaunch({
-        signedIn: true,
+        signedIn: input.internalSignedIn !== false,
+        ...(input.isWsl ? { excludeOmnisiTeam: true } : {}),
         provider,
         ...paths,
         ...(provider === 'claude' && claudeHeadersHelper ? { claudeHeadersHelper } : {}),

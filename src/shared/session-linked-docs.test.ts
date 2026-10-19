@@ -5,7 +5,7 @@ import {
   sanitizeSessionLinkedDoc
 } from './session-linked-docs'
 
-const API = 'https://app.omnisi.ai'
+const API = 'https://console.example.com'
 
 describe('extractSessionLinkedDocs', () => {
   it('finds Slite docs and omnios pages in reply order, the last one newest', () => {

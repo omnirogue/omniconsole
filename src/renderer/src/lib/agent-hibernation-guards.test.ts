@@ -281,17 +281,14 @@ describe('R1 under idleAutoCloseMode', () => {
 })
 
 describe('an open ask keeps the agent (G1)', () => {
-  it.each(['awaiting-user', 'waiting-for-yes', 'working'])(
-    'keeps on Stage A1 %s',
-    async (state) => {
-      const shutdown = install(HIBERNATION)
-      readKeep.mockImplementation(async (targets) =>
-        targets.map((target) => ({ ...quiet(target), state }))
-      )
-      await ticks(3)
-      expect(shutdown).not.toHaveBeenCalled()
-    }
-  )
+  it.each(['awaiting-user', 'waiting-for-yes', 'working'])('keeps on Stage A1 %s', async (state) => {
+    const shutdown = install(HIBERNATION)
+    readKeep.mockImplementation(async (targets) =>
+      targets.map((target) => ({ ...quiet(target), state }))
+    )
+    await ticks(3)
+    expect(shutdown).not.toHaveBeenCalled()
+  })
 
   it.each([
     ['a numbered question list', 'Before I go on:\n1. Phase 0?\n2. Thirty minutes?\n3. Archive?'],

@@ -57,7 +57,6 @@ export const SessionProjectBindLaunchParamsSchema = z
 export type SessionProjectRendererRequest =
   | { kind: 'readProject'; folder: string; worktreeId?: string }
   | { kind: 'suggestProject'; folder: string; by: string; reason: string }
-  | { kind: 'createProject'; folder: string; settings: ProjectSettings }
   /** Every project in this window (`SessionProjectListResult`, without thread counts). */
   | { kind: 'listProjects' }
   /** The project a pane works in, as its project page counts threads (`SessionProjectForPane`). */
@@ -74,7 +73,6 @@ export const SESSION_PROJECT_REQUEST_KINDS: ReadonlySet<string> = new Set([
   'readProject',
   'listProjects',
   'suggestProject',
-  'createProject',
   'projectForPane',
   'bindLaunchContext'
 ])

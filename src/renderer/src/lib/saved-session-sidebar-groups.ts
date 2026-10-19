@@ -75,8 +75,9 @@ export function addSavedSessionGroups(
       })
     }
   }
+  // Why (Sal, 2026-10-19): Agent sessions sit under the person's own sessions, Saved included.
   const savedPosition = groups.findIndex(
-    (group) => group.kind === 'hidden' || group.kind === 'archived'
+    (group) => group.kind === 'workers' || group.kind === 'hidden' || group.kind === 'archived'
   )
   if (!query || savedRows.length || savedGroups.length > 1) {
     groups.splice(savedPosition === -1 ? groups.length : savedPosition, 0, ...savedGroups)

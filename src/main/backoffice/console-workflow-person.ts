@@ -137,11 +137,17 @@ export function currentConsolePublicationScope(): {
   principal: string
   baseUrl: string
   profileKey: string
+  organizationId?: string
 } | null {
   try {
     const current = context()
     return current
-      ? { principal: current.principal, baseUrl: current.baseUrl, profileKey: current.profileKey }
+      ? {
+          principal: current.principal,
+          baseUrl: current.baseUrl,
+          profileKey: current.profileKey,
+          organizationId: current.identity.organizationId
+        }
       : null
   } catch {
     return null

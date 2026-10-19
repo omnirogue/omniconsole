@@ -6,7 +6,7 @@ import {
 
 describe('resolveArtifactCloudApiUrl', () => {
   it('uses the first-party production origin by default', () => {
-    expect(resolveArtifactCloudApiUrl(undefined, {}, true)).toBe('https://app.omnisi.ai')
+    expect(resolveArtifactCloudApiUrl(undefined, {}, true)).toBe('https://console.example.com')
   })
 
   it('allows loopback HTTP only in development', () => {
@@ -24,7 +24,7 @@ describe('resolveArtifactCloudApiUrl', () => {
     expect(() => resolveArtifactCloudApiUrl('https://example.com', {}, false)).toThrow(
       /omnirogue\.com/
     )
-    expect(() => resolveArtifactCloudApiUrl('https://app.omnisi.ai/path', {}, false)).toThrow(
+    expect(() => resolveArtifactCloudApiUrl('https://console.example.com/path', {}, false)).toThrow(
       /origin/
     )
   })

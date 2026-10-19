@@ -32,7 +32,6 @@ const EMBEDDED_SECTIONS = new Set([
   'dispatch',
   'projects',
   'needs-you',
-  'artifacts',
   'happening',
   'stats',
   'companies'

@@ -34,7 +34,7 @@ function invalid(message: string): RuntimeClientError {
   return new RuntimeClientError('invalid_argument', message)
 }
 
-/** A page id, or an omnios page link such as `https://app.omnisi.ai/a/<id>`. */
+/** A page id, or an omnios page link such as `https://console.example.com/a/<id>`. */
 export function artifactSlugFromReference(reference: string): string {
   const slug = slugFromReference(reference)
   if (!slug) {

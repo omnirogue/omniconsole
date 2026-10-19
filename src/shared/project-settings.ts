@@ -72,24 +72,6 @@ export const projectCoordinatorSchema = z.object({
   sessionKey: z.string().min(1).max(1000).optional()
 })
 
-export const projectThreadLaunchSchema = projectCoordinatorSchema.shape.launch.extend({
-  role: z.string().max(80).optional()
-})
-
-export const projectThreadMemorySchema = z.object({
-  threadId: z.string().min(1).max(160),
-  title: z.string().min(1).max(200),
-  agent: z.string().min(1).max(64),
-  model: z.string().max(120).optional(),
-  effort: z.string().max(32).optional(),
-  status: z.string().max(32).optional(),
-  deletedFromUi: z.boolean().optional(),
-  updatedAt: z.number().finite().nonnegative(),
-  summary: z.string().max(600),
-  outputTxtPath: z.string().max(512).optional(),
-  memoryPath: z.string().max(512).optional()
-})
-
 export const projectSettingsSchema = z.object({
   repos: z.array(projectRepoSchema).max(PROJECT_MAX_REPOS),
   attachments: z.array(sessionContextAttachmentSchema),
@@ -98,14 +80,7 @@ export const projectSettingsSchema = z.object({
   hostPolicy: projectHostPolicySchema,
   company: LABEL.optional(),
   domain: LABEL.optional(),
-  goal: z.string().max(1000).optional(),
   coordinator: projectCoordinatorSchema.optional(),
-  /** Default model, effort, and team setting for new child threads spawned in this project. */
-  threadDefaults: projectCoordinatorSchema.shape.launch.optional(),
-  /** Multi-model parallel thread fleet presets launched from the project coordinator or page. */
-  multiThreadFleet: z.array(projectThreadLaunchSchema).max(8).optional(),
-  /** Per-thread memory index (survives UI thread deletion) + clean Output.txt transcript pointers. */
-  threadMemories: z.array(projectThreadMemorySchema).max(25).optional(),
   /** Jira issues the project works on (plan §5): links for its page and coordinator, never a brief. */
   tasks: z.array(consoleJiraWorkRef).max(PROJECT_MAX_TASKS).optional(),
   createdBy: z.literal('person'),
@@ -117,8 +92,6 @@ export type ProjectRepo = z.infer<typeof projectRepoSchema>
 export type ProjectAgent = z.infer<typeof projectAgentSchema>
 export type ProjectHostPolicy = z.infer<typeof projectHostPolicySchema>
 export type ProjectCoordinator = z.infer<typeof projectCoordinatorSchema>
-export type ProjectThreadLaunch = z.infer<typeof projectThreadLaunchSchema>
-export type ProjectThreadMemory = z.infer<typeof projectThreadMemorySchema>
 export type ProjectSettings = z.infer<typeof projectSettingsSchema>
 
 export function emptyProjectSettings(now: number): ProjectSettings {

@@ -227,9 +227,9 @@ describe('bringing a finished Discover run to OmniOS', () => {
       at: expect.any(String),
       attempts: 1
     })
-    const reply = { ok: true, result: { shareUrl: 'https://app.omnisi.ai/a/1a2b3c' } }
+    const reply = { ok: true, result: { shareUrl: 'https://console.example.com/a/1a2b3c' } }
     await writeFile(join(d.root, 'run-1', 'published.json'), JSON.stringify(reply))
-    expect(discoverOmniosStatus(d.root, 'run-1')?.url).toBe('https://app.omnisi.ai/a/1a2b3c')
+    expect(discoverOmniosStatus(d.root, 'run-1')?.url).toBe('https://console.example.com/a/1a2b3c')
     await writeFile(
       join(d.root, 'run-1', 'published.json'),
       JSON.stringify({ result: { shareUrl: 'javascript:alert(1)' } })
@@ -273,7 +273,7 @@ describe('bringing a finished Discover run to OmniOS', () => {
     await reconcileDiscoverDeliveries({ ...d, view: async () => view })
     expect(d.launches).toHaveLength(1)
     expect((await deliverDiscoverToOmnios(d, 'run-1')).outcome).toBe('pending')
-    const url = 'https://app.omnisi.ai/a/published'
+    const url = 'https://console.example.com/a/published'
     await writeFile(
       join(d.root, 'run-1', 'published.json'),
       JSON.stringify({ ok: true, result: { shareUrl: url } })

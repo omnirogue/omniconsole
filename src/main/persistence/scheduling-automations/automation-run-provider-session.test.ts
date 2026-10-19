@@ -7,8 +7,7 @@ import {
   type AutomationRunOperations
 } from './automation-run-operations'
 
-const CODEX_HOME =
-  '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/acct/home'
+const CODEX_HOME = '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/acct/home'
 const transcriptPath = `${CODEX_HOME}/sessions/2026/09/19/rollout-2026-09-19T16-30-57-thread-1.jsonl`
 
 function operations(): AutomationRunOperations {

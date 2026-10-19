@@ -27,8 +27,7 @@ describe('computeTrustedHash', () => {
         eventLabel: 'session_end',
         groupIndex: 0,
         handlerIndex: 0,
-        command:
-          '/usr/bin/python3 /Users/maintainer/Work/Ops/bin/omni-session-context hook --provider codex --event SessionEnd',
+        command: '/usr/bin/python3 /Users/maintainer/Work/Ops/bin/omni-session-context hook --provider codex --event SessionEnd',
         timeoutSec: 3,
         matcher: ''
       })
@@ -44,12 +43,7 @@ describe('computeTrustedHash', () => {
       { hooks: [] },
       { type: 'command', command: 'python3 /x/question-mirror.py --provider codex', timeout: 5 }
     )
-    expect(entry).toMatchObject({
-      eventLabel: 'session_end',
-      groupIndex: 1,
-      handlerIndex: 0,
-      timeoutSec: 5
-    })
+    expect(entry).toMatchObject({ eventLabel: 'session_end', groupIndex: 1, handlerIndex: 0, timeoutSec: 5 })
   })
 
   it('produces a different hash when the command changes', () => {

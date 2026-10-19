@@ -243,7 +243,8 @@ async function drainOnePromptQueue(
       hostAdmission: hostOperation
         ? { hostOperation }
         : { writer: keepGoing ? 'keep-going' : 'prompt-queue' },
-      unattended: keepGoing || entry.requestedBy?.actor === 'steward',
+      unattended:
+        keepGoing || entry.requestedBy?.actor === 'steward' || entry.automation !== undefined,
       beforeWrite: guard,
       ...(receiver
         ? {

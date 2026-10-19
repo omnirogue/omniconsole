@@ -1701,3 +1701,17 @@ live and exited proof on connection loss, retain history, and wait for fresh
 host evidence. Journal projection failure also revokes process proof. Passive
 viewing and its UI are pane-only, behind `commandCenter`; existing full-page
 hold requests and responses remain unchanged.
+
+## Deliverable check records and repair prompts
+
+The turn-end deliverable check (W22-20) runs on the host that classifies the session's turns and
+keeps its records there. `deliverables.list` and `deliverables.markFalseAlarm` are additive strict
+methods; a client asking an older host gets `method_not_found` and shows no Deliverables block,
+with no local fallback (the client's disk never answers for a remote session).
+
+A repair prompt is an ordinary prompt-queue entry with a new optional `automation` field
+(`{ kind: 'deliverable-repair', verificationId, attempt }`), never a new `origin` kind: an older
+client's field-by-field reader drops the field and keeps the entry with its visible
+`[from Deliverable check n/max · dv-…]` marker, where an unknown origin would drop the entry. The
+owning host's delivery guard re-reads its own record before the write. No stream opcode or
+capability is added.

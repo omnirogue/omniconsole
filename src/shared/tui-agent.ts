@@ -27,7 +27,6 @@ export type TuiAgent =
   | 'cursor' // Cursor
   | 'droid' // Factory Droid
   | 'kimi' // Kimi
-  | 'deepseek' // DeepSeek CLI
   | 'mistral-vibe' // Mistral Vibe
   | 'qwen-code' // Qwen Code
   | 'rovo' // Rovo Dev
@@ -67,7 +66,6 @@ export const TUI_AGENT_VALUES: readonly TuiAgent[] = [
   'cursor',
   'droid',
   'kimi',
-  'deepseek',
   'mistral-vibe',
   'qwen-code',
   'rovo',

@@ -103,10 +103,10 @@ export function conversationSidebarGroupLabel(
   return translate('conversationFleet.waitingGroup', 'Waiting')
 }
 
-/** The groups after Done: Agent sessions, Saved, Hidden and Archived. */
+/** The groups after Done: Saved, Agent sessions, Hidden and Archived. */
 const LATER_GROUP_KINDS: readonly SessionSidebarGroup['kind'][] = [
-  'workers',
   'saved',
+  'workers',
   'hidden',
   'archived'
 ]

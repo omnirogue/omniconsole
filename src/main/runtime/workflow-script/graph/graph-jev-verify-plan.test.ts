@@ -8,7 +8,12 @@ import { normalizeWorkflowSpec } from '../../../../shared/workflow-graph-normali
 import { workflowTemplate } from '../../../../shared/workflow-graph-templates'
 import { workflowRunResult } from '../../../../shared/workflow-run-result'
 import { planWorkflowGraph, type GraphCall, type GraphOutcome } from './graph-plan'
-import type { GraphConfig, GraphStepRun, GraphTarget, GraphVerifyRequest } from './graph-plan-types'
+import type {
+  GraphConfig,
+  GraphStepRun,
+  GraphTarget,
+  GraphVerifyRequest
+} from './graph-plan-types'
 import type { GraphScope } from './graph-scope'
 import { graphJudgingGates } from './graph-judging-gates'
 import { createGraphJevVerifier } from './graph-jev-verify'
@@ -653,12 +658,8 @@ describe('live JEV verify', () => {
     })
     const started = { worktreeId: 'w', conversationId: 'c', executionId: 'e' }
     const settled = { state: 'completed', calls: [], startedAt: 0, graphRun: view }
-    const json = workflowRunResult(
-      settled as unknown as LocalWorkflowView,
-      started,
-      'discover',
-      1
-    ).results.targets.find((target) => target.key === 'find.r1.2')!
+    const json = workflowRunResult(settled as unknown as LocalWorkflowView, started, 'discover', 1)
+      .results.targets.find((target) => target.key === 'find.r1.2')!
     expect(json).toMatchObject({ tally: 'unverified', resurfaced: true, setAsideAt: 0.05 })
     expect(json.refutedBy).toBeUndefined()
     const kept = projected(same).steps.find((step) => step.id === 'verify')!.rounds[0]!.targets!
@@ -672,15 +673,10 @@ describe('live JEV verify', () => {
     // find.r1.2 is folded into find.r1.3, which reviewers leave unsure; JEV rates both not real.
     const p = { 'find.r1.1': 0.95, 'find.r1.2': 0.08, 'find.r1.3': 0.05, 'find.r1.4': 0.97 }
     const merged = (later: ReturnType<typeof found>[]) =>
-      live(
-        { mode: 'live' },
-        'ok',
-        {},
-        {
-          shape: { ...shape, loop: true, rootCause: true, unsure: 'find.r1.3', later },
-          p
-        }
-      )
+      live({ mode: 'live' }, 'ok', {}, {
+        shape: { ...shape, loop: true, rootCause: true, unsure: 'find.r1.3', later },
+        p
+      })
     const round = merged(FOUND).plan.runs.verify[0].targets!
     expect(tallies(round)['find.r1.3']).toBe('refuted by jev')
     expect(round.find((target) => target.item.key === 'find.r1.3')!.item.alsoMerged).toEqual([

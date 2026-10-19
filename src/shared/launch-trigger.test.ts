@@ -51,9 +51,9 @@ describe('resolveLaunchTrigger', () => {
 
   it('lets a request naming the exact tab win over the renderer guess', () => {
     expect(resolveLaunchTrigger({ rendererTrigger: 'new', tabHint: 'cli' })).toBe('cli')
-    expect(
-      resolveLaunchTrigger({ rendererTrigger: 'hibernation-wake', tabHint: 'mobile-wake' })
-    ).toBe('mobile-wake')
+    expect(resolveLaunchTrigger({ rendererTrigger: 'hibernation-wake', tabHint: 'mobile-wake' })).toBe(
+      'mobile-wake'
+    )
   })
 
   it('refines only background or unattributed renderer guesses with a worktree-wide hint', () => {

@@ -692,10 +692,7 @@ describe('WorkDeliveryClaimer reconcile by receipt', () => {
     await h.claimer.pass()
     expect(h.deps.respawn).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({
-        folder: '/Users/maintainer/omni-ide-worktrees/gone',
-        transcript: 'gone'
-      }),
+      expect.objectContaining({ folder: '/Users/maintainer/omni-ide-worktrees/gone', transcript: 'gone' }),
       expect.any(String),
       expect.any(String)
     )

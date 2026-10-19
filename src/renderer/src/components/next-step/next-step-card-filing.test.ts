@@ -193,9 +193,7 @@ describe('where a new card is filed', () => {
       unitId: 'dom_eng',
       unitName: 'Engineering'
     })
-    expect('refusal' in result && result.refusal.reason).toContain(
-      'Engineering has no active goal.'
-    )
+    expect('refusal' in result && result.refusal.reason).toContain('Engineering has no active goal.')
   })
 
   it('refuses a workspace whose path this desktop does not know', async () => {

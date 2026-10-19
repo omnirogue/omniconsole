@@ -496,17 +496,26 @@ describe.skipIf(process.platform === 'win32')('managed hook stdin lifecycle', ()
     }
   })
 
-  it('accepts a large payload without Orca environment or a broken writer', async () => {
+  it('accepts a large payload without breaking the writer', async () => {
     const scripts = await generatePosixScripts()
     for (const [agent, script] of scripts) {
+      // Keep stdin coverage independent of Command Code's host ancestor lookup.
       const extraEnv = agent.startsWith('command-code')
         ? {
+            ORCA_AGENT_HOOK_ENDPOINT: join(isolatedUserDataDir, 'absent-endpoint.env'),
             ORCA_AGENT_HOOK_PORT: '1',
             ORCA_AGENT_HOOK_TOKEN: 'test-token',
-            ORCA_PANE_KEY: 'test-pane'
+            ORCA_AGENT_HOOK_ENV: 'test',
+            ORCA_AGENT_HOOK_VERSION: '1',
+            ORCA_PANE_KEY: 'test-pane',
+            ORCA_TAB_ID: 'test-tab',
+            ORCA_WORKTREE_ID: 'test-worktree',
+            ORCA_AGENT_LAUNCH_TOKEN: 'test-launch-token'
           }
         : {}
-      const result = await runPosixHook(script, extraEnv)
+      const result = await runPosixHook(script, extraEnv).catch((error: unknown) => {
+        throw new Error(`${agent}: ${String(error)}`, { cause: error })
+      })
       expect(result.exitCode, `${agent} exit code`).toBe(0)
       expect(result.stdinErrors, `${agent} stdin errors`).toHaveLength(0)
     }

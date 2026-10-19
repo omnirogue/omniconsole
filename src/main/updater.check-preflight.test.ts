@@ -439,7 +439,7 @@ describe('updater', () => {
     })
     expect(autoUpdaterMock.setFeedURL).toHaveBeenLastCalledWith({
       provider: 'generic',
-      url: 'https://app.omnisi.ai/updates/v1.4.36-rc.5'
+      url: 'https://console.example.com/updates/v1.4.36-rc.5'
     })
     expect(
       sendMock.mock.calls

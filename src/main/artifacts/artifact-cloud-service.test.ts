@@ -59,7 +59,7 @@ function createResponse(slug = 'artifact-a', expiresAt = '2027-09-06T00:00:00.00
         byteSize: 12,
         deletedAt: null
       },
-      shareUrl: `https://app.omnisi.ai/a/${slug}`,
+      shareUrl: `https://console.example.com/a/${slug}`,
       editToken: 'edit-secret'
     }),
     { status: 200, headers: { 'content-type': 'application/json' } }
@@ -185,11 +185,11 @@ describe('ArtifactCloudService record authorization', () => {
 
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'created', item: { shareUrl: 'https://app.omnisi.ai/a/artifact-a' } }
+      value: { change: 'created', item: { shareUrl: 'https://console.example.com/a/artifact-a' } }
     })
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'updated', item: { shareUrl: 'https://app.omnisi.ai/a/artifact-a' } }
+      value: { change: 'updated', item: { shareUrl: 'https://console.example.com/a/artifact-a' } }
     })
 
     expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({ method: 'POST' })
@@ -225,7 +225,7 @@ describe('ArtifactCloudService record authorization', () => {
       service.getPublishedLink({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })
     ).resolves.toEqual({
       status: 'ok',
-      value: { shareUrl: 'https://app.omnisi.ai/a/artifact-a' }
+      value: { shareUrl: 'https://console.example.com/a/artifact-a' }
     })
     await expect(
       service.getPublishedLink({ sourceKey: '/repo/other.html', apiUrl, authToken: 'token-a' })
@@ -286,7 +286,7 @@ describe('ArtifactCloudService record authorization', () => {
 
     await expect(Promise.all([publish, share])).resolves.toMatchObject([
       { status: 'ok', value: { change: 'created' } },
-      { status: 'ok', value: { shareUrl: 'https://app.omnisi.ai/a/artifact-b' } }
+      { status: 'ok', value: { shareUrl: 'https://console.example.com/a/artifact-b' } }
     ])
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
@@ -336,11 +336,11 @@ describe('ArtifactCloudService record authorization', () => {
     await service.publish(writeRequest)
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'created', item: { shareUrl: 'https://app.omnisi.ai/a/artifact-b' } }
+      value: { change: 'created', item: { shareUrl: 'https://console.example.com/a/artifact-b' } }
     })
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'updated', item: { shareUrl: 'https://app.omnisi.ai/a/artifact-b' } }
+      value: { change: 'updated', item: { shareUrl: 'https://console.example.com/a/artifact-b' } }
     })
 
     expect(fetchMock.mock.calls.map(([, options]) => options?.method)).toEqual([
@@ -594,7 +594,7 @@ describe('ArtifactCloudService publish capability gate', () => {
       service.getPublishedLink({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })
     ).resolves.toEqual({
       status: 'ok',
-      value: { shareUrl: 'https://app.omnisi.ai/a/artifact-a' }
+      value: { shareUrl: 'https://console.example.com/a/artifact-a' }
     })
     await expect(
       service.unshare({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })

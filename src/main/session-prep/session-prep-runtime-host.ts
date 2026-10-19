@@ -262,7 +262,7 @@ export function createSessionPrepRuntimeHost(
           ...(env ? { preparedLaunchEnv: env } : {})
         }
       )
-      return sessionPrepLaunchSurface(created, args.connectorLaunch, args.agent)
+      return sessionPrepLaunchSurface(runtime, created, args.connectorLaunch, args.agent)
     },
     async fileSession(args) {
       const filing = filingFor(args.request)

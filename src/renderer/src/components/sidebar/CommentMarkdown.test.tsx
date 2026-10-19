@@ -131,6 +131,59 @@ describe('CommentMarkdown', () => {
     expect(markup).toContain(`href="${url}"`)
   })
 
+  it('renders direct .mp4/.webm/.mov links as inline video players in document variant', () => {
+    const url = 'https://example.com/demo/walkthrough.mp4'
+    const markup = renderToStaticMarkup(
+      <CommentMarkdown variant="document" content={`[Watch walkthrough](${url})`} />
+    )
+
+    expect(markup).toContain('<video')
+    expect(markup).toContain(`src="${url}"`)
+    expect(markup).toContain('controls=""')
+  })
+
+  it('renders direct .mp3/.wav links as inline audio players in document variant', () => {
+    const url = 'https://example.com/audio/summary.mp3'
+    const markup = renderToStaticMarkup(
+      <CommentMarkdown variant="document" content={`[Listen to summary](${url})`} />
+    )
+
+    expect(markup).toContain('<audio')
+    expect(markup).toContain(`src="${url}"`)
+    expect(markup).toContain('controls=""')
+  })
+
+  it('keeps document markdown images expandable in the lightbox even when onLinkClick is provided', () => {
+    const markup = renderToStaticMarkup(
+      <CommentMarkdown
+        variant="document"
+        onLinkClick={() => undefined}
+        allowFileUriLinks
+        content="![preview](https://example.com/preview.png)"
+      />
+    )
+
+    expect(markup).toContain('<img')
+    expect(markup).toContain('src="https://example.com/preview.png"')
+    expect(markup).toContain('aria-label="Expand image"')
+  })
+
+  it('keeps remote video and audio links as plain links when remoteImages is link', () => {
+    const markup = renderToStaticMarkup(
+      <CommentMarkdown
+        variant="document"
+        remoteImages="link"
+        content="[vid](https://evil.example/a.mp4) and ![aud](https://evil.example/a.mp3)"
+      />
+    )
+
+    expect(markup).not.toContain('<video')
+    expect(markup).not.toContain('<audio')
+    expect(markup).not.toContain('<img')
+    expect(markup).toContain('href="https://evil.example/a.mp4"')
+    expect(markup).toContain('href="https://evil.example/a.mp3"')
+  })
+
   it('autolinks very large generated GitHub reference comments', () => {
     const referenceCount = 130_000
     const tree = {

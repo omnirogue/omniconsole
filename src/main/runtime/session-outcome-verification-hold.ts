@@ -21,6 +21,7 @@ import {
 import type { SessionOutcomeHoldReading } from './session-outcome-hold-block'
 import { sessionOutcomeReviewVerdictsHold } from './session-outcome-review-hold'
 import { sessionOutcomeEventHold } from './session-outcome-event-hold'
+import { sessionOutcomeDeliverableRepairHold } from './session-outcome-deliverable-repair-hold'
 
 /** The verifier's own diagnostics that other files compare against; none of them decides a class. */
 export const SESSION_OUTCOME_OWN_REVIEW_REQUIRED = 'Your review is required for this version.'
@@ -119,8 +120,14 @@ function proofHold(
     return reportHold(chain, set, outcome, condition)
   }
   if (condition.kind === 'file') {
-    // Every stage ran and the file is still not what was promised: nothing scheduled will write it.
-    return { block: { class: 'failed', code: 'deliverable-unverified' }, attention: [] }
+    // Every stage ran and the file is still not what was promised: its agent is asked to finish it
+    // within the repair budget, and after that nothing scheduled will write it.
+    return (
+      sessionOutcomeDeliverableRepairHold(chain, set, outcome) ?? {
+        block: { class: 'failed', code: 'deliverable-unverified' },
+        attention: []
+      }
+    )
   }
   if (condition.kind === 'session') {
     return {

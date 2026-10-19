@@ -110,9 +110,9 @@ describe('next-step summaries', () => {
       status: 'queued' as const
     }
     expect(describeSessionChain(chain([a, b, uma]))).toBe('⑂ Claude and Codex, then Uma')
-    expect(describeSessionChain(chain([{ ...a, group: undefined, status: 'launched' }, uma]))).toBe(
-      '→ Uma'
-    )
+    expect(
+      describeSessionChain(chain([{ ...a, group: undefined, status: 'launched' }, uma]))
+    ).toBe('→ Uma')
     expect(
       describeSessionChain(
         chain([

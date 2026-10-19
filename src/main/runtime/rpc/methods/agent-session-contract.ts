@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { attachContractVerify } from '../../session-contract-verify'
 import { defineMethod, type RpcMethod } from '../core'
 import { requiredString } from '../schemas'
+import { noteAgentSession } from '../../../session-organization/agent-session-mark'
 
 const PANE_KEY_WAIT_MS = 10_000
 const PANE_KEY_POLL_MS = 250
@@ -74,6 +75,25 @@ export const AGENT_SESSION_CONTRACT_METHODS: RpcMethod[] = [
         paneKey,
         action: params.action
       })
+    }
+  }),
+  defineMethod({
+    name: 'agentSession.markAgentSession',
+    params: z
+      .object({
+        terminal: requiredString('Missing terminal handle')
+      })
+      .strict(),
+    // `session launch`: an agent started it, so it lists in Agent sessions on this host. Why the
+    // retried note: a lost one leaves it the person's for good, and a window may still be adding it.
+    handler: async (params, context) => {
+      const { runtime } = context
+      const paneKey = await launchedPaneKey(runtime, params.terminal)
+      if (!paneKey) {
+        throw new Error('The launched terminal has no conversation identity yet.')
+      }
+      noteAgentSession(runtime, paneKey)
+      return { noted: true }
     }
   })
 ]

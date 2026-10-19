@@ -45,12 +45,24 @@ export type PromptQueueRequestedBy = {
   hostOperation?: { operationId: string; conversationId: string }
 }
 
+/**
+ * An app automation's own prompt (the deliverable check's repair, W22-20). Its own optional field,
+ * never an `origin`, for the same reason as `requestedBy`: an older client drops the field and keeps
+ * the entry with its visible marker instead of rejecting an origin it cannot read.
+ */
+export type PromptQueueAutomation = {
+  kind: 'deliverable-repair'
+  verificationId: string
+  attempt: number
+}
+
 /** What a caller asks the queue to hold; the queue stamps the rest. */
 export type PromptQueueEnqueueInput = {
   id: string
   text: string
   origin?: PromptQueueEntryOrigin
   requestedBy?: PromptQueueRequestedBy
+  automation?: PromptQueueAutomation
 }
 
 export type PromptQueueEntry = {
@@ -74,6 +86,7 @@ export type PromptQueueEntry = {
   retry?: PromptQueueRetry
   origin?: PromptQueueEntryOrigin
   requestedBy?: PromptQueueRequestedBy
+  automation?: PromptQueueAutomation
 }
 
 type ConversationSourceKindDoor = 'pty' | 'structured'
@@ -158,6 +171,7 @@ export function normalizePromptQueueEntry(raw: unknown): PromptQueueEntry | null
   const door = DOORS.find((candidate) => candidate === value.door)
   const reason = boundedString(value.reason, PROMPT_QUEUE_MAX_REASON_LENGTH)
   const retry = readRetry(value.retry)
+  const automation = readAutomation(value.automation)
   // Pre-release builds of `omni session` wrote the relay as an origin; read it as what it is.
   const legacyRelay = readRequestedBy(value.origin, (raw) => raw.kind === 'session')
   const requestedBy = readRequestedBy(value.requestedBy) ?? legacyRelay
@@ -180,8 +194,22 @@ export function normalizePromptQueueEntry(raw: unknown): PromptQueueEntry | null
     ...(state === 'failed' && value.holdsQueue === true ? { holdsQueue: true as const } : {}),
     ...(retry ? { retry } : {}),
     ...(origin ? { origin } : {}),
-    ...(requestedBy ? { requestedBy } : {})
+    ...(requestedBy ? { requestedBy } : {}),
+    ...(automation ? { automation } : {})
   }
+}
+
+function readAutomation(raw: unknown): PromptQueueAutomation | null {
+  const value = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const verificationId = boundedString(value.verificationId, 200)
+  const attempt = value.attempt
+  return value.kind === 'deliverable-repair' &&
+    verificationId &&
+    typeof attempt === 'number' &&
+    Number.isInteger(attempt) &&
+    attempt >= 1
+    ? { kind: 'deliverable-repair', verificationId, attempt }
+    : null
 }
 
 function readRetry(raw: unknown): PromptQueueRetry | null {
@@ -291,12 +319,15 @@ export function promptQueuePending(queue: PromptQueue): PromptQueueEntry[] {
 
 /**
  * Work nobody is watching: a Keep going round, another session's relayed request (the steward's
- * included) or a capacity-recovery brief. It never pauses the queue and is never paused by it,
+ * included), a deliverable check repair or a capacity-recovery brief. It never pauses the queue and is never paused by it,
  * so unattended work keeps draining.
  */
 export function isUnattendedPromptQueueEntry(entry: PromptQueueEntry): boolean {
   return Boolean(
-    entry.origin || entry.requestedBy || entry.id.startsWith(CAPACITY_RECOVERY_ENTRY_PREFIX)
+    entry.origin ||
+    entry.requestedBy ||
+    entry.automation ||
+    entry.id.startsWith(CAPACITY_RECOVERY_ENTRY_PREFIX)
   )
 }
 

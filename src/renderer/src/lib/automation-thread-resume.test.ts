@@ -11,8 +11,7 @@ import {
 
 const leafId = '11111111-1111-4111-8111-111111111111'
 const paneKey = `tab-1:${leafId}`
-const CODEX_HOME =
-  '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/acct/home'
+const CODEX_HOME = '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/acct/home'
 const OTHER_HOME =
   '/Users/maintainer/Library/Application Support/omniconsole-ide/codex-accounts/other/home'
 const transcriptPath = `${CODEX_HOME}/sessions/2026/09/19/rollout-2026-09-19T16-30-57-thread-1.jsonl`

@@ -15,10 +15,10 @@ export default function CommentMermaidBlock({
   content: string
   className?: string
 }): React.JSX.Element {
-  const settings = useAppStore((s) => s.settings)
+  const theme = useAppStore((s) => s.settings?.theme)
   const isDark =
-    settings?.theme === 'dark' ||
-    (settings?.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
   return (
     <div className={cn(className)}>

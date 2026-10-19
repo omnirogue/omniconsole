@@ -445,6 +445,7 @@ type CoreSettings = {
   mobilePairingCustomAddresses?: string[]
   /** Experimental: floating animated pet in the bottom-right corner. Opt-in cosmetic;
    *  off never mounts the overlay, and toggling takes effect instantly (renderer-side). */
+  experimentalOmnisiTeam?: boolean
   experimentalPet: boolean
   /** Legacy persisted key from before the sidekick -> pet rename; read only during migration, new writes use experimentalPet. */
   experimentalSidekick?: boolean
@@ -469,6 +470,7 @@ type CoreSettings = {
   /** Experimental: per-workspace on-demand environment recipes and setup surface. */
   experimentalEphemeralVms?: boolean
   /** Experimental: OmniSI panels whose backend or data feed is not live yet (Model Arena, Brand Kits, Assets, Spend Guard, prompt cost, Evolve Pareto and Judge Audit). */
+  experimentalOmniCredits?: boolean
   experimentalOmniSiPreviews?: boolean
   /** Experimental: read-only titlebar count of decisions waiting; click opens Decisions. */
   experimentalDecisionsTitlebarBadge?: boolean

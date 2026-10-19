@@ -3,6 +3,7 @@ import type { AppState } from '@/store'
 import { DONE_ARCHIVE_DEFAULT_MINUTES } from '../../../shared/session-done-archive'
 import type { SessionFolderMetadata } from './session-folders'
 import { isSessionSaved } from './session-folders'
+import { isAgentLaunchedSession } from './agent-session-note'
 import type { SessionSidebarView } from './session-sidebar-view'
 import type { PursuitSidebarTreeRow } from './session-sidebar-tree-rows'
 import { conversationViewKey } from './conversation-view'
@@ -25,9 +26,11 @@ export function sessionDoneArchiveRevision(
   const finish = metadata.finishActions?.[key]
   const status = session.paneKey ? state.agentStatusByPaneKey[session.paneKey] : null
   if (
-    // A finished answer does not make a conversation disposable; workers opt in with --ephemeral.
-    finish?.action !== 'end' ||
-    finish.afterCompletion !== true ||
+    // A finished answer does not make a conversation disposable: only When finished: End
+    // (`--ephemeral`) or an agent's launch does (Sal, 2026-10-19: "human started sessions stay
+    // open until we close them").
+    ((finish?.action !== 'end' || finish.afterCompletion !== true) &&
+      !isAgentLaunchedSession(metadata, key)) ||
     !unique ||
     state.workspaceSessionReady !== true ||
     !session.sessionKey ||
@@ -93,6 +96,8 @@ export function sessionEmptyArchiveRevision(
   const key = conversationViewKey(session)
   const status = session.paneKey ? state.agentStatusByPaneKey[session.paneKey] : null
   if (
+    // Why: a blank session a person opened is theirs to close; only an agent's is cleaned up.
+    !isAgentLaunchedSession(metadata, key) ||
     !unique ||
     state.workspaceSessionReady !== true ||
     !session.sessionKey ||

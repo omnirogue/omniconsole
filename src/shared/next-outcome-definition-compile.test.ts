@@ -352,19 +352,18 @@ describe('concrete finish admission', () => {
     ).toThrow('unsupported')
   })
 
-  it.each([
-    '/Users/maintainer/Desktop/result.md',
-    'C:\\Users\\Sal\\result.md',
-    './output/result.json'
-  ])('preserves explicit host destination %s', (target) => {
-    const [definition] = compileNextStepOutcomes(
-      [{ ...outcome({ kind: 'complete' }), instructions: `Save "${target}"` }],
-      context()
-    )
-    expect(definition.conditions).toEqual([{ id: 'outcome_1_file_1', kind: 'file', target }])
-    expect(definition.actions[0].instruction).toContain(target)
-    expect(definition.actions[0].instruction).not.toContain('/.omni/runs/')
-  })
+  it.each(['/Users/maintainer/Desktop/result.md', 'C:\\Users\\Sal\\result.md', './output/result.json'])(
+    'preserves explicit host destination %s',
+    (target) => {
+      const [definition] = compileNextStepOutcomes(
+        [{ ...outcome({ kind: 'complete' }), instructions: `Save "${target}"` }],
+        context()
+      )
+      expect(definition.conditions).toEqual([{ id: 'outcome_1_file_1', kind: 'file', target }])
+      expect(definition.actions[0].instruction).toContain(target)
+      expect(definition.actions[0].instruction).not.toContain('/.omni/runs/')
+    }
+  )
 
   it('keeps every file obligation and refuses partially understood instructions', () => {
     const [definition] = compileNextStepOutcomes(

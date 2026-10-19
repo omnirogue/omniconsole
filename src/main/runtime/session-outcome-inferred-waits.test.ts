@@ -41,30 +41,9 @@ describe('inferred waits', () => {
     const review = { id: 'r', kind: 'review' as const, target: 'emp_uma', recipientId: 'emp_uma' }
     const out = requireApprovalBeforeDependents(
       commit([
-        {
-          id: 'a',
-          title: 'a',
-          finish: 'human-handoff',
-          dependsOn: [],
-          actions: [],
-          conditions: [review]
-        },
-        {
-          id: 'b',
-          title: 'b',
-          finish: 'complete',
-          dependsOn: ['a'],
-          actions: [],
-          conditions: [] as never
-        },
-        {
-          id: 'c',
-          title: 'c',
-          finish: 'human-handoff',
-          dependsOn: [],
-          actions: [],
-          conditions: [review]
-        }
+        { id: 'a', title: 'a', finish: 'human-handoff', dependsOn: [], actions: [], conditions: [review] },
+        { id: 'b', title: 'b', finish: 'complete', dependsOn: ['a'], actions: [], conditions: [] as never },
+        { id: 'c', title: 'c', finish: 'human-handoff', dependsOn: [], actions: [], conditions: [review] }
       ]),
       undefined
     )

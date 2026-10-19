@@ -2,6 +2,7 @@ import {
   DISCOVER_OMNIOS_PICKS,
   DISCOVER_OMNIOS_MAX_FINDINGS,
   discoverOmniosKey,
+  stripInlineMarkdown,
   type DiscoverOmniosFinding,
   type DiscoverOmniosPick,
   type DiscoverOmniosRun,
@@ -44,7 +45,10 @@ const EVIDENCE_WORDS: Partial<Record<string, string>> = {
 
 function option(finding: DiscoverOmniosFinding, pick: DiscoverOmniosPick): string {
   const chosen = finding.recommended === pick
-  const detail = pick === 'Start' && finding.next ? finding.next : PICK_DETAIL[pick]
+  const detail =
+    pick === 'Start' && finding.next
+      ? stripInlineMarkdown(finding.next)
+      : PICK_DETAIL[pick]
   return (
     `<label class="opt"><input type="radio" name="f${finding.n}" value="${pick}"` +
     `${chosen ? ' data-recommended checked' : ''}><span><b>${pick}` +
@@ -73,18 +77,17 @@ function findingHtml(finding: DiscoverOmniosFinding): string {
     .filter(Boolean)
     .map((fact) => escape(String(fact)))
     .join(' · ')
+  const whyText = stripInlineMarkdown(finding.why || '')
   return [
     `<section class="finding"><fieldset data-n="${finding.n}" data-finding="${escape(finding.key)}" data-key="${escape(discoverOmniosKey(finding))}">`,
-    `<legend>${finding.n}. ${escape(finding.title)}</legend>`,
-    finding.why ? `<p class="why">${escape(finding.why)}</p>` : '',
-    `<p class="facts">${facts}</p>`,
-    `<p class="facts">${escape(confidence(finding))}</p>`,
-    `<p class="facts">Effort: ${escape(finding.effort ?? 'unknown')} · Risk: ${escape(finding.risk ?? 'unknown')}</p>`,
+    `<legend>${finding.n}. ${escape(stripInlineMarkdown(finding.title))}</legend>`,
+    whyText ? `<p class="why">${escape(whyText)}</p>` : '',
+    `<p class="facts">Effort: ${escape(finding.effort ?? 'unknown')} · Risk: ${escape(finding.risk ?? 'unknown')} · ${facts}</p>`,
     ...DISCOVER_OMNIOS_PICKS.map((pick) => option(finding, pick)),
     '</fieldset>',
-    finding.detail
-      ? `<details><summary>Evidence</summary><pre>${escape(finding.detail)}</pre></details>`
-      : '',
+    `<details><summary>Evidence &amp; verification details</summary><p class="facts">${escape(confidence(finding))}</p>${
+      finding.detail ? `<pre>${escape(finding.detail)}</pre>` : ''
+    }</details>`,
     '</section>'
   ].join('')
 }
@@ -158,13 +161,14 @@ export function discoverOmniosPage(run: DiscoverOmniosRun, page = 1): string {
     .filter(Boolean)
     .map((line) => `<p>${line}</p>`)
     .join('')
+  const cleanSummary = stripInlineMarkdown(run.summary || '')
   return [
     '<!doctype html><html lang="en"><head><meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width,initial-scale=1">',
     `<title>${escape(`${kind}: ${run.goal}`.slice(0, 160))}</title><style>${STYLE}</style></head><body><main>`,
     `<p class="eyebrow">${eyebrow}</p>`,
     `<h1>${escape(headline(run))}</h1>`,
-    run.summary ? `<p class="lead">${escape(run.summary)}</p>` : '',
+    cleanSummary ? `<p class="lead">${escape(cleanSummary)}</p>` : '',
     gaps,
     how,
     ...findings.map(findingHtml),

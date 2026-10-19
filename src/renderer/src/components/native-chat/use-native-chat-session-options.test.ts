@@ -115,8 +115,9 @@ describe('useNativeChatSessionOptions model reporting', () => {
       )
       try {
         frame = `› Ask Codex to do anything\n\n${model} ${effort} · ~/repo`
+        // Why 1000: the resumed-header retry polls every second since 85b625668b (was 250 ms).
         await act(async () => {
-          await vi.advanceTimersByTimeAsync(250)
+          await vi.advanceTimersByTimeAsync(1000)
         })
         expect(modelDescriptor(result.current.snapshot).currentValue).toBe(model)
         if (effort === 'default') {

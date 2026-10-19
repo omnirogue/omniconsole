@@ -32,7 +32,12 @@ const PREVIEW_PLATFORM_SUFFIXES = [
   'fly.dev'
 ]
 /** Sal's own domains: the apex and any sub-domain count. */
-const OWNED_PREVIEW_DOMAINS = ['omnirogue.com', 'betacorp.com', 'example.edu', 'apexlabs.ai']
+const OWNED_PREVIEW_DOMAINS = [
+  'omnirogue.com',
+  'betacorp.com',
+  'example.edu',
+  'apexlabs.ai'
+]
 
 /** Where finished work lives outside the app; the host (or its parent) names the service. */
 const WORK_SERVICES: Readonly<Record<string, string>> = {

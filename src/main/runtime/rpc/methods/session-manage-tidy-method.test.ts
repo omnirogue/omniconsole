@@ -76,7 +76,7 @@ function run(params: Record<string, unknown>): Promise<SessionTidyResult> {
 
 function add(paneKey: string, entry: Partial<SessionManageEntry>): void {
   const tabId = paneKey.split(':')[0]!
-  state.rows.push(sidebarRow({ paneKey, tabId, rowKey: `row-${paneKey}` }))
+  state.rows.push(sidebarRow({ paneKey, tabId, rowKey: `row-${paneKey}`, agentSession: true }))
   state.entries.set(paneKey, manageEntry({ paneKey, tabId, title: paneKey, ...entry }))
 }
 

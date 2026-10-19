@@ -95,34 +95,21 @@ export function ArtifactNameCell({
   hover: string
 }): React.JSX.Element {
   const name = artifactName(item)
-  const kind = artifactKindLabel(item.artifact.review?.context?.kind ?? item.artifact.review?.type)
+  const kind = artifactKindLabel(item.artifact.review?.context?.kind)
   const revision = item.artifact.revision
-  const subtitle =
-    item.artifact.review?.question?.trim() || item.artifact.review?.context?.scope?.trim() || ''
-  const summary = item.artifact.review?.summary?.trim() || ''
   return (
-    <span className="flex min-w-0 flex-col gap-0.5" title={hover}>
-      <span className="flex min-w-0 items-center gap-1.5">
-        <span className="min-w-0 truncate font-medium">{name}</span>
-        {kind ? (
-          <span className="shrink-0 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground">
-            {kind}
-          </span>
-        ) : null}
-        {typeof revision === 'number' && revision > 1 ? (
-          <span className="shrink-0 text-[11px] text-muted-foreground">
-            {translate('auto.components.artifacts.lifecycle.revision', 'rev {{revision}}', {
-              revision
-            })}
-          </span>
-        ) : null}
-      </span>
-      {subtitle ? (
-        <span className="min-w-0 truncate text-xs text-muted-foreground">{subtitle}</span>
+    <span className="flex min-w-0 items-center gap-1.5" title={hover}>
+      <span className="min-w-0 truncate font-medium">{name}</span>
+      {kind ? (
+        <span className="shrink-0 rounded-full border border-border px-1.5 py-px text-[10px] text-muted-foreground">
+          {kind}
+        </span>
       ) : null}
-      {summary ? (
-        <span className="line-clamp-3 whitespace-pre-line text-xs text-muted-foreground/85">
-          {summary}
+      {typeof revision === 'number' && revision > 1 ? (
+        <span className="shrink-0 text-[11px] text-muted-foreground">
+          {translate('auto.components.artifacts.lifecycle.revision', 'rev {{revision}}', {
+            revision
+          })}
         </span>
       ) : null}
     </span>

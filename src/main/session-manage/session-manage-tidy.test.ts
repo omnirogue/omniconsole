@@ -9,6 +9,7 @@ import { sealSessionRunCompletion } from '../../shared/session-run-completion'
 import type { SessionManageSidebarRow } from '../../shared/session-manage-relay'
 import type { SessionManageEntry, SessionTidyRow } from '../../shared/session-manage-types'
 import {
+  PERSON_STARTED_TIDY_HOLD,
   applySessionTidy,
   classifySessionTidy,
   classifySessionTidyFor,
@@ -17,7 +18,7 @@ import {
 } from './session-manage-tidy'
 import { manageEntry, sidebarRow } from './session-manage-test-fixtures'
 
-const ROW = sidebarRow()
+const ROW = sidebarRow({ agentSession: true })
 
 /** A recorded commitment for ROW's conversation, sealed complete with every receipt. */
 function provenChain(): SessionChain {
@@ -87,7 +88,7 @@ function classify(
   include: string[] = []
 ) {
   return classifySessionTidy(
-    sidebarRow(rowOverrides),
+    sidebarRow({ agentSession: true, ...rowOverrides }),
     entry(entryOverrides),
     hold,
     new Set(include)
@@ -101,6 +102,38 @@ describe('session tidy planner', () => {
       reason: 'Exited.'
     })
     expect(classify({ state: 'idle' }).action).toBe('archive')
+  })
+
+  // Sal, 2026-10-19: "human started sessions stay open until we close them."
+  it('holds a session a person started, or one an older window does not say, unless named', () => {
+    for (const agentSession of [false, undefined]) {
+      for (const state of [
+        { state: 'idle' as const },
+        { state: 'exited' as const, verdict: 'exited' as const }
+      ]) {
+        expect(classify(state, { agentSession })).toEqual({
+          action: 'hold',
+          reason: PERSON_STARTED_TIDY_HOLD,
+          group: 'held'
+        })
+        expect(classify(state, { agentSession }, null, [ROW.paneKey!])).toMatchObject({
+          action: 'archive',
+          included: true
+        })
+      }
+    }
+    // A skip still beats --include: a person's session with something open stays.
+    expect(
+      classify({ pendingSteps: ['Deploy it'] }, { agentSession: false }, null, [ROW.paneKey!])
+    ).toMatchObject({ action: 'skip', group: 'open-items' })
+    // Another hold still names its own reason first.
+    expect(
+      classify({}, { agentSession: false }, 'Its recorded outcomes are not finished.')
+    ).toEqual({
+      action: 'hold',
+      reason: 'Its recorded outcomes are not finished.',
+      group: 'held'
+    })
   })
 
   it('skips idle sessions with a pending step, a queue or something waiting on the person', () => {
@@ -223,7 +256,7 @@ describe('session tidy answer waits', () => {
       })
     }
     expect(answerWait).toHaveBeenCalledWith(ROW)
-    const other = sidebarRow({ paneKey: 'tab-9:1' })
+    const other = sidebarRow({ agentSession: true, paneKey: 'tab-9:1' })
     expect(classifySessionTidyFor({ answerWait }, other, exited, null, new Set()).action).toBe(
       'archive'
     )

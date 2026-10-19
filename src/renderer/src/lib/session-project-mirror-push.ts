@@ -1,6 +1,4 @@
 import { listSessionFolderEntries } from '@/lib/session-folder-cli-list'
-import { ensureBuiltinUniversalProjects } from '@/lib/session-organization-person-changes'
-import { useAppStore } from '@/store'
 import { useSessionFolders } from '@/store/session-folders'
 import { useSessionSidebarView } from '@/store/session-sidebar-view'
 
@@ -16,12 +14,6 @@ export function registerSessionProjectMirrorPush(unsubs: (() => void)[]): void {
   let pushed: unknown = null
   const push = (): void => {
     timer = null
-    if (!useSessionFolders.getState().loaded) {
-      useSessionFolders.getState().load()
-    }
-    if (useSessionFolders.getState().loaded) {
-      ensureBuiltinUniversalProjects()
-    }
     const { loaded, metadata } = useSessionFolders.getState()
     // Why the identity check: the store changes for many reasons; only folders and projects matter.
     if (!loaded || pushed === metadata) {
@@ -48,23 +40,9 @@ export function registerSessionProjectMirrorPush(unsubs: (() => void)[]): void {
     timer = setTimeout(push, PUSH_DELAY_MS)
   }
   schedule()
-  let lastRepoCount = useAppStore.getState()?.repos?.length ?? 0
-  let lastWorktreeTabCount = Object.keys(useAppStore.getState()?.tabsByWorktree ?? {}).length
-  unsubs.push(
-    useSessionFolders.subscribe(schedule),
-    useAppStore.subscribe((state) => {
-      const repoCount = state.repos?.length ?? 0
-      const worktreeTabCount = Object.keys(state.tabsByWorktree ?? {}).length
-      if (repoCount !== lastRepoCount || worktreeTabCount !== lastWorktreeTabCount) {
-        lastRepoCount = repoCount
-        lastWorktreeTabCount = worktreeTabCount
-        schedule()
-      }
-    }),
-    () => {
-      if (timer) {
-        clearTimeout(timer)
-      }
+  unsubs.push(useSessionFolders.subscribe(schedule), () => {
+    if (timer) {
+      clearTimeout(timer)
     }
-  )
+  })
 }

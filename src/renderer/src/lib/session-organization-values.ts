@@ -3,6 +3,7 @@ import { archiveSleepViaOf } from '../../../shared/archive-sleep-contract'
 import { withArchiveExecutor } from './session-archive-events'
 import { translate } from '@/i18n/i18n'
 import {
+  isPersonExecutor,
   organizationValueAt,
   type OrganizationChange,
   type OrganizationChangeKind,
@@ -179,6 +180,9 @@ function applyByKind(change: OrganizationChange, stores: OrganizationStores): st
           !stores.folders.getState().moveSessions(keys, typeof parsed === 'string' ? parsed : null)
         ) {
           refusal ??= storeError('Could not move the conversation.')
+        } else if (isPersonExecutor(change.executor)) {
+          // Why: a person who files an agent's session where they want it makes it their own.
+          stores.folders.getState().forgetAgentSessions(keys)
         }
         break
       case 'archive':

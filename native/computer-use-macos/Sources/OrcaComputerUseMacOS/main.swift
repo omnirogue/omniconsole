@@ -3207,7 +3207,7 @@ private final class PermissionView: NSView {
         addSubview(stack)
         contentStack = stack
 
-        let icon = NSImageView(image: NSWorkspace.shared.icon(forFile: appURL.path))
+        let icon = NSImageView(image: bundledAppIcon(appURL: appURL))
         icon.imageScaling = .scaleProportionallyUpOrDown
         icon.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -3833,10 +3833,16 @@ private final class DraggableAppTile: NSView, NSDraggingSource {
     }
 
     private func appIcon(size: CGFloat) -> NSImage {
-        let icon = NSWorkspace.shared.icon(forFile: appURL.path)
+        let icon = bundledAppIcon(appURL: appURL)
         icon.size = NSSize(width: size, height: size)
         return icon
     }
+}
+
+// Why: CFBundleVersion never changes, so LaunchServices keeps serving a stale cached icon after a rebrand.
+private func bundledAppIcon(appURL: URL) -> NSImage {
+    let iconURL = appURL.appendingPathComponent("Contents/Resources/AppIcon.icns")
+    return NSImage(contentsOf: iconURL) ?? NSWorkspace.shared.icon(forFile: appURL.path)
 }
 
 private enum PermissionPalette {

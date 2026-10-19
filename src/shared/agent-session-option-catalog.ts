@@ -10,7 +10,6 @@ import {
 } from './agent-session-option-catalog-gemini-cursor'
 import { OMP_SESSION_OPTION_CATALOG } from './agent-session-option-catalog-omp'
 import { GROK_SESSION_OPTION_CATALOG } from './agent-session-option-catalog-grok'
-import { DEEPSEEK_SESSION_OPTION_CATALOG } from './agent-session-option-catalog-deepseek'
 import { MUSE_SESSION_OPTION_CATALOG } from './agent-session-option-catalog-muse'
 import { OPENCODE_SESSION_OPTION_CATALOG } from './agent-session-option-catalog-opencode'
 import type {
@@ -38,7 +37,6 @@ const CATALOGS: AgentSessionOptionCatalogMap = {
   gemini: GEMINI_SESSION_OPTION_CATALOG,
   cursor: CURSOR_SESSION_OPTION_CATALOG,
   grok: GROK_SESSION_OPTION_CATALOG,
-  deepseek: DEEPSEEK_SESSION_OPTION_CATALOG,
   muse: MUSE_SESSION_OPTION_CATALOG,
   omp: OMP_SESSION_OPTION_CATALOG,
   opencode: OPENCODE_SESSION_OPTION_CATALOG
