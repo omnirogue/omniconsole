@@ -6,6 +6,7 @@ import { ActivityTitlebarControls } from '../components/activity/ActivityTitleba
 import { SessionWorkIndicator } from '../components/right-sidebar/session-artifact/SessionWorkIndicator'
 import { useShortcutLabel } from '../hooks/useShortcutLabel'
 import { useAppStore } from '../store'
+import { DecisionsTitlebarBadge } from './DecisionsTitlebarBadge'
 import { hasCustomTitleBar } from './app-window-chrome'
 import type { AppChromeLayout } from './use-app-chrome-layout'
 
@@ -59,6 +60,7 @@ export function TitlebarMainStrip({ layout }: { layout: AppChromeLayout }): Reac
           className={`flex flex-1 min-w-0 self-stretch${!layout.workspaceChromeActive ? ' invisible pointer-events-none' : ''}`}
         />
       )}
+      <DecisionsTitlebarBadge />
       {layout.showTitlebarExpandButton && (
         <Tooltip>
           <TooltipTrigger asChild>

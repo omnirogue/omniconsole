@@ -1,6 +1,11 @@
 import { buildWindowsPromptHookScript } from '../agent-hooks/windows-hook-post-reply'
 import { buildPosixAgentHookPostCommand } from '../agent-hooks/hook-post-command'
 import {
+  buildPosixHookAnswerAckFunctionLines,
+  buildPosixHookAnswerSplitLines,
+  posixHookPrintReplyCommand
+} from '../agent-hooks/hook-answer-ack-script'
+import {
   buildPosixHookPayloadCapture,
   buildPosixHookSpoolLines
 } from '../agent-hooks/hook-stdin-contract'
@@ -49,19 +54,26 @@ export function getManagedScript(target: 'local' | 'posix' = 'local'): string {
     '  curl_bin="$1"',
     '  connect_timeout="${2:-0.5}"',
     '  max_time="${3:-1.5}"',
+    '  orca_hook_late="${4:-0}"',
     // Why: keep full hook JSON off the command line and avoid URL-encoding paths/commands into IDS-friendly traversal signatures.
     ...buildPosixAgentHookPostCommand('codex', {
       curlCommand: '"$curl_bin"',
-      indent: '    '
+      indent: '    ',
+      lateVar: 'orca_hook_late'
     }).map((line) => `  ${line}`),
     '}',
+    // Why: these events relay the listener's reply (an OmniOS answer or the next-step pointer).
+    'codex_reply=',
+    'case "$payload" in',
+    `  *'"hook_event_name":"PostToolUse"'*|*'"hook_event_name":"Stop"'*|*'"hook_event_name":"SessionStart"'*|*UserPromptSubmit*) codex_reply=1 ;;`,
+    'esac',
+    ...buildPosixHookAnswerAckFunctionLines(),
     'send_codex_hook() {',
     '  orca_hook_response=$(post_codex_hook "$@" 2>/dev/null) || return 1',
-    '  case "$payload" in',
-    '    *UserPromptSubmit*)',
-    `      case "$orca_hook_response" in '{'*) printf '%s\\n' "$orca_hook_response" ;; esac`,
-    '      ;;',
-    '  esac',
+    '  if [ -n "$codex_reply" ]; then',
+    ...buildPosixHookAnswerSplitLines('    '),
+    `    case "$orca_hook_response" in '{'*) ${posixHookPrintReplyCommand()} ;; esac`,
+    '  fi',
     '}',
     'is_wsl_runtime() {',
     '  [ -n "$WSL_DISTRO_NAME" ] && return 0',
@@ -73,7 +85,8 @@ export function getManagedScript(target: 'local' | 'posix' = 'local'): string {
     'if is_wsl_runtime; then',
     '  windows_curl=$(command -v curl.exe 2>/dev/null || true)',
     '  if [ -n "$windows_curl" ] && [ -x "$windows_curl" ]; then',
-    '    if send_codex_hook "$windows_curl" 3 5; then',
+    // Why late: the retry runs past the hook's 1.5 s deadline, so its reply may carry no OmniOS answer.
+    '    if send_codex_hook "$windows_curl" 3 5 1; then',
     '      exit 0',
     '    fi',
     '    # post_codex_hook "$windows_curl" 3 5 >/dev/null 2>&1 || true',

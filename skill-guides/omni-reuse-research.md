@@ -62,7 +62,7 @@ Give the recommended choice: reuse, extend, adopt or build. Include:
 If implementation was also requested, continue within that authorization.
 Otherwise stop at the recommendation. Do not install a package, enable a hook,
 create a business task, or publish a plan merely because it ranked well.
-Follow the project's verification policy. In this repository, existing required
+Follow the project's verification policy. For Sal's main-next, existing required
 GitHub checks are the test/merge authority; no local or fleet test suites or
 additional review gates are introduced by this skill.
 

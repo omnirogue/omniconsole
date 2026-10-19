@@ -22,7 +22,7 @@ export type BackofficeEnv = 'local' | 'production'
 export const DEFAULT_BACKOFFICE_LOCAL_URL = 'http://127.0.0.1:4477'
 
 /** The live OmniConsole; used whenever no production URL was configured. */
-export const DEFAULT_BACKOFFICE_PRODUCTION_URL = 'https://console.example.com'
+export const DEFAULT_BACKOFFICE_PRODUCTION_URL = 'https://app.omnisi.ai'
 
 /** Environment a profile lands on when it never chose one. */
 export const DEFAULT_BACKOFFICE_ENV: BackofficeEnv = 'production'

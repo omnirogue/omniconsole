@@ -149,9 +149,9 @@ describe('model summaries', () => {
   })
 
   it('adds the recorded output links a model summary left out', () => {
-    const links = ['https://github.com/o/r/pull/1', 'https://console.example.com/a/abc12345']
+    const links = ['https://github.com/o/r/pull/1', 'https://app.omnisi.ai/a/abc12345']
     expect(withRecordedLinks('Outputs: https://github.com/o/r/pull/1', links)).toBe(
-      'Outputs: https://github.com/o/r/pull/1\nLinks: https://console.example.com/a/abc12345'
+      'Outputs: https://github.com/o/r/pull/1\nLinks: https://app.omnisi.ai/a/abc12345'
     )
     expect(withRecordedLinks('Outputs: all', [])).toBe('Outputs: all')
   })
@@ -255,12 +255,12 @@ describe('Outcome and Links lines', () => {
   })
 
   it('adds recorded links to the Links line the model wrote', () => {
-    const links = ['https://github.com/o/r/pull/1', 'https://console.example.com/a/abc12345']
+    const links = ['https://github.com/o/r/pull/1', 'https://app.omnisi.ai/a/abc12345']
     expect(withRecordedLinks('State: done\nLinks: https://github.com/o/r/pull/1', links)).toBe(
-      'State: done\nLinks: https://github.com/o/r/pull/1 https://console.example.com/a/abc12345'
+      'State: done\nLinks: https://github.com/o/r/pull/1 https://app.omnisi.ai/a/abc12345'
     )
     expect(withRecordedLinks('Links: none\nState: done', links)).toBe(
-      'Links: https://console.example.com/a/abc12345 https://github.com/o/r/pull/1\nState: done'
+      'Links: https://app.omnisi.ai/a/abc12345 https://github.com/o/r/pull/1\nState: done'
     )
   })
 })

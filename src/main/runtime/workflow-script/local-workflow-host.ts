@@ -89,7 +89,8 @@ export class LocalWorkflowHost {
       launch: (snapshot, id, fence) =>
         options.launch(snapshot as LocalWorkflowHostSnapshot, id, fence, registry.observer(id)),
       attestNativeResult: options.attestNativeResult,
-      ...(options.seatCapacity ? { seatCapacity: options.seatCapacity } : {})
+      ...(options.seatCapacity ? { seatCapacity: options.seatCapacity } : {}),
+      budgetAuthority: options.budgetAuthority
     })
     if (options.working) {
       this.workingRead = createOrchestrationCaller(options.working.runtime)

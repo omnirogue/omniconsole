@@ -51,7 +51,10 @@ export function checkPromptHardStops(
   answered: string,
   target?: AdPauseTarget
 ): void {
-  for (const text of [prompt.ask.text, ...prompt.commandText, answered]) {
+  // A question's card is the question, its header and the chosen option; the scrollback above it
+  // is the session's own history and is not what the answer approves.
+  const shown = prompt.ask.kind === 'question' ? prompt.subject : prompt.ask.text
+  for (const text of [shown, ...prompt.commandText, answered]) {
     checkAnswerHardStops(text, target)
   }
 }

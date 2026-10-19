@@ -60,7 +60,7 @@ describe('artifactLifecycleRequestSchema', () => {
 describe('artifactLifecycleSnapshot', () => {
   const base = {
     artifact: { slug: 'a', revision: 4 },
-    shareUrl: 'https://console.example.com/a/a',
+    shareUrl: 'https://app.omnisi.ai/a/a',
     status: 'approved',
     latest: null,
     decisions: [],

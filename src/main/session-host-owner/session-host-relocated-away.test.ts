@@ -57,6 +57,8 @@ describe('a conversation moved to another computer is not started here again', (
           lastOutputAt: async () => null,
           stillWorking: async () => false,
           resume: async () => ({ summary: 'Resumed.', tabId: 'tab-2' }),
+          confirmRestarted: async () => ({ state: 'unconfirmed' as const }),
+          keepCheckpoint: async () => false,
           rename: async () => {
             throw new Error('not used')
           },

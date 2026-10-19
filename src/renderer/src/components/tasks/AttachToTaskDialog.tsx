@@ -230,7 +230,7 @@ export function AttachToTaskDialog({
           </Button>
           <Button
             variant="outline"
-            onClick={() => void window.api.shell.openUrl('https://console.example.com/work/jira')}
+            onClick={() => void window.api.shell.openUrl('https://app.omnisi.ai/work/jira')}
           >
             {translate('tasks.jira.openShared', 'Open shared Jira tasks')}
           </Button>

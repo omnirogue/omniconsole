@@ -50,6 +50,27 @@ export type WorkDeliveryTarget = {
   transcript: 'present' | 'gone'
 }
 
+/**
+ * Proof, found before anything is sent, that this decision already reached its session: a receipt
+ * written when it was delivered (the review pass's settled queue entry, the choices notifier's
+ * read or delivered key for this decision id). Never inferred from a page or slug being mentioned.
+ */
+export type WorkDeliveryAlreadyDelivered = {
+  delivered: 'receipt'
+  /** What proved it, for the audit log. */
+  evidence: string
+  /** The session it reached, when known. */
+  ref: string | null
+}
+
+export type WorkDeliveryResolution = WorkDeliveryTarget | WorkDeliveryAlreadyDelivered | null
+
+export function isAlreadyDelivered(
+  resolution: WorkDeliveryResolution
+): resolution is WorkDeliveryAlreadyDelivered {
+  return resolution !== null && 'delivered' in resolution
+}
+
 export type WorkDeliveryKindAdapter = {
   kind: WorkDeliveryKind
   /**
@@ -59,10 +80,12 @@ export type WorkDeliveryKindAdapter = {
   claimOnlyWhenHeld?: boolean
   /** Never start a fresh session: a gone transcript is held `transcript_gone`. */
   noRespawn?: boolean
-  resolve(
-    delivery: ClaimableDelivery,
-    runtime: OrcaRuntimeService
-  ): Promise<WorkDeliveryTarget | null>
+  /**
+   * Before a handover is held as unconfirmable, the target's transcript is read for the delivered
+   * text itself (a user turn after the event); a mention of the page is never proof.
+   */
+  confirmByTranscript?: true
+  resolve(delivery: ClaimableDelivery, runtime: OrcaRuntimeService): Promise<WorkDeliveryResolution>
   text(delivery: ClaimableDelivery, target: WorkDeliveryTarget): string
   /** Brings back a conversation the person deleted, as an audited organization change (approved by answering). */
   restoreDeleted?(
@@ -78,6 +101,14 @@ export type WorkDeliveryKindAdapter = {
     target: WorkDeliveryTarget,
     runtime: OrcaRuntimeService
   ): Promise<'typed' | 'not_open'>
+}
+
+/** An adapter whose `resolve` only ever finds a session, never a receipt. */
+export type WorkDeliveryTargetAdapter = Omit<WorkDeliveryKindAdapter, 'resolve'> & {
+  resolve(
+    delivery: ClaimableDelivery,
+    runtime: OrcaRuntimeService
+  ): Promise<WorkDeliveryTarget | null>
 }
 
 export const WORK_DELIVERY_HELD_REASONS = [

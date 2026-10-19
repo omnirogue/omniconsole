@@ -74,6 +74,7 @@ export const LocalWorkflowStartDraftSchema = z
     runsOn: z.enum(['fleet', 'local']).optional(),
     ...workflowLaunchChoiceFields,
     skipEarlierRuns: z.literal(true).optional(),
+    budgetRootId: z.string().uuid().optional(),
     focusFinding: z
       .string()
       .regex(/^[a-zA-Z0-9_-]{1,128}:[1-9][0-9]{0,3}$/)

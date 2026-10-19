@@ -27,6 +27,7 @@ import type { Store } from '../../persistence'
 import type { OrcaRuntimeService } from '../../runtime/omni-runtime'
 import type { StatsCollector } from '../../stats/collector'
 import { registerFilesystemHandlers } from '../filesystem'
+import { registerDeliverablesHubHandlers } from '../deliverables-hub'
 import { registerAssistedBriefHandlers } from '../assisted-brief'
 import type { CommitMessageAgentEnvironmentResolvers } from '../../text-generation/commit-message-agent-environment'
 import { registerFilesystemWatcherHandlers } from '../filesystem-watcher'
@@ -167,6 +168,7 @@ export function registerCoreHandlers(
   registerAppHandlers(store, { onBeforeRelaunch: lifecycleOptions.onBeforeRelaunch })
   registerCliHandlers()
   registerPreflightHandlers()
+  registerDeliverablesHubHandlers()
   registerUsageProviderHandlers({ claudeUsage, codexUsage, openCodeUsage })
   registerCodexAccountHandlers(codexAccounts, () => store.getSettings())
   registerAgentHookHandlers(runtime, { getPtyIdForPaneKey })

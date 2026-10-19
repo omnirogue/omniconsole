@@ -1,0 +1,30 @@
+name: Ops win-back cohort
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/omnirogue-winback-cohort*'
+      - '.github/workflows/ops-winback-cohort.yml'
+  push:
+    branches: [main-next]
+    paths:
+      - 'scripts/ops/omnirogue-winback-cohort*'
+      - '.github/workflows/ops-winback-cohort.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  cohort:
+    runs-on: [self-hosted, Linux, omni-ci]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: node --check scripts/ops/omnirogue-winback-cohort.mjs
+      - run: node --test scripts/ops/omnirogue-winback-cohort.test.mjs
+      - run: node scripts/ops/omnirogue-winback-cohort.mjs --mode shadow --input scripts/ops/omnirogue-winback-cohort.example.json --now 2026-10-17T12:00:00Z

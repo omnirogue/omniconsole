@@ -71,6 +71,27 @@ export function readCodexStateDbBackfillStatus(codexHomePath: string): CodexStat
   }
 }
 
+/** Whether this Codex home's own state index records the thread, as the account it ran under does. */
+export function codexStateDbHasThread(codexHomePath: string, threadId: string): boolean {
+  const stateDbPath = findNewestCodexStateDbPath(codexHomePath)
+  if (!stateDbPath) {
+    return false
+  }
+  let db: SyncDatabase | null = null
+  try {
+    db = new SyncDatabase(stateDbPath, { readonly: true, fileMustExist: true })
+    return Boolean(db.prepare('SELECT 1 FROM threads WHERE id = ? LIMIT 1').get(threadId))
+  } catch {
+    return false
+  } finally {
+    try {
+      db?.close()
+    } catch {
+      // A close failure cannot change the read-only answer already collected.
+    }
+  }
+}
+
 export function countCodexSessionFilesUpTo(sessionsRoot: string, limit: number): number {
   let count = 0
   const pendingDirectories = [sessionsRoot]

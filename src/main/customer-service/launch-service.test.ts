@@ -49,7 +49,7 @@ beforeEach(() => {
   vi.mocked(captureConsoleWorkflowPerson).mockImplementation(async () => ({
     ok: true,
     data: {
-      baseUrl: 'https://console.example.com',
+      baseUrl: 'https://app.omnisi.ai',
       bearer: 'odt_test',
       principal,
       profileKey: 'profile-a',

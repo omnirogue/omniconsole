@@ -1888,8 +1888,8 @@
     "omni-boundary-review": [
       {
         "releaseRevision": 1,
-        "packageDigest": "87fd07fe754669926276574202b1d840a8137639ede5198b12e499d21d987045",
-        "gitTreeSha": "41ceda3c6baba817268bf5ffbbf35b2a3b2405f7",
+        "packageDigest": "a423daaf87637ddbe5f58acd736d875b715dc1cddc97b75b552563ea721c7eb4",
+        "gitTreeSha": "e3b8bceabcc6e6be34ae80e0a7578bb52f819f35",
         "files": [
           {
             "path": "LICENSE",
@@ -1902,12 +1902,12 @@
           },
           {
             "path": "SKILL.md",
-            "size": 4728,
+            "size": 4730,
             "executable": false,
             "classification": "text",
-            "exactSha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a",
-            "textNormalizedSha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a",
-            "identitySha256": "ab83e6b4fda5d5d1fb9201973d5e01a429a845e2ecd2eeaf35e9c43fa88a0f6a"
+            "exactSha256": "aeba41920d02fadaa6e9b8e5aa5d7a60490ed0c2014cae2e96f18c6213a2363f",
+            "textNormalizedSha256": "aeba41920d02fadaa6e9b8e5aa5d7a60490ed0c2014cae2e96f18c6213a2363f",
+            "identitySha256": "aeba41920d02fadaa6e9b8e5aa5d7a60490ed0c2014cae2e96f18c6213a2363f"
           },
           {
             "path": "agents/openai.yaml",
@@ -1924,8 +1924,8 @@
     "omni-reuse-research": [
       {
         "releaseRevision": 1,
-        "packageDigest": "f1606c90df4b92e9b19f3538afeefefa286ade3d911b652bb418d64c7cfff18c",
-        "gitTreeSha": "5907b104988befd0888689a13786fe16bcecf354",
+        "packageDigest": "023c6779ca421409b5a9d3a7f6973885d4e71128921af43708b9f6d5077e21ef",
+        "gitTreeSha": "bb24e40d3f9e799fb7e8fe1fd0cecc2d1b4108ea",
         "files": [
           {
             "path": "LICENSE",
@@ -1941,9 +1941,9 @@
             "size": 4526,
             "executable": false,
             "classification": "text",
-            "exactSha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78",
-            "textNormalizedSha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78",
-            "identitySha256": "2c50d12270adb4134d7d48c85a628601b4f57b9e69043b03851978b3c86e2f78"
+            "exactSha256": "8c24023e5df31ae19eb22f69a4190d9289c254703a8a226d81ca3b01ed895aa8",
+            "textNormalizedSha256": "8c24023e5df31ae19eb22f69a4190d9289c254703a8a226d81ca3b01ed895aa8",
+            "identitySha256": "8c24023e5df31ae19eb22f69a4190d9289c254703a8a226d81ca3b01ed895aa8"
           },
           {
             "path": "agents/openai.yaml",
@@ -1960,8 +1960,8 @@
     "omni-typescript-review": [
       {
         "releaseRevision": 1,
-        "packageDigest": "a35cbfb619a32647fbee2c2d775a0f24378f39c509d9f8d5c8ec2fa8bad499f1",
-        "gitTreeSha": "7de18a81b0fd8db1a437a41c222c390c307059e6",
+        "packageDigest": "5e836d11aeeb0d41770eb7f7cb0b7232d6c08711a5db194c30cebd245cea04b3",
+        "gitTreeSha": "b3db6dc6bf7b3fe26c2d0988fd2825c0fee1cf0f",
         "files": [
           {
             "path": "LICENSE",
@@ -1977,9 +1977,9 @@
             "size": 4611,
             "executable": false,
             "classification": "text",
-            "exactSha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25",
-            "textNormalizedSha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25",
-            "identitySha256": "7aec8611ed2f595edc68fcfeef33a812326eb7c172b1607ded81857e764c5c25"
+            "exactSha256": "1759be61bcbf3b574ba608d19268bd971f9da13b43f4e8ad68de651d9688843e",
+            "textNormalizedSha256": "1759be61bcbf3b574ba608d19268bd971f9da13b43f4e8ad68de651d9688843e",
+            "identitySha256": "1759be61bcbf3b574ba608d19268bd971f9da13b43f4e8ad68de651d9688843e"
           },
           {
             "path": "agents/openai.yaml",

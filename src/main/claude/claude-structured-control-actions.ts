@@ -1,6 +1,7 @@
 import { applyClaudePromptAnswer } from './claude-structured-prompt-replies'
 import { ClaudeControlRequestError } from './claude-stream-json-connection'
 import type { ClaudeSession } from './claude-structured-session-state'
+import { AgentSessionPromptGoneError } from '../native-chat/agent-session-wire/structured-agent-session-prompt-error'
 
 const INTERRUPT_CANCEL_QUEUED_CAPABILITY = 'interrupt_cancel_queued_v1'
 
@@ -72,7 +73,7 @@ export async function answerClaudePrompt(
 ): Promise<void> {
   const found = session.prompts.find(input.itemId)
   if (!found || found.prompt.kind !== input.kind) {
-    throw new Error(`claude is no longer waiting on ${input.itemId}`)
+    throw new AgentSessionPromptGoneError(`claude is no longer waiting on ${input.itemId}`)
   }
   const response = applyClaudePromptAnswer(found, input.optionId)
   if (response === null) {

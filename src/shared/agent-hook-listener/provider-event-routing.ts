@@ -140,8 +140,8 @@ export function extractToolFields(
   // Why: exhaustive switch so a new AgentHookSource fails typecheck here instead of silently routing through OpenCode's extractor.
   switch (source) {
     case 'claude':
+      return extractClaudeToolFields(eventName, hookPayload, { turnEndAsks: true })
     // Why: Kimi Code uses Claude's tool_name/tool_input payload fields verbatim.
-    // falls through
     case 'kimi':
       return extractClaudeToolFields(eventName, hookPayload)
     case 'codex':

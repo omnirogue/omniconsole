@@ -12,6 +12,17 @@ export type ArtifactSessionOrigin = {
 /** What `omni artifacts share|publish|update` reports from the env the IDE injected into its terminal. */
 export type ArtifactWriteOrigin = ArtifactSessionOrigin & {
   terminalHandle?: string
+  /** The Claude conversation the CLI ran inside, when any; a different one than the pane's never binds. */
+  claudeSessionId?: string
+}
+
+/** A share or update whose command was not tied to its terminal's session, and why. */
+export type ArtifactSessionBindingNotice = { state: 'unbound'; reason: string }
+
+export function artifactSessionBindingLine(notice: ArtifactSessionBindingNotice | undefined) {
+  return notice?.state === 'unbound'
+    ? `session: not bound, ${notice.reason}. Decisions on this page will not be delivered to this session; read them with \`omni artifacts status <file>\`.`
+    : null
 }
 
 export const ARTIFACT_ORIGIN_FIELD_MAX_CHARS = 4_096

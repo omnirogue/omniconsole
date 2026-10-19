@@ -152,9 +152,9 @@ export const SESSION_MANAGE_METHODS: RpcMethod[] = [
           dryRun: params.dryRun === true
         })
       )
+      // Why no window toast: an exited row's restart is reported only once its agent confirms it.
       return settleSessionAction(context, prepared, 'restart', result, params, {
-        before: { verdict: prepared.entry.verdict, state: prepared.entry.state },
-        windowToastShown: prepared.entry.verdict === 'exited'
+        before: { verdict: prepared.entry.verdict, state: prepared.entry.state }
       })
     }
   }),

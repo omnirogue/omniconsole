@@ -21,7 +21,7 @@ const scope: ArtifactShareScope = {
   cloudUserId: 'user-a',
   cloudProfileId: 'cloud-a',
   cloudOrganizationId: 'org-a',
-  apiOrigin: 'https://console.example.com'
+  apiOrigin: 'https://app.omnisi.ai'
 }
 const body = {
   content: '<h1>Original</h1>',

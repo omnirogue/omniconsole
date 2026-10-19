@@ -12,6 +12,9 @@ import { abandonedOn, failure, record, refusal } from './console-workflow-refusa
 
 export { failure, refusal, unavailable } from './console-workflow-refusal'
 
+/** The one request whose sign-in links (an AirTop live view's token) reach OmniOS whole, so the person can open them. */
+const SIGN_IN_LINK_ROUTE = '/api/session-questions/sync'
+
 /** Main-only transport: the named client operations choose the route and verb. */
 export async function requestConsoleWorkflow<T>(
   path: string,
@@ -52,16 +55,18 @@ export async function requestConsoleWorkflow<T>(
       // Why: the requests that carry a whole file (handoff versions and attachments, an
       // employee transcript) get their own budget; every other body stays small.
       const maxBytes = consoleWorkflowRequestBudget(path)
+      const keepSignInLinks = method === 'POST' && path === SIGN_IN_LINK_ROUTE
+      const redact = (value: unknown) => redactConsoleWorkflowMemory(value, keepSignInLinks)
       serializeConsoleWorkflowRequest(
         { path, ...(body === undefined ? {} : { body }) },
         bearer,
-        redactConsoleWorkflowMemory,
+        redact,
         maxBytes
       )
       serialized =
         body === undefined
           ? undefined
-          : serializeConsoleWorkflowRequest(body, bearer, redactConsoleWorkflowMemory, maxBytes)
+          : serializeConsoleWorkflowRequest(body, bearer, redact, maxBytes)
     } catch {
       return failure(
         'invalid_request',

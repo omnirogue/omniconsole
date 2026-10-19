@@ -10,6 +10,7 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { createInterface } from 'node:readline'
 import type { SessionReferenceAgent } from '../../shared/session-reference'
+import { codexStateDbHasThread } from '../codex/codex-state-db'
 import {
   discoverTranscriptRoots,
   findTranscriptFiles,
@@ -47,13 +48,32 @@ export async function locateTranscripts(
     const providerRoot = dirname(root.dir)
     return { path, providerRoot, defaultRoot: providerRoot === defaultHome }
   })
-  return located.length > 1 ? distinctFiles(located) : located
+  return located.length > 1 ? distinctFiles(located, agent === 'codex' ? sessionId : null) : located
 }
 
-/** One entry per file on disk: the default home's link first, else the first path in order. */
-async function distinctFiles(located: LocatedTranscript[]): Promise<LocatedTranscript[]> {
+/**
+ * One entry per file on disk: the link under the home whose Codex index records the thread first,
+ * then the default home's, else the first path in order.
+ */
+async function distinctFiles(
+  located: LocatedTranscript[],
+  codexThreadId: string | null
+): Promise<LocatedTranscript[]> {
+  // Why: only the account a Codex conversation ran under indexes its thread. Resumed under another
+  // account's link, Codex said "No saved session found" or never reported the conversation, so a
+  // coordinator could not continue a closed worker (Studio and MacBook, 17 Oct 2026).
+  const indexed = new Set(
+    codexThreadId
+      ? located
+          .filter((entry) => codexStateDbHasThread(entry.providerRoot, codexThreadId))
+          .map((entry) => entry.path)
+      : []
+  )
   const ordered = located.toSorted(
-    (a, b) => Number(b.defaultRoot) - Number(a.defaultRoot) || a.path.localeCompare(b.path)
+    (a, b) =>
+      Number(indexed.has(b.path)) - Number(indexed.has(a.path)) ||
+      Number(b.defaultRoot) - Number(a.defaultRoot) ||
+      a.path.localeCompare(b.path)
   )
   const seen = new Set<string>()
   const distinct: LocatedTranscript[] = []

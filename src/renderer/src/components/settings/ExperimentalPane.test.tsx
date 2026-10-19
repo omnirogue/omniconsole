@@ -255,6 +255,30 @@ describe('ExperimentalPane', () => {
     expect(markup).toContain('aria-checked="true"')
   })
 
+  it('keeps OmniSI previews off by default and enables them through the switch', async () => {
+    expect(getDefaultSettings('/tmp').experimentalOmniSiPreviews).toBe(false)
+    expect(
+      getExperimentalPaneSearchEntries().find((entry) => entry.title === 'OmniSI previews')
+        ?.targetSectionId
+    ).toBe('omnisi-previews')
+    const updateSettings = vi.fn()
+    const { root, container } = await renderExperimentalPane({ updateSettings })
+    const switchButton = container.querySelector<HTMLButtonElement>(
+      '#omnisi-previews button[role="switch"]'
+    )
+    if (!switchButton) {
+      throw new Error('OmniSI previews switch was not rendered')
+    }
+    expect(switchButton.getAttribute('aria-checked')).toBe('false')
+
+    await act(async () => {
+      switchButton.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
+
+    expect(updateSettings).toHaveBeenCalledWith({ experimentalOmniSiPreviews: true })
+    root.unmount()
+  })
+
   it('shows the structured-native-chat child setting only when Chat UI is the default view', async () => {
     const updateSettings = vi.fn()
     const disabledSettings = { ...getDefaultSettings('/tmp'), experimentalNativeChat: false }

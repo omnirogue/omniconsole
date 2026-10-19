@@ -24,6 +24,7 @@ import type { WorkflowAttemptLaunch } from './workflow-durable-call'
 import type { WorkflowLiveObserver } from './workflow-live-observer'
 import type { LocalWorkflowHostSnapshot } from './local-workflow-host-snapshot'
 import type { WorkflowNativeAttestationInput } from './workflow-execution-service'
+import type { AgentBudgetClient } from './agent-budget-client'
 
 /** `executionHost`: set only once the runtime proved the run executes on this computer. */
 export type LocalWorkflowWorkspace = {
@@ -74,6 +75,11 @@ export type LocalWorkflowHostOptions = {
   ) => Promise<WorkflowPlacement>
   discardDispatch?: (placement: WorkflowPlacement) => Promise<void>
   preflight?: (snapshot: LocalWorkflowHostSnapshot) => Promise<void>
+  /**
+   * The shared agent budget authority, present only while this computer enforces budgets: every
+   * Start then names an approved root and every call is admitted against it before it runs.
+   */
+  budgetAuthority?: AgentBudgetClient
   launch: (
     snapshot: LocalWorkflowHostSnapshot,
     executionId: string,

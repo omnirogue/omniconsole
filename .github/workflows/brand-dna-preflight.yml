@@ -1,0 +1,24 @@
+name: Brand DNA preflight CLI
+
+on:
+  pull_request:
+    paths:
+      - config/scripts/brand-dna-preflight*
+      - .github/workflows/brand-dna-preflight.yml
+permissions:
+  contents: read
+
+jobs:
+  offline-checks:
+    runs-on: ${{ vars.OMNI_CI_GITHUB_HOSTED == 'true' && 'ubuntu-24.04' || fromJSON('["self-hosted","Linux","omni-ci"]') }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: node --check config/scripts/brand-dna-preflight.mjs
+      - run: node --test config/scripts/brand-dna-preflight.node-test.mjs
+      - run: node config/scripts/brand-dna-preflight.mjs --help

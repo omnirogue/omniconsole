@@ -52,7 +52,7 @@ export function setUnattendedCallerBinding(next: UnattendedCallerBinding | null)
   }
 }
 
-function callerPid(value: unknown): number | undefined {
+export function callerPid(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isInteger(value) && value > 1 ? value : undefined
 }
 

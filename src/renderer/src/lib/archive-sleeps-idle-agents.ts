@@ -210,7 +210,8 @@ export function createArchiveSleepController(deps: ArchiveSleepDeps) {
         protectionKeep: deps.readProtection(
           state,
           { worktreeId: session.worktreeId, tabId, paneKey },
-          now
+          now,
+          { ignoreStartedToday: true }
         )
       })
       if (verdict.kind === 'drop') {

@@ -31,7 +31,7 @@ import { invokeWithOmniConsoleMcpDefaults } from './omni-console-mcp-request-con
 export type DispatcherOptions = { runtime: OrcaRuntimeService; methods?: readonly RpcAnyMethod[] }
 
 // oxfmt-ignore
-type DispatchCallOptions = Pick<RpcDispatchStreamingOptions, 'signal' | 'keepAliveWhileWaiting' | 'connectionId' | 'clientId' | 'pairedDeviceId' | 'clientKind' | 'clientCapabilities' | 'authenticatedCallerFingerprint' | 'unattendedCaller'>
+type DispatchCallOptions = Pick<RpcDispatchStreamingOptions, 'signal' | 'keepAliveWhileWaiting' | 'connectionId' | 'clientId' | 'pairedDeviceId' | 'clientKind' | 'clientCapabilities' | 'authenticatedCallerFingerprint' | 'unattendedCaller' | 'callerPid'>
 
 export class RpcDispatcher {
   private readonly runtime: OrcaRuntimeService
@@ -150,7 +150,8 @@ export class RpcDispatcher {
             orchestrationCompatibilityCallerAuthority:
               compatibility.orchestrationCompatibilityCallerAuthority,
             orchestrationCompatibilityEvidence: request.orchestrationCompatibilityEvidence,
-            ...(options?.unattendedCaller ? { unattendedCaller: options.unattendedCaller } : {})
+            ...(options?.unattendedCaller ? { unattendedCaller: options.unattendedCaller } : {}),
+            ...(options?.callerPid ? { callerPid: options.callerPid } : {})
           })
         )
       }

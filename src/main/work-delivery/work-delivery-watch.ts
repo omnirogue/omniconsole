@@ -15,13 +15,15 @@ import {
   type WorkDeliveryDeps,
   type WorkPane
 } from './work-delivery-claimer-types'
-import type {
-  ClaimableDelivery,
-  WorkDeliveryHeldReason,
-  WorkDeliveryKindAdapter,
-  WorkDeliveryOwner,
-  WorkDeliveryTarget
+import {
+  isAlreadyDelivered,
+  type ClaimableDelivery,
+  type WorkDeliveryHeldReason,
+  type WorkDeliveryKindAdapter,
+  type WorkDeliveryOwner,
+  type WorkDeliveryTarget
 } from './work-delivery-kind'
+import { settleDelivered, transcriptProof } from './work-delivery-proof'
 import {
   followLoginCut,
   followWorking,
@@ -86,6 +88,7 @@ export async function respawnDelivery(
     parseSessionReference(target.ref)?.agent ??
     delivery.owner?.provider
   const accountId = target.accountId ?? delivery.owner?.accountId
+  const folder = started.folder ?? target.folder
   const owner: Partial<WorkDeliveryOwner> = {
     hostId,
     hostLabel: ledger.deps.hostLabel,
@@ -96,7 +99,7 @@ export async function respawnDelivery(
     ...(started.conversationId ? { conversationId: started.conversationId } : {}),
     ...(target.model ? { model: target.model } : {}),
     ...(target.effort ? { effort: target.effort } : {}),
-    ...(target.folder ? { folder: target.folder } : {})
+    ...(folder ? { folder } : {})
   }
   const recorded = await ledger.receipt(hostId, delivery, {
     state: 'typed',
@@ -164,6 +167,9 @@ export async function followUpDeliveries(ledger: ClaimerLedger): Promise<void> {
         })
         continue
       } else if (state !== 'queued') {
+        if (await settledByTranscript(ledger, hostId, watch, false)) {
+          continue
+        }
         await ledger.hold(
           hostId,
           watch.delivery,
@@ -214,6 +220,9 @@ export async function followUpDeliveries(ledger: ClaimerLedger): Promise<void> {
         watch.freeSince = null
       }
       if (now - watch.since > WORK_DELIVERY_WORKING_GRACE_MS) {
+        if (await settledByTranscript(ledger, hostId, watch, true)) {
+          continue
+        }
         await ledger.hold(
           hostId,
           watch.delivery,
@@ -232,6 +241,22 @@ export async function followUpDeliveries(ledger: ClaimerLedger): Promise<void> {
   }
 }
 
+/** Its text found as a user turn in the transcript: done, instead of held as unconfirmable. */
+async function settledByTranscript(
+  ledger: ClaimerLedger,
+  hostId: string,
+  watch: Watch,
+  typedAlready: boolean
+): Promise<boolean> {
+  const proof = await transcriptProof(ledger.deps, watch.delivery, watch.target)
+  if (!proof) {
+    return false
+  }
+  const summary = `done in pane ${watch.pane.paneKey} (${proof})`
+  await settleDelivered(ledger, hostId, watch.delivery, summary, typedAlready)
+  return true
+}
+
 /** Whether delivering would unarchive, restore, resume or respawn (unknown counts as yes). */
 export async function needsStart(
   deps: WorkDeliveryDeps,
@@ -239,8 +264,11 @@ export async function needsStart(
 ): Promise<boolean> {
   try {
     const target = await deps.resolveTarget(deps.adapters.get(delivery.kind)!, delivery)
-    if (!target || target.deleted) {
-      return !!target
+    if (!target || isAlreadyDelivered(target)) {
+      return false
+    }
+    if (target.deleted) {
+      return true
     }
     const holder = await deps.findHolder(target)
     return holder.kind === 'none' || (holder.kind === 'live' && holder.pane.archived)

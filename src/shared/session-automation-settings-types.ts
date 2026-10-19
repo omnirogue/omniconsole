@@ -74,4 +74,10 @@ export type SessionAutomationSettings = {
    * A person's create is unchanged. On unless explicitly false.
    */
   tidyAgentWorktreeTerminals?: boolean
+  /**
+   * Pilot (2026-10-17): an OmniOS answer for a Claude/Codex conversation on this computer rides
+   * that agent's own hook replies first and is typed only as a fallback. Off unless `hookFirst`
+   * is explicitly true. Why here: global-settings-types.ts is at its max-lines budget.
+   */
+  answerDelivery?: { hookFirst?: boolean }
 }

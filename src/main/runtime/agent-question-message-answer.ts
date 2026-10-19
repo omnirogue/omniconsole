@@ -59,16 +59,16 @@ export type AgentQuestionAnswerRuntime = Pick<
 /** Codex runs its prompt hooks before OmniConsole hears the new turn: over 8 s measured live. */
 export const AGENT_QUESTION_ANSWER_CONFIRM_MS = 20_000
 
-/** Only Codex asks async questions. */
-const ASKING_AGENT = 'codex'
+/** Codex (request_user_input_async, turn-end asks) and Claude (turn-end asks) ask async questions. */
+const ASKING_AGENTS = new Set(['codex', 'claude'])
 
 const NOT_SENT = 'Nothing was sent.'
-const NOT_PROVEN = `Codex could not be proven to hold this terminal. ${NOT_SENT} Answer it in the terminal.`
+const NOT_PROVEN = `The agent could not be proven to hold this terminal. ${NOT_SENT} Answer it in the terminal.`
 const MOVED_ON = `That question was already answered, or the session moved on. ${NOT_SENT}`
-const ON_ITS_WAY = `An answer to that question is already on its way to Codex. ${NOT_SENT}`
-const AGENT_GONE = `Codex is no longer running in this terminal, so its question was removed. ${NOT_SENT}`
+const ON_ITS_WAY = `An answer to that question is already on its way to the agent. ${NOT_SENT}`
+const AGENT_GONE = `The agent is no longer running in this terminal, so its question was removed. ${NOT_SENT}`
 const SSH_REFUSED = `This session runs over SSH, where an unattended answer cannot be guarded at its terminal. ${NOT_SENT} Answer it in OmniConsole or in the terminal.`
-const PERSON_ANSWERED = `Someone pressed Enter in its terminal after Codex left this question waiting, and Codex has not reported that turn yet; it may already be answered. ${NOT_SENT}`
+const PERSON_ANSWERED = `Someone pressed Enter in its terminal after the agent left this question waiting, and it has not reported that turn yet; it may already be answered. ${NOT_SENT}`
 
 export type AgentQuestionAnswerPlan = {
   paneKey: string
@@ -184,8 +184,11 @@ export async function planAgentQuestionAnswer(
     return { refusal: NOT_PROVEN }
   }
   const expected = options.expected
+  // Why the hook's agent: the process must be the one that asked; a row without one predates Claude asks.
+  const asker = hook.agentType ?? 'codex'
   if (
-    proof.agent !== ASKING_AGENT ||
+    !ASKING_AGENTS.has(asker) ||
+    proof.agent !== asker ||
     proof.ptyId !== request.ptyId ||
     hook.agentPid !== proof.pid ||
     (expected &&
@@ -325,7 +328,7 @@ export async function confirmAgentQuestionAnswer(
     if (Date.now() >= deadline) {
       return {
         status: 'unconfirmed',
-        reason: `Codex did not report taking it within ${Math.round(windowMs / 1000)} seconds`
+        reason: `The agent did not report taking it within ${Math.round(windowMs / 1000)} seconds`
       }
     }
     await new Promise((resolve) => setTimeout(resolve, 250))

@@ -55,7 +55,7 @@ describe.runIf(process.platform === 'darwin')('OmniConsole signed Mac update dow
       })
       expect(autoUpdaterMock.setFeedURL).toHaveBeenCalledWith({
         provider: 'generic',
-        url: 'https://console.example.com/updates/latest'
+        url: 'https://app.omnisi.ai/updates/latest'
       })
       checkForUpdatesFromMenu()
       await vi.waitFor(() =>
@@ -69,7 +69,7 @@ describe.runIf(process.platform === 'darwin')('OmniConsole signed Mac update dow
       )
       expect(autoUpdaterMock.setFeedURL).toHaveBeenLastCalledWith({
         provider: 'generic',
-        url: 'https://console.example.com/updates/v1.5.3'
+        url: 'https://app.omnisi.ai/updates/v1.5.3'
       })
       // autoDownload stays off because the decision is ours, not electron-updater's:
       // a signed release starts the download itself the moment one is available, so the
@@ -89,7 +89,7 @@ describe.runIf(process.platform === 'darwin')('OmniConsole signed Mac update dow
         expect(openExternal).not.toHaveBeenCalled()
       } else {
         expect(openExternal).toHaveBeenCalledWith(
-          `https://console.example.com/updates/v1.5.3/OmniConsole-1.5.3-macos-${process.arch === 'arm64' ? 'arm64' : 'x64'}.dmg`
+          `https://app.omnisi.ai/updates/v1.5.3/OmniConsole-1.5.3-macos-${process.arch === 'arm64' ? 'arm64' : 'x64'}.dmg`
         )
         expect(autoUpdaterMock.downloadUpdate).not.toHaveBeenCalled()
       }

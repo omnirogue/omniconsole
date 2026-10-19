@@ -9,6 +9,7 @@
 import { z } from 'zod'
 import { requestConsoleWorkflow } from '../backoffice/console-workflow-transport'
 import { redactValue } from '../observability/redactor'
+import { redactValueKeepingSignInLinks } from '../observability/sign-in-link-redaction'
 import { currentLedgerPrincipal } from '../session-ledger/ledger-client'
 import {
   OmniosQuestionPublisherState,
@@ -61,12 +62,13 @@ const stillAccount = (account: string) => () => currentLedgerPrincipal() === acc
 
 export const consoleQuestionTransport: OmniosQuestionTransport = {
   async sync(body, account) {
-    // Why redactValue: the transport refuses a body its redactor would change.
+    // Why redact here: the transport refuses a body its redactor would change. Sign-in links stay
+    // whole on this route only (D1): telemetry and every other request still redact their tokens.
     const sent = await requestConsoleWorkflow(
       '/api/session-questions/sync',
       'POST',
       syncSchema,
-      redactValue(body),
+      redactValueKeepingSignInLinks(body),
       TIMEOUT_MS,
       false,
       account,

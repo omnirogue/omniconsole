@@ -671,6 +671,12 @@ ipcRenderer.on('ui:findInBrowserPage', (_event, source: unknown) => {
 // Custom APIs for renderer
 const api = {
   mcpConnectors: createMcpConnectorsApi(),
+  deliverablesHub: {
+    search: (query: string, refresh?: boolean) =>
+      ipcRenderer.invoke('deliverablesHub:search', query, refresh),
+    resolve: (relativePath: string, modifiedAt: number) =>
+      ipcRenderer.invoke('deliverablesHub:resolve', relativePath, modifiedAt)
+  } satisfies NonNullable<PreloadApi['deliverablesHub']>,
   app: {
     homeDirectory:
       process.platform === 'win32'

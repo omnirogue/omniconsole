@@ -2,7 +2,7 @@ import { graphAvailableSeatCapacity } from './graph/graph-seat-substitution'
 import type { ResolvedLocalWorkflowSeat } from '../../../shared/local-workflow-seats'
 import type { LocalWorkflowSeatCapacity } from '../../../shared/local-workflow-seat-capacity'
 import { runWorkflowPreset } from './workflow-preset-runner'
-import { reconcileWorkflowProgram } from './workflow-program-recovery'
+import { recoverInterruptedWorkflow } from './workflow-interrupted-recovery'
 import type { AgentSessionProcessIdentity } from '../../../shared/agent-session-record'
 import { createWorkflowProgramContext } from './workflow-program-context'
 import {
@@ -15,23 +15,19 @@ import type { WorkflowCheckpointStore } from './workflow-checkpoint-store'
 import type { WorkflowCheckpointStart } from './workflow-checkpoint-admission'
 import { WorkflowScriptSlots } from './workflow-script-slots'
 import { createLiveWorkflowAgent, type WorkflowExecutionLiveHooks } from './workflow-execution-live'
-import type { NativeResult } from './workflow-native-result'
+import type { WorkflowNativeAttestationInput } from './workflow-attempt-outcomes'
 import { resolveCouncilProgramRevision } from './council-program-revision'
 import {
   requireWorkflowFrozenSeat,
   type WorkflowProgramSnapshot
 } from './workflow-program-snapshot'
 import { GraphWebChangedError } from './graph/graph-web-sources'
+import { runWorkflowBudgeted, workflowBudgetGate } from './workflow-call-budget'
+import type { AgentBudgetClient } from './agent-budget-client'
 
 export type { WorkflowProgramSnapshot } from './workflow-program-snapshot'
 export type WorkflowExecutionOutcome = { state: string; result?: unknown; error?: string }
-export type WorkflowNativeAttestationInput = {
-  route: ResolvedLocalWorkflowSeat['agent']
-  seat: ResolvedLocalWorkflowSeat
-  executionId: string
-  attemptId: string
-  parsed: NativeResult
-}
+export type { WorkflowNativeAttestationInput } from './workflow-attempt-outcomes'
 type Active = { abort: AbortController; completion: Promise<WorkflowExecutionOutcome> }
 
 /** One instance per execution host; callers resolve context, accounts and models before Start. */
@@ -56,6 +52,9 @@ export class WorkflowExecutionService {
       live?: WorkflowExecutionLiveHooks
       /** Account capacity now, for moving a call that failed at launch (graph seat rules). */
       seatCapacity?: () => Promise<(seat: ResolvedLocalWorkflowSeat) => LocalWorkflowSeatCapacity>
+      /** The shared budget authority; without it a budgeted run fails before its first call. */
+      budgetAuthority?: AgentBudgetClient
+      budgetWatchMs?: number
     }
   ) {}
 
@@ -90,6 +89,12 @@ export class WorkflowExecutionService {
     const state = this.options.store.requestControl(executionId, fence, action)
     if (action === 'stop' && ['stopping', 'cancelled'].includes(state)) {
       this.active.get(executionId)?.abort.abort(new Error('Workflow stopped'))
+      // A manual stop revokes the root itself, so no host, product or replay can spend it again.
+      const { budget } = this.options.store.inspect(executionId, fence)
+        .snapshot as WorkflowProgramSnapshot
+      void workflowBudgetGate(budget, this.options.budgetAuthority, executionId)
+        ?.stop('Stopped in OmniConsole')
+        .catch(() => undefined)
     }
     return state
   }
@@ -122,21 +127,7 @@ export class WorkflowExecutionService {
       throw new Error('Workflow is still active')
     }
     const abort = new AbortController()
-    const completion = (async () => {
-      const claimedFence = await this.options.store.claimOwner(executionId, fence, owner)
-      const outcome = await reconcileWorkflowProgram({
-        store: this.options.store,
-        slots: this.options.slots,
-        executionId,
-        fence: claimedFence,
-        attestNativeResult:
-          this.options.attestNativeResult ??
-          (() => {
-            throw new Error('Workflow native attestation is unavailable during recovery')
-          })
-      })
-      return { ...outcome, fence: claimedFence }
-    })()
+    const completion = recoverInterruptedWorkflow({ ...this.options, executionId, fence, owner })
       .then((outcome) => {
         this.completed.set(executionId, structuredClone(outcome))
         return outcome
@@ -166,6 +157,9 @@ export class WorkflowExecutionService {
         ) {
           throw new Error('Invalid frozen workflow concurrency')
         }
+        const budget = replayOnly
+          ? undefined
+          : workflowBudgetGate(snapshot.budget, this.options.budgetAuthority, executionId)
         const localSlots = new WorkflowScriptSlots(concurrency)
         const slots = (onAcquired?: () => void): Pick<WorkflowScriptSlots, 'run'> => ({
           run: (work, signal) =>
@@ -198,6 +192,7 @@ export class WorkflowExecutionService {
             : undefined,
           seatFingerprint: (id) => JSON.stringify(seat(id)),
           route: (id) => seat(id).agent,
+          ...(budget ? { budget, budgetSeat: seat } : {}),
           launch: replayOnly
             ? async () => {
                 throw new Error('Completed workflow recovery cannot launch a model')
@@ -257,21 +252,28 @@ export class WorkflowExecutionService {
                 )
               }
             : snapshot
-        const result = await runWorkflowPreset(context, frozen.preset, programSnapshot, undefined, {
-          jev: { executionId, cacheOnly: replayOnly },
-          refused: (callId) => store.attempts.graphCallRefused(executionId, fence, callId),
-          recorded: () => store.readCallEvidence(executionId, fence).map((row) => row.callId),
-          webStarts: store.attempts.webStarts(executionId, fence),
-          ...(this.options.seatCapacity
-            ? {
-                seatCapacity: graphAvailableSeatCapacity(
-                  this.options.seatCapacity,
-                  durable.seatFailures!
-                )
-              }
-            : {}),
-          processes: { signal: abort.signal, slot: (work) => slots().run(work, abort.signal) }
-        })
+        const result = await runWorkflowBudgeted<unknown>(
+          budget,
+          durable.closeAdmission,
+          this.options.budgetWatchMs,
+          () =>
+            runWorkflowPreset(context, frozen.preset, programSnapshot, undefined, {
+              jev: { executionId, cacheOnly: replayOnly },
+              refused: (callId) => store.attempts.graphCallRefused(executionId, fence, callId),
+              recorded: () => store.readCallEvidence(executionId, fence).map((row) => row.callId),
+              webStarts: store.attempts.webStarts(executionId, fence),
+              ...(this.options.seatCapacity
+                ? {
+                    seatCapacity: graphAvailableSeatCapacity(
+                      this.options.seatCapacity,
+                      durable.seatFailures!
+                    )
+                  }
+                : {}),
+              processes: { signal: abort.signal, slot: (work) => slots().run(work, abort.signal) }
+            }),
+          (message) => this.options.progress(executionId, { message })
+        )
         const state = store.finish(executionId, fence, true)
         return { state, ...(state === 'completed' ? { result } : {}) }
       } catch (cause) {

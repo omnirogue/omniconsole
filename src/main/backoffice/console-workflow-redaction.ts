@@ -1,4 +1,5 @@
 import { redactValue } from '../observability/redactor'
+import { redactValueKeepingSignInLinks } from '../observability/sign-in-link-redaction'
 
 const MAX_REQUEST_BYTES = 1_048_576
 
@@ -17,8 +18,14 @@ export function consoleWorkflowCredentialVariants(bearer: string): string[] {
 }
 
 /** Include the actual in-memory credential: opaque test and future tokens have no fingerprint. */
-export function redactConsoleWorkflowValue(value: unknown, bearer: string | null): unknown {
-  let serialized = JSON.stringify(redactValue(value))
+export function redactConsoleWorkflowValue(
+  value: unknown,
+  bearer: string | null,
+  keepSignInLinks = false
+): unknown {
+  let serialized = JSON.stringify(
+    keepSignInLinks ? redactValueKeepingSignInLinks(value) : redactValue(value)
+  )
   if (serialized === undefined) {
     return null
   }

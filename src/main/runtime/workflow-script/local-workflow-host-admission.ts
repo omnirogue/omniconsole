@@ -30,6 +30,7 @@ import {
   type WorkflowEarlierSettledReader
 } from './workflow-earlier-findings'
 import { workflowEarlierSettledReader } from './workflow-earlier-settled'
+import { admitWorkflowBudget } from './local-workflow-budget-admission'
 
 /** Frozen like the output root, so a retargeted workspace is refused rather than read. */
 async function freezeWorkspaceRoot(
@@ -282,13 +283,18 @@ export async function admitLocalWorkflow(
     if (placement?.mode !== 'dispatched-seats') {
       await input.options.preflight?.(snapshot)
     }
+    const budget = await admitWorkflowBudget({
+      rootId: draft.budgetRootId,
+      snapshot,
+      authority: input.options.budgetAuthority
+    })
     const executionId = input.service.start({
       conversationId,
       requestId: request.requestId,
       owner: input.options.owner,
       fence: 1,
       preset: prepared.preset,
-      snapshot,
+      snapshot: budget ? { ...snapshot, budget } : snapshot,
       attemptLimit: prepared.attemptLimit,
       callLimit: prepared.callLimit,
       budgetLimit: prepared.budgetLimit

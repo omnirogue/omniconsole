@@ -275,6 +275,11 @@ const TUI_AGENT_CONFIG_SOURCE: Record<TuiAgent, TuiAgentConfigSource> = {
     detectCmd: 'kimi',
     promptInjectionMode: 'stdin-after-start'
   },
+  deepseek: {
+    detectCmd: 'deepseek',
+    detectCmdAliases: ['deepseek-cli', 'dsh', 'dsh-tui', 'dst'],
+    promptInjectionMode: 'stdin-after-start'
+  },
   'mistral-vibe': {
     // Why: installer exposes binary `vibe` though the package is mistral-vibe; keep old name as alias for wrapped installs.
     detectCmd: 'vibe',

@@ -51,7 +51,7 @@ describe('hub task resume environment', () => {
       })
     ).toEqual({
       OMNI_TASK_ID: 'btk_durable',
-      OMNIOS_URL: 'https://console.example.com',
+      OMNIOS_URL: 'https://app.omnisi.ai',
       PROFILE: 'saved'
     })
   })
@@ -69,7 +69,7 @@ describe('hub task resume environment', () => {
       })
     ).toEqual({
       OMNI_TASK_ID: 'btk_saved',
-      OMNIOS_URL: 'https://console.example.com',
+      OMNIOS_URL: 'https://app.omnisi.ai',
       PROFILE: 'saved'
     })
   })
@@ -95,7 +95,7 @@ describe('hub task resume environment', () => {
         candidates: [],
         sessionHubTaskId: 'btk_structured'
       })
-    ).toEqual({ OMNI_TASK_ID: 'btk_structured', OMNIOS_URL: 'https://console.example.com' })
+    ).toEqual({ OMNI_TASK_ID: 'btk_structured', OMNIOS_URL: 'https://app.omnisi.ai' })
     expect(() =>
       resolveHubTaskResumeEnvironment({
         db: null,

@@ -867,10 +867,14 @@ jobs:
       # AppArmor userns profile for the Chrome .deb, so chromium dies with "No usable
       # sandbox" and the provider passes no --no-sandbox. Why fail instead of skip: an
       # unset ORCA_BROWSER_EXECUTABLE is exactly how this test went uncovered for so long.
-      - name: Resolve Chrome for the browser provider
+      - name: Install and resolve Chrome for the browser provider
         run: |
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v google-chrome-stable || true)"
+          if [ -z "$chrome" ]; then
+            pnpm exec playwright install --with-deps chrome
+            chrome="$(command -v google-chrome || command -v google-chrome-stable || true)"
+          fi
           if [ -z "$chrome" ]; then
             echo "::error::No Google Chrome on the runner; the browser provider test would silently skip."
             exit 1

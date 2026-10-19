@@ -201,7 +201,11 @@ export type SessionManageRendererRequest =
       launchTabId?: string
       /** Only a pane hibernation slept that still has no PTY (a review wake after a restart). */
       onlySleptPane?: true
+      /** session restart: set the checkpoint aside for main's verdict, and no toast. */
+      keepCheckpoint?: true
     }
+  /** That restart's agent never confirmed it: keep its checkpoint on the new pane or the old one. */
+  | { kind: 'keepResumeCheckpoint'; tabId: string; onto: 'launched' | 'original' }
   | { kind: 'conversationOrganization'; hostId: string; sessionId: string }
   /** Is this pane one hibernation slept whose PTY the daemon says is gone (review Reject)? */
   | { kind: 'paneParkedBySleep'; paneKey: string }
@@ -216,7 +220,7 @@ export type SessionManageRendererRequest =
       flash: boolean
     }
   /** A finished one-off cleanup session: close it once its host confirms (an older window ignores it). */
-  | { kind: 'scheduleFinish'; paneKey?: string; tabId?: string; action: 'end' }
+  | { kind: 'scheduleFinish'; paneKey?: string; tabId?: string; action: 'archive' | 'end' | null }
   /** Read-only: the sidebar's counts as last rendered (session-count step 0; an older window ignores it). */
   | { kind: 'readSidebarCounts' }
   /** Read-only (session parity, step 8): the unfiltered parity population; null while restoring. */
@@ -245,7 +249,12 @@ export type SessionManageRenameReply = {
   /** A window that applied `change` answers with what it changed. */
   organization?: OrganizationRelayedOutcome
 }
-export type SessionManageResumeReply = { summary: string; tabId: string | null }
+export type SessionManageResumeReply = {
+  summary: string
+  tabId: string | null
+  /** With `keepCheckpoint`: the new tab's pane, whose agent hooks must report the conversation. */
+  paneKey?: string | null
+}
 
 /**
  * How this window has a conversation filed, read from its view keys even when no row lists it

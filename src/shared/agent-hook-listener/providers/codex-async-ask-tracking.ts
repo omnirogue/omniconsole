@@ -64,7 +64,9 @@ export function dismissCodexAsyncQuestions(
   shown: readonly ShownAsyncQuestion[]
 ): { interactivePrompt: string | undefined } | null {
   const tracked = state.codexAsyncAskByPaneKey.get(paneKey)
-  const envelope = tracked || !rowPrompt ? null : envelopeOf(rowPrompt)
+  const snapshot = state.lastToolByPaneKey.get(paneKey)
+  const prompt = rowPrompt ?? snapshot?.interactivePrompt
+  const envelope = tracked || !prompt ? null : envelopeOf(prompt)
   const ask = tracked ?? (envelope ? codexAsyncAskFromEnvelope(envelope) : null)
   if (!ask) {
     return null
@@ -78,11 +80,19 @@ export function dismissCodexAsyncQuestions(
   } else if (tracked) {
     state.codexAsyncAskByPaneKey.delete(paneKey)
   }
-  return {
-    interactivePrompt: left
-      ? serializeCodexAsyncAskEnvelope(left.envelope, AGENT_STATUS_INTERACTIVE_PROMPT_MAX_LENGTH)
-      : undefined
+  const interactivePrompt = left
+    ? serializeCodexAsyncAskEnvelope(left.envelope, AGENT_STATUS_INTERACTIVE_PROMPT_MAX_LENGTH)
+    : undefined
+  // Why: a turn-end ask (turn-end-question.ts) lives in the tool snapshot, which cached
+  // payloads re-emit; clear or narrow it so a child's next event or dismissing a tracked
+  // native ask cannot bring the turn-end card back.
+  if (snapshot?.interactivePrompt && envelopeOf(snapshot.interactivePrompt)) {
+    state.lastToolByPaneKey.set(paneKey, {
+      ...snapshot,
+      interactivePrompt: tracked ? undefined : interactivePrompt
+    })
   }
+  return { interactivePrompt }
 }
 
 function toolNameOf(hookPayload: Record<string, unknown>): string | undefined {

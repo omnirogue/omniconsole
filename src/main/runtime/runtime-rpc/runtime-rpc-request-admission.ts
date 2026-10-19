@@ -6,6 +6,7 @@ import { errorResponse } from '../rpc/errors'
 import { RuntimeRpcBinaryRouting } from './runtime-rpc-binary-routing'
 import { classifyRuntimeLongPoll, type RuntimeLongPollClass } from './runtime-rpc-long-poll'
 import {
+  callerPid,
   UNATTENDED_CALLER_METHODS,
   unattendedCallerRefusal,
   unattendedSocketCaller
@@ -47,11 +48,13 @@ export class RuntimeRpcRequestAdmission extends RuntimeRpcBinaryRouting {
       context?.startKeepalive()
     }
 
+    const pid = callerPid(request.callerPid)
     try {
       return await this.dispatcher.dispatch(request, {
         signal: longPoll ? context?.signal : undefined,
         ...(context ? { keepAliveWhileWaiting: context.startKeepalive } : {}),
-        ...(unattendedCaller ? { unattendedCaller } : {})
+        ...(unattendedCaller ? { unattendedCaller } : {}),
+        ...(pid ? { callerPid: pid } : {})
       })
     } finally {
       this.releaseLongPoll(longPoll)

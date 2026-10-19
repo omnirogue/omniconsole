@@ -43,7 +43,7 @@ describe('registerNotificationHandlers', () => {
       'https://example-team.atlassian.net/browse/OAOS-1',
       'https://example-team.atlassian.net/browse/OAOS-1'
     ],
-    ['https://evil.test/', 'https://console.example.com/work']
+    ['https://evil.test/', 'https://app.omnisi.ai/work']
   ])('opens a work notice in the default browser: %s', async (url, expected) => {
     shellOpenExternalMock.mockResolvedValue(undefined)
     registerNotificationHandlers({

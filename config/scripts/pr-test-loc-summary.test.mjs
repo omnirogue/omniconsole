@@ -232,8 +232,9 @@ describe('PR test LoC summary', () => {
     expect(result.stderr).toContain('--from-pr')
   })
 
-  it('is a no-checkout GitHub-hosted PR workflow', () => {
-    expect(locJob['runs-on']).toBe('ubuntu-latest')
+  it('uses the shared CI runner selection without checking out PR code', () => {
+    const prWorkflow = parse(readFileSync(join(projectDir, '.github/workflows/pr.yml'), 'utf8'))
+    expect(locJob['runs-on']).toBe(prWorkflow.jobs.code_paths['runs-on'])
     expect(locJob.steps).toHaveLength(1)
     expect(locStep.run).toContain('gh api')
     expect(locStep.run).toContain('pr-test-loc-table.mjs')
@@ -241,7 +242,6 @@ describe('PR test LoC summary', () => {
     expect(locStep.run).toContain('--update-pr')
     expect(locWorkflow.permissions['pull-requests']).toBe('write')
     expect(JSON.stringify(locWorkflow)).not.toContain('actions/checkout')
-    expect(JSON.stringify(locWorkflow)).not.toContain('self-hosted')
   })
 
   // The write-scoped GITHUB_TOKEN makes any PR-authored code a privilege escalation.

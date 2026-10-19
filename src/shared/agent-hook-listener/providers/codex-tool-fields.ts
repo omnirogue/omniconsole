@@ -6,6 +6,7 @@ import {
   toolUpdate
 } from '../tool-input-preview'
 import { deriveInteractivePrompt } from '../interactive-tool'
+import { turnEndAsyncAskPrompt } from '../turn-end-question'
 
 export function extractCodexToolFields(
   eventName: unknown,
@@ -33,8 +34,11 @@ export function extractCodexToolFields(
   }
   if (eventName === 'Stop') {
     const message = readString(hookPayload, 'last_assistant_message')
-    if (message) {
-      return { lastAssistantMessage: message }
+    // Why no tracked-ask check here: buildCodexStatusPayload prefers Codex's own open questions.
+    const asked = turnEndAsyncAskPrompt(hookPayload, message)
+    return {
+      ...(message ? { lastAssistantMessage: message } : {}),
+      ...(asked ? { interactivePrompt: asked } : {})
     }
   }
   return {}

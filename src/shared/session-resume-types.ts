@@ -3,12 +3,31 @@
 import type { ConversationProfile } from './conversation-resume-command'
 import type { SessionManageActionResult } from './session-manage-types'
 
-export type SessionResumeOutcome = 'already-open' | 'restarted' | 'resumed' | 'adopted'
+export type SessionResumeOutcome =
+  | 'already-open'
+  | 'restarted'
+  | 'started_unconfirmed'
+  | 'resumed'
+  | 'adopted'
+
+/** A checkpoint restart is `restarted` only once the new pane's agent hooks report the same conversation. */
+export type SessionRestartOutcome = Extract<
+  SessionResumeOutcome,
+  'restarted' | 'started_unconfirmed'
+>
+
+export type SessionRestartResult = SessionManageActionResult & {
+  outcome: SessionRestartOutcome
+  /** Why a `started_unconfirmed` start could not be confirmed. */
+  reason?: string
+}
 
 export type SessionResumeResult = SessionManageActionResult & {
   ref: string
   /** Absent on a dry run. */
   outcome?: SessionResumeOutcome
+  /** Why a `started_unconfirmed` start could not be confirmed. */
+  reason?: string
   paneKey?: string | null
   tabId?: string | null
   terminal?: string

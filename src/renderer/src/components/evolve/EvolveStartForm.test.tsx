@@ -119,4 +119,29 @@ describe('EvolveStartForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Iterations')
     expect(startCalls()).toHaveLength(0)
   })
+
+  // Last: the runs store is shared, and the completed run it loads would leak into earlier tests.
+  it('warm-starts a hosted run from the completed local winner', async () => {
+    const winner = evolveRunFixture({ id: 'evo_local_winner', state: 'done' })
+    mocks.rpc.mockImplementation(async (_target: unknown, method: string) => {
+      if (method === 'evolve.start') {
+        return { run: evolveRunFixture() }
+      }
+      return method === 'evolve.list' ? { runs: [winner] } : { hosts: [] }
+    })
+    render(<EvolveStartForm tab={tab()} />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Warm-start from local winner' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Start from local winner' }))
+    await waitFor(() => expect(startCalls()).toHaveLength(1))
+    expect(startCalls()[0]?.[2]).toEqual(
+      expect.objectContaining({ runsOn: 'hosted', seedFromRunId: 'evo_local_winner' })
+    )
+    await waitFor(() =>
+      expect(mocks.update).toHaveBeenCalledWith(
+        'repo::/workspace',
+        'evolve-tab',
+        expect.objectContaining({ executionId: evolveRunFixture().id })
+      )
+    )
+  })
 })

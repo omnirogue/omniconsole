@@ -150,8 +150,8 @@ describe('existing OmniConsole MCP names', () => {
   })
 
   it.each([
-    { url: 'https://console.example.com/another' },
-    { url: 'http://console.example.com/mcp' },
+    { url: 'https://app.omnisi.ai/another' },
+    { url: 'http://console.omnisi.ai/mcp' },
     { url: OMNI_CONSOLE_MCP_URL, command: 'custom-command' },
     { url: OMNI_CONSOLE_MCP_URL, type: 'stdio' }
   ])('does not treat another endpoint or transport as the connector: %j', (other) => {

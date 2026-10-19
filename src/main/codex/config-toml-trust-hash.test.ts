@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { computeTrustedHash, type CodexTrustEntry } from './config-toml-trust'
+import { createCodexHookTrustEntry } from './codex-hook-identity'
 
 // Why: captured from a real Codex 0.129 `/hooks` approval; fails loudly if Codex's serialization drifts.
 const REAL_APPROVED_COMMAND = '/bin/sh "/tmp/omni-case-b-mCmCe6/agent-hooks/codex-hook.sh"'
@@ -16,6 +17,39 @@ describe('computeTrustedHash', () => {
         command: REAL_APPROVED_COMMAND
       })
     ).toBe(REAL_APPROVED_HASH)
+  })
+
+  it('reproduces the hash Codex wrote for a real SessionEnd hook with an empty matcher', () => {
+    // Why: captured from Codex 0.160 trust in ~/.codex/config.toml (17 Oct 2026); session_end hashes its matcher.
+    expect(
+      computeTrustedHash({
+        sourcePath: '/Users/maintainer/.codex/hooks.json',
+        eventLabel: 'session_end',
+        groupIndex: 0,
+        handlerIndex: 0,
+        command:
+          '/usr/bin/python3 /Users/maintainer/Work/Ops/bin/omni-session-context hook --provider codex --event SessionEnd',
+        timeoutSec: 3,
+        matcher: ''
+      })
+    ).toBe('sha256:95a6c8697871d9274514b2054f3fe466166e0d9ecef752f951288bcb8fd48e25')
+  })
+
+  it('gives a SessionEnd hook a trust entry so mirrored SessionEnd hooks keep their trust', () => {
+    const entry = createCodexHookTrustEntry(
+      '/x/hooks.json',
+      'SessionEnd',
+      1,
+      0,
+      { hooks: [] },
+      { type: 'command', command: 'python3 /x/question-mirror.py --provider codex', timeout: 5 }
+    )
+    expect(entry).toMatchObject({
+      eventLabel: 'session_end',
+      groupIndex: 1,
+      handlerIndex: 0,
+      timeoutSec: 5
+    })
   })
 
   it('produces a different hash when the command changes', () => {

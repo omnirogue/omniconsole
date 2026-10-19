@@ -18,7 +18,8 @@ import {
   readSidebarRows,
   runtimeAskWaitDeps,
   runtimeControlDeps,
-  runtimeDeliveryDeps
+  runtimeDeliveryDeps,
+  showSessionManageNotice
 } from '../session-manage/session-manage-runtime-actions'
 import {
   createRuntimeObserveSources,
@@ -146,7 +147,12 @@ export function startSessionHostOwner(input: SessionHostOwnerStart): () => Promi
           input.windowAttached() ? control.resume(target) : resumeHeadless(target)
       },
       answer: (session) => runtimeSessionAnswerDeps({ runtime }, session),
-      answerQuarantine: new PersistentSessionAnswerQuarantine(userDataPath)
+      answerQuarantine: new PersistentSessionAnswerQuarantine(userDataPath),
+      notice: (summary) => {
+        if (input.windowAttached()) {
+          showSessionManageNotice(runtime, { kind: 'notice', summary })
+        }
+      }
     },
     organization: {
       host: () => sessionOrganizationHostFor(userDataPath),

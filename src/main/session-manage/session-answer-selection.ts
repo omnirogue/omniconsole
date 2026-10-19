@@ -76,7 +76,7 @@ export function selectSessionAnswer(
   if (!prompt.readable) {
     refuse('The question cannot be read completely.')
   }
-  if ([ask.text, ...prompt.commandText].some(persistentApproval)) {
+  if ([prompt.subject, ...prompt.commandText].some(persistentApproval)) {
     refuse(
       'This question requests a persistent or scoped permission; answer it in its own session.'
     )

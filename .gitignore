@@ -134,6 +134,7 @@ docs/**
 !docs/reference/ssh-reconnect-source-recovery.md
 !docs/reference/web-sources.md
 !docs/reference/windows-setup-shell.md
+!docs/reference/work-contract-admission.md
 !docs/reference/worktree-scan-fingerprint.md
 !docs/reference/wsl-command-execution.md
 !docs/reference/wsl-probe-failure-semantics.md

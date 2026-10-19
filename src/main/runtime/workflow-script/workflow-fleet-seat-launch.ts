@@ -181,7 +181,8 @@ export function launchWorkflowFleetSeats(input: {
         attemptId: call.attemptId,
         mode,
         schema: call.call.schema,
-        timeoutMs
+        timeoutMs,
+        ...(call.budget ? { budget: call.budget } : {})
       })
       await mkdir(inputs, { recursive: true, mode: 0o700 })
     } catch (cause) {

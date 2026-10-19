@@ -54,5 +54,26 @@ export const AGENT_SESSION_CONTRACT_METHODS: RpcMethod[] = [
         label: 'A'
       })
     }
+  }),
+  defineMethod({
+    name: 'agentSession.scheduleFinish',
+    params: z
+      .object({
+        terminal: requiredString('Missing terminal handle'),
+        action: z.enum(['archive', 'end']).nullable()
+      })
+      .strict(),
+    handler: async (params, context) => {
+      const { runtime } = context
+      const paneKey = await launchedPaneKey(runtime, params.terminal)
+      if (!paneKey) {
+        throw new Error('The launched terminal has no conversation identity yet.')
+      }
+      return runtime.requestSessionFolders({
+        kind: 'scheduleFinish',
+        paneKey,
+        action: params.action
+      })
+    }
   })
 ]

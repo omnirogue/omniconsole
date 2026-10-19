@@ -1,4 +1,4 @@
-import { samWorkPlan as authoringFixture } from '../example-work-plan'
+import { samWorkPlan as authoringFixture } from '../sal-work-plan'
 import type { WorkPlan } from '../../../work-plan-types'
 
 /** WP-2's executable fixture uses the worker gate required by the merged validator. */

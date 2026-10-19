@@ -1,0 +1,28 @@
+name: Executive video cost audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/scripts/executive-video-cost-audit*'
+      - '.github/workflows/executive-video-cost-audit.yml'
+  push:
+    branches: [omni-brand]
+    paths:
+      - 'config/scripts/executive-video-cost-audit*'
+      - '.github/workflows/executive-video-cost-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  targeted-test:
+    runs-on: [self-hosted, Linux, omni-ide-linux]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: node --check config/scripts/executive-video-cost-audit.mjs
+      - run: node --test config/scripts/executive-video-cost-audit.node-test.mjs

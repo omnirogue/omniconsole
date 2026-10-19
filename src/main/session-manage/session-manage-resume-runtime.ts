@@ -8,7 +8,6 @@ import type {
   SessionManageConversationOrganization,
   SessionManageRendererRequest
 } from '../../shared/session-manage-relay'
-import { rowHoldsSessionReference } from '../../shared/session-reference'
 import { isTerminalLeafId, makePaneKey } from '../../shared/stable-pane-id'
 import type { OrcaRuntimeService } from '../runtime/omni-runtime'
 import { toSessionManageEntry } from './session-manage-inventory'
@@ -18,16 +17,18 @@ import {
   type SessionResumeDeps,
   type SessionResumeVerdict
 } from './session-manage-resume'
-import { readSidebarRows, runtimeControlDeps } from './session-manage-runtime-actions'
+import {
+  readSidebarRows,
+  runtimeControlDeps,
+  showSessionManageNotice
+} from './session-manage-runtime-actions'
 import { createRuntimeObserveSources } from './session-manage-runtime-sources'
 import type { OrganizationExecutor } from '../../shared/session-organization-change'
 import type { SessionActionActor } from './session-actions-log'
 import { sessionOrganizationLedgerFor } from '../session-organization/organization-change-ledger'
 import { relayOrganizationMutation } from '../session-organization/organization-relayed-mutation'
 import { locateTranscripts, readTranscriptCwd } from './session-transcript-locate'
-
-const CONFIRM_TIMEOUT_MS = 30_000
-const CONFIRM_POLL_MS = 1_000
+import { confirmPaneConversation, restartWithHookProof } from './session-restart-proof'
 
 type Runtime = Parameters<typeof readSidebarRows>[0] &
   Parameters<typeof createRuntimeObserveSources>[0] &
@@ -102,7 +103,6 @@ export function runtimeResumeDeps(
       ),
     { trigger: 'unknown' }
   )
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
   return {
     readRows: () => readSidebarRows(runtime),
     observe: async (row) =>
@@ -114,19 +114,20 @@ export function runtimeResumeDeps(
       }),
     transcriptCwd: (reference, path) => readTranscriptCwd(reference.agent, path),
     restart: async (row, entry) => {
-      const reply = await runtimeControlDeps(runtime).resume(
-        {
-          ...(row.paneKey ? { paneKey: row.paneKey } : {}),
-          ...(row.tabId ? { tabId: row.tabId } : {})
-        },
+      const proof = await restartWithHookProof(
+        runtimeControlDeps(runtime),
+        row,
+        `“${entry.title}”`,
         launchCause
       )
+      // Why here: the window no longer toasts a restart before its agent confirms it.
+      showSessionManageNotice(runtime, { kind: 'notice', summary: proof.summary })
       return {
         dryRun: false,
         action: 'restart',
         target: { paneKey: entry.paneKey, title: entry.title },
         actor: { kind: 'cli' },
-        summary: reply.summary
+        ...proof
       }
     },
     launch: async ({ reference, transcriptPath, cwd, providerRoot, agentTemplate }) => {
@@ -167,28 +168,14 @@ export function runtimeResumeDeps(
         disposition
       }
     },
-    confirm: async (reference, launched): Promise<SessionResumeVerdict> => {
-      const deadline = Date.now() + CONFIRM_TIMEOUT_MS
+    confirm: (reference, launched): Promise<SessionResumeVerdict> => {
       let paneKey = launched.paneKey
-      for (;;) {
-        paneKey ??= await paneKeyOf(runtime, launched.terminal)
-        // Only the agent's own hook reports count: the tab's launch intent is not proof.
-        const reported = paneKey
-          ? runtime.getReportedProviderSessionsForPane(paneKey)[0]
-          : undefined
-        if (paneKey && reported) {
-          const same = rowHoldsSessionReference(reference, {
-            hostId: 'local',
-            providerSessionId: reported.id,
-            transcriptPath: reported.transcriptPath ?? null
-          })
-          return same ? { state: 'same', paneKey } : { state: 'different', reported: reported.id }
-        }
-        if (Date.now() >= deadline || options.signal?.aborted) {
-          return { state: 'unconfirmed' }
-        }
-        await sleep(CONFIRM_POLL_MS)
-      }
+      return confirmPaneConversation(
+        runtime,
+        reference,
+        async () => (paneKey ??= await paneKeyOf(runtime, launched.terminal)),
+        options.signal
+      )
     },
     platform: process.platform,
     hostLabel: hostname(),

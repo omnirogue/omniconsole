@@ -8,6 +8,7 @@ import { translate } from '@/i18n/i18n'
 import { NATIVE_FILE_DROP_TARGET } from '../../../../shared/native-file-drop'
 import type { ComposerAutocomplete, NativeChatPickerItem } from './native-chat-composer-state'
 import { NativeChatMentionHint, NativeChatPickerMenu } from './NativeChatAutocompleteMenus'
+import { PromptCostPreviewBadge } from '../terminal/PromptCostPreviewBadge'
 import { NativeChatComposerActions } from './NativeChatComposerActions'
 import { nativeChatComposerPlaceholder } from './native-chat-composer-target'
 import type {
@@ -327,6 +328,7 @@ export function NativeChatComposerField({
               )}
             />
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <PromptCostPreviewBadge prompt={draft} />
               <NativeChatComposerActions
                 agent={agent}
                 onTag={onTag}

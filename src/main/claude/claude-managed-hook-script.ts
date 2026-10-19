@@ -1,7 +1,8 @@
 import { buildWindowsAgentHookCurlPostCommand } from '../agent-hooks/installer-utils'
 import {
   buildPosixAgentHookPostWithReplyLines,
-  buildPosixUserPromptSubmitReplyGateLines
+  buildPosixHookReplyGateLines,
+  POSIX_HOOK_EARLY_EXIT
 } from '../agent-hooks/hook-post-command'
 import {
   buildPosixHookPayloadCapture,
@@ -22,7 +23,7 @@ export function getManagedScript(
       '@echo off',
       'setlocal',
       // Why: Claude-compatible permission hooks fail closed on empty stdout (#14818).
-      // The Windows script does not relay a UserPromptSubmit reply yet; see the POSIX body below.
+      // The Windows script relays no listener reply yet (prompt, answer or Stop); see the POSIX body below.
       'echo {}',
       // Why: refresh endpoint coordinates for PTYs surviving an OmniConsole restart.
       'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
@@ -54,12 +55,12 @@ export function getManagedScript(
     '#!/bin/sh',
     ...buildPosixHookPayloadCapture(),
     // Why: Claude parses stdout as hook output. Permission hooks fail closed on an empty one (#14818),
-    // so the neutral object goes out as soon as the event is known; a UserPromptSubmit instead
-    // relays the listener's JSON reply (none today; see agent-hook-prompt-reply-limit) and falls back to `{}`.
-    ...buildPosixUserPromptSubmitReplyGateLines(),
+    // so the neutral object goes out as soon as the event is known; UserPromptSubmit, SessionStart,
+    // PostToolUse and Stop instead relay the listener's JSON reply and fall back to `{}`.
+    ...buildPosixHookReplyGateLines(),
     // Grok imports Claude hooks too; do not overwrite its identity or link Claude memory.
     'if [ -n "$GROK_HOOK_EVENT" ] && [ -n "$GROK_SESSION_ID" ]; then',
-    '  exit 0',
+    `  ${POSIX_HOOK_EARLY_EXIT}`,
     'fi',
     // Why: worktree agents must carry the repo's Claude memory; runs before any early exit.
     ...buildPosixWorktreeMemoryLinkLines(),
@@ -68,14 +69,14 @@ export function getManagedScript(
       ? [
           // Why: Devin imports .claude hooks by default; skip OmniConsole's managed hook there so status posts stay attributed to Devin.
           'if [ -n "$DEVIN_PROJECT_DIR" ]; then',
-          '  exit 0',
+          `  ${POSIX_HOOK_EARLY_EXIT}`,
           'fi'
         ]
       : []),
     // Why: a backgrounded session runs in a daemon worker that inherited the dispatching
     // pane's env, so ORCA_PANE_KEY names a pane this session does not run in (#9236).
     'if [ -n "$CLAUDE_JOB_DIR" ]; then',
-    '  exit 0',
+    `  ${POSIX_HOOK_EARLY_EXIT}`,
     'fi',
     // Why: refresh endpoint coordinates for PTYs surviving an OmniConsole restart.
     // Why: suppress parse errors so they neither leak nor trip outer set -e.
@@ -85,7 +86,7 @@ export function getManagedScript(
     'fi',
     'if [ -z "$ORCA_AGENT_HOOK_PORT" ] || [ -z "$ORCA_AGENT_HOOK_TOKEN" ] || [ -z "$ORCA_PANE_KEY" ]; then',
     '  spool_hook_event',
-    '  exit 0',
+    `  ${POSIX_HOOK_EARLY_EXIT}`,
     'fi',
     'if [ "${ORCA_AGENT_HOOK_LIFECYCLE_QUEUE:-}" = "1" ] && [ -r "${ORCA_AGENT_HOOK_ENDPOINT:-}" ]; then',
     `  case "$payload" in *'"hook_event_name":"SubagentStart"'*|*'"hook_event_name": "SubagentStart"'*)`,
@@ -95,7 +96,10 @@ export function getManagedScript(
     '  ;; esac',
     'fi',
     // Why: keep full hook JSON off the command line and avoid IDS-friendly URL-encoded paths.
-    ...buildPosixAgentHookPostWithReplyLines('claude', { onFailure: 'spool_hook_event' }),
+    ...buildPosixAgentHookPostWithReplyLines('claude', {
+      onFailure: 'spool_hook_event',
+      answerAck: true
+    }),
     'exit 0',
     ''
   ].join('\n')

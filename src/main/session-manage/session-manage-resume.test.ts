@@ -37,6 +37,7 @@ function deps(overrides: Partial<SessionResumeDeps> = {}): ResumeDeps {
         action: 'restart',
         target: { paneKey: 'tab-1:leaf-1', title: 'Parser fix' },
         actor,
+        outcome: 'restarted',
         summary: 'Resumed “Parser fix”: the same conversation, in a new tab'
       }))
   )
@@ -153,6 +154,27 @@ describe('omni session resume', () => {
     expect(exitedResult.outcome).toBe('restarted')
     expect(exited.restart).toHaveBeenCalledTimes(1)
     expect(exited.launch).not.toHaveBeenCalled()
+  })
+
+  it('passes on a checkpoint restart its agent never confirmed, with the reason', async () => {
+    const reason = 'its agent did not report which conversation it opened within 30 s'
+    const exited = deps({
+      readRows: async () => [held({ resumable: true })],
+      observe: async () =>
+        manageEntry({ verdict: 'exited', state: 'exited' } as Partial<SessionManageEntry>),
+      restart: async () => ({
+        dryRun: false,
+        action: 'restart',
+        target: { paneKey: 'tab-1:leaf-1', title: 'Parser fix' },
+        actor,
+        outcome: 'started_unconfirmed',
+        reason,
+        summary: `“Parser fix” was started again in a new tab, but ${reason}.`
+      })
+    })
+    const result = await resumeConversation(exited, { actor, ref: REF, dryRun: false })
+    expect(result).toMatchObject({ outcome: 'started_unconfirmed', reason })
+    expect(result.summary).toContain(reason)
   })
 
   it('carries an exited row’s launch record onto the tab it reopens', async () => {

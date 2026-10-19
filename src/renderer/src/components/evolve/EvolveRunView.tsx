@@ -5,6 +5,7 @@ import { EvolveCompounding } from './EvolveCompounding'
 import { EvolveDecisionCard } from './EvolveDecisionCard'
 import { EvolveHostedProgressCard } from './EvolveHostedProgressCard'
 import { EvolveRunHeader } from './EvolveRunHeader'
+import { EvolveRunPreviewPanels } from './EvolveRunPreviewPanels'
 import { EvolveRunStatus } from './EvolveRunStatus'
 import { evolveTime } from './evolve-run-text'
 import { useEvolveRun } from './use-evolve-run'
@@ -39,6 +40,7 @@ export function EvolveRunView({ tabId, runId }: { tabId: string; runId: string }
       <EvolveRunStatus run={run} />
       <EvolveHostedProgressCard run={run} />
       <EvolveDecisionCard run={run} />
+      <EvolveRunPreviewPanels run={run} />
       {run.ledger && <EvolveCompounding ledger={run.ledger} />}
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">{translate('evolve.events', 'Events')}</h3>

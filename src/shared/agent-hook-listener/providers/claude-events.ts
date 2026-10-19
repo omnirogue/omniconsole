@@ -145,11 +145,17 @@ export function normalizeClaudeEvent(
 
   const eventToolUseId = readFirstString(hookPayload, ['tool_use_id', 'toolUseId'])
   const previousTool = state.lastToolByPaneKey.get(paneKey)
+  // Why: the next assistant message cannot start until the question has a result, so a lead tool
+  // starting under a different tool_use_id while the card is open is a sibling from the same
+  // message (Claude runs it in parallel); letting it through overwrote the open card (MacBook 17 Oct).
+  const isParallelSiblingStartDuringQuestion = eventName === 'PreToolUse' && !isAskUserQuestionWait
   const isParallelSiblingCompletionDuringQuestion =
     eventAgentId === undefined &&
     previousLead?.state === 'waiting' &&
     isAskUserQuestionTool(previousTool?.toolName) &&
-    (eventName === 'PostToolUse' || eventName === 'PostToolUseFailure') &&
+    (eventName === 'PostToolUse' ||
+      eventName === 'PostToolUseFailure' ||
+      isParallelSiblingStartDuringQuestion) &&
     previousLead.waitingToolUseId !== undefined &&
     eventToolUseId !== undefined &&
     eventToolUseId !== previousLead.waitingToolUseId

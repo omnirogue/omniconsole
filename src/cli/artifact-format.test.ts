@@ -22,7 +22,7 @@ const item: ArtifactListItem = {
     byteSize: 12,
     deletedAt: null
   },
-  shareUrl: 'https://console.example.com/a/artifact-1'
+  shareUrl: 'https://app.omnisi.ai/a/artifact-1'
 }
 
 const reviewed: ArtifactListItem = {
@@ -71,6 +71,19 @@ describe('artifact formatting', () => {
     )
     expect(formatArtifactShared({ ...item, warnings })).toBe(
       [item.shareUrl, `warning: ${warnings[0].hint}`, `warning: ${warnings[1].hint}`].join('\n')
+    )
+  })
+
+  it('says when the page is not tied to the session that published it', () => {
+    const sessionBinding = {
+      state: 'unbound' as const,
+      reason: 'no agent is running in its terminal'
+    }
+    const line =
+      'session: not bound, no agent is running in its terminal. Decisions on this page will not be delivered to this session; read them with `omni artifacts status <file>`.'
+    expect(formatArtifactShared({ ...item, sessionBinding })).toBe(`${item.shareUrl}\n${line}`)
+    expect(formatArtifactShared({ ...reviewed, sessionBinding })).toBe(
+      [reviewed.shareUrl, 'review: pending', line, ARTIFACT_REVIEW_NEXT_STEP].join('\n')
     )
   })
 

@@ -31,6 +31,7 @@ export type LaunchInput = {
   folderRef?: string
   agentArgs?: string
   managedToolsFile?: string
+  ephemeral?: boolean
   again: boolean
   dryRun: boolean
   operationId?: string
@@ -175,6 +176,9 @@ export async function readLaunchInput(
   if (typeof flags.get('again') === 'string') {
     throw new RuntimeClientError('invalid_argument', '--again takes no value.')
   }
+  if (typeof flags.get('ephemeral') === 'string') {
+    throw new RuntimeClientError('invalid_argument', '--ephemeral takes no value.')
+  }
   const model = getOptionalStringFlag(flags, 'model')
   const effort = getOptionalStringFlag(flags, 'effort')
   assertLaunchEffort(provider, model, effort)
@@ -199,6 +203,7 @@ export async function readLaunchInput(
     folderRef: getOptionalStringFlag(flags, 'folder'),
     agentArgs: getOptionalStringFlag(flags, 'agent-args'),
     managedToolsFile: getOptionalStringFlag(flags, 'managed-tools-file'),
+    ...(flags.get('ephemeral') === true ? { ephemeral: true } : {}),
     again: flags.get('again') === true,
     dryRun: flags.get('dry-run') === true,
     operationId,

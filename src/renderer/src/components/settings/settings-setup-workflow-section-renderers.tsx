@@ -8,6 +8,8 @@ import { GeneralPane } from './GeneralPane'
 import { IntegrationsPane } from './IntegrationsPane'
 import { MobileSettingsPane } from './MobileSettingsPane'
 import { OmniRogueDiagnosticsCard } from './OmniRogueDiagnosticsCard'
+import { OmniRogueGatewayHealthCard } from './OmniRogueGatewayHealthCard'
+import { OmniSiMcpExplorerEntry } from './OmniSiMcpExplorerEntry'
 import { OrcaAccountSettingsPane } from './OrcaAccountSettingsPane'
 import { SettingsSetupGuidePane } from './SettingsSetupGuidePane'
 import { ShareSkillsSettingsPane } from './ShareSkillsSettingsPane'
@@ -38,6 +40,8 @@ export function renderOrcaAccountSettingsSection(
         <div className="flex flex-col gap-6">
           <OrcaAccountSettingsPane />
           <OmniRogueDiagnosticsCard runDoctor={runOmniRogueDoctor} />
+          <OmniRogueGatewayHealthCard />
+          <OmniSiMcpExplorerEntry />
         </div>
       ) : null}
     </SettingsSection>

@@ -89,6 +89,27 @@ describe('a session-manage control on another computer’s session', () => {
     expect(executor.dispatched).toHaveLength(1)
   })
 
+  it('says a restart the other computer could not confirm is not confirmed, with its reason', async () => {
+    const { executor } = await remoteTestRuntime(root.root)
+    executor.afterDispatch = async () => ({
+      kind: 'completed',
+      result: {
+        summary: '“Release notes” was started again in a new tab, but …',
+        outcome: 'started_unconfirmed',
+        reason: 'its agent did not report which conversation it opened within 30 s'
+      }
+    })
+    const result = await remoteSessionAction(
+      {} as never,
+      prepared('runtime:studio'),
+      { action: 'restart', payload: {} },
+      {}
+    )
+    expect(result?.summary).toBe(
+      'The computer that runs “Release notes” started it again, but it is not confirmed: its agent did not report which conversation it opened within 30 s. Check it before sending it anything.'
+    )
+  })
+
   it('reports an answer with the question this Mac saw, the choice, and the delivery', async () => {
     await remoteTestRuntime(root.root)
     const dry = await remoteSessionAnswer(

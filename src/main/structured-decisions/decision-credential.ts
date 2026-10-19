@@ -6,7 +6,9 @@ import { join } from 'node:path'
 const credentialPatterns = {
   OPENROUTER_API_KEY: /^[A-Za-z0-9_-]{16,512}$/,
   TYPESAFE_API_KEY: /^[A-Za-z0-9_-]{16,512}$/,
-  ACME_META_ACCESS_TOKEN: /^[A-Za-z0-9_-]{16,4096}$/
+  ACME_META_ACCESS_TOKEN: /^[A-Za-z0-9_-]{16,4096}$/,
+  // An OmniSI API key with budget scopes: osi_api1.<org>.<secret>
+  OMNISI_AGENT_BUDGET_KEY: /^osi_api1\.[A-Za-z0-9_.:-]{16,600}$/
 } as const
 
 async function resolveLiteralCredential(
@@ -63,6 +65,13 @@ export function resolveAcmeMetaCredential(
   vaultPath = join(homedir(), '.config', 'omni', 'connections.env')
 ): Promise<string | undefined> {
   return resolveLiteralCredential('ACME_META_ACCESS_TOKEN', environment, vaultPath)
+}
+
+export function resolveAgentBudgetCredential(
+  environment: NodeJS.ProcessEnv = process.env,
+  vaultPath = join(homedir(), '.config', 'omni', 'connections.env')
+): Promise<string | undefined> {
+  return resolveLiteralCredential('OMNISI_AGENT_BUDGET_KEY', environment, vaultPath)
 }
 
 export function resolveOpenRouterCredential(

@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Bot, Folder, FolderGit2, Home, Pencil, Settings2, SlidersHorizontal } from 'lucide-react'
+import {
+  Bot,
+  Folder,
+  FolderGit2,
+  FolderPlus,
+  Home,
+  Pencil,
+  Settings2,
+  SlidersHorizontal
+} from 'lucide-react'
+import { openProjectCreate } from '@/components/projects/project-settings-dialog-store'
 import { SessionContextLauncherRow } from './SessionContextLauncherRow'
 import { translate } from '@/i18n/i18n'
 import { Badge } from '@/components/ui/badge'
@@ -209,10 +219,16 @@ export function CustomizeWorkspaceRow({
 
   return (
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger className="items-start gap-2.5 py-2">
+      <DropdownMenuSubTrigger
+        className="items-start gap-2.5 py-2"
+        onClick={() => {
+          onClose()
+          openProjectCreate()
+        }}
+      >
         <SlidersHorizontal aria-hidden="true" className="mt-0.5 size-3.5" />
         <span className="flex min-w-0 flex-col gap-0.5">
-          <span>{translate('launchContext.customize', 'Customize workspace…')}</span>
+          <span>{translate('launchContext.customize', 'Create Project')}</span>
           <span className="truncate text-xs font-normal text-muted-foreground">
             {translate('launchContext.customizeSummary', 'In {{target}} · {{agent}}', {
               target:
@@ -223,6 +239,24 @@ export function CustomizeWorkspaceRow({
         </span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="w-72" {...subContentProps(hover)}>
+        <DropdownMenuItem
+          onSelect={() => {
+            onClose()
+            openProjectCreate()
+          }}
+        >
+          <FolderPlus className="size-3.5" />
+          <div className="min-w-0 flex-1">
+            <div>{translate('projects.create.action', 'Create Project')}</div>
+            <div className="truncate text-xs text-muted-foreground">
+              {translate(
+                'projects.create.actionDetail',
+                'Create a universal project with coordinator & thread defaults'
+              )}
+            </div>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <TargetIcon className="size-3.5" />

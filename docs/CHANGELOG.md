@@ -294,7 +294,7 @@ make sure this gets done", and then it holds the work rather than becoming it.
 - Task sources are console-only by default: Settings → Task Sources shows the
   OmniConsole backoffice and one switch that brings GitHub Issues, GitLab,
   Linear, Jira, Bitbucket, Azure DevOps and Gitea back exactly as configured.
-- New profiles start on the production console (`https://console.example.com`);
+- New profiles start on the production console (`https://app.omnisi.ai`);
   only a profile that explicitly chose Local keeps the loopback backoffice.
 - The Jobs view renders the production console's projection again: listed jobs
   accept the hub's own task ids, and a workflow response that fails its contract

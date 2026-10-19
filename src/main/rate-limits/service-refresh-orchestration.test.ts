@@ -9,6 +9,7 @@ import { fetchMiniMaxRateLimits } from './minimax-fetcher'
 import { fetchGrokRateLimits } from './grok-fetcher'
 import { readGrokAuthSession } from './grok-auth'
 import { readKimiSignIn } from '../kimi/kimi-sign-in'
+import { workflowGeminiApiKey } from '../runtime/workflow-script/workflow-gemini-key'
 import { fetchOpenCodeGoRateLimits } from './opencode-go-usage-fetcher'
 import {
   deferred,
@@ -39,6 +40,10 @@ vi.mock('./kimi-fetcher', () => ({
 
 vi.mock('../kimi/kimi-sign-in', () => ({
   readKimiSignIn: vi.fn(async () => false)
+}))
+
+vi.mock('../runtime/workflow-script/workflow-gemini-key', () => ({
+  workflowGeminiApiKey: vi.fn(() => undefined)
 }))
 
 vi.mock('./opencode-go-usage-fetcher', () => ({
@@ -122,6 +127,25 @@ describe('RateLimitService', () => {
     expect(fetchMiniMaxRateLimits).not.toHaveBeenCalled()
     expect(service.getState().grokAuthConfigured).toBe(true)
     expect(service.getState().grok?.status).toBe('ok')
+  })
+
+  it('reports whether a Gemini API key exists, read on fetch cycles and not on state snapshots', async () => {
+    vi.mocked(fetchClaudeRateLimits).mockResolvedValue(okProvider('claude', 10))
+    vi.mocked(fetchCodexRateLimits).mockResolvedValue(okProvider('codex', 10))
+    const service = new RateLimitService()
+    service.getState()
+    expect(service.getState().geminiAuthConfigured).toBe(false)
+    expect(workflowGeminiApiKey).toHaveBeenCalledTimes(1)
+
+    // Why: an OAuth-less host with a key set up later must show it without a restart.
+    vi.mocked(workflowGeminiApiKey).mockReturnValueOnce('AIza-test-key')
+    await serviceInternals(service).fetchAll()
+
+    expect(workflowGeminiApiKey).toHaveBeenCalledTimes(2)
+    expect(service.getState().geminiAuthConfigured).toBe(true)
+    expect(workflowGeminiApiKey).toHaveBeenCalledTimes(2)
+    // Only that a key exists leaves the service, never the key itself.
+    expect(JSON.stringify(service.getState())).not.toContain('AIza-test-key')
   })
 
   it('reads the Kimi login from the same resolved home as the usage fetch', async () => {

@@ -37,7 +37,7 @@ function createResponse(slug: string): Response {
         byteSize: 12,
         deletedAt: null
       },
-      shareUrl: `https://console.example.com/a/${slug}`,
+      shareUrl: `https://app.omnisi.ai/a/${slug}`,
       editToken: `edit-${slug}`
     }),
     { status: 200, headers: { 'content-type': 'application/json' } }

@@ -31,6 +31,7 @@ import type { SessionManagePaneVerifier } from './session-manage-caller'
 import type { ReadChangedFiles } from './session-manage-conflicts'
 import type { SessionControlDeps } from './session-manage-control'
 import type { SessionDeliveryDeps } from './session-manage-deliver'
+import { confirmPaneConversation } from './session-restart-proof'
 import {
   readRuntimeLatestTurn,
   readRuntimeOwnSteps,
@@ -185,6 +186,16 @@ export function runtimeControlDeps(runtime: Runtime): SessionControlDeps {
         launchTabId
       })
     },
+    confirmRestarted: (reference, paneKey) =>
+      confirmPaneConversation(runtime, reference, async () => paneKey),
+    keepCheckpoint: async (tabId, onto) =>
+      (
+        await relay<{ kept?: boolean } | null>(runtime, {
+          kind: 'keepResumeCheckpoint',
+          tabId,
+          onto
+        })
+      )?.kept === true,
     rename: (target, title, change) =>
       relay<SessionManageRenameReply>(runtime, {
         kind: 'renameSession',

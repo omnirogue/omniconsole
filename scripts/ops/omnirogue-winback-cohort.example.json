@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-17T12:00:00Z",
+  "candidates": [
+    {
+      "userId": "example-user",
+      "customerId": "cus_example",
+      "subscriptionId": "sub_example",
+      "eventType": "customer.subscription.deleted",
+      "cancellationReason": "cancellation_requested",
+      "endedAt": "2026-10-03T12:00:00Z",
+      "reasonCategory": "too_expensive",
+      "reasonCreatedAt": "2026-10-01T12:00:00Z",
+      "stripeFeedback": null,
+      "previousSequenceAt": null,
+      "completedSteps": [],
+      "checks": {
+        "accountExists": true,
+        "paidPlan": false,
+        "lifetime": false,
+        "liveSubscription": false,
+        "refundOrDispute": false,
+        "pendingRefund": false,
+        "unsubscribed": false,
+        "bounced": false,
+        "complained": false,
+        "isAdmin": false
+      }
+    }
+  ]
+}

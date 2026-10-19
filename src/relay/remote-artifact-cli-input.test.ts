@@ -158,7 +158,7 @@ describe('prepareRemoteArtifactCliInput', () => {
       ]
     ],
     [['artifacts', 'close', '--no-action', '--note', 'Answered', 'plan.html', '--json']],
-    [['artifacts', 'supersede', '--by', 'https://console.example.com/a/next', 'plan.html']],
+    [['artifacts', 'supersede', '--by', 'https://app.omnisi.ai/a/next', 'plan.html']],
     [['artifacts', 'reopen', 'plan.html', '--json']],
     [['artifacts', 'unsupersede', 'plan.html']]
   ])('transfers only source identity for lifecycle changes: %j', async (argv) => {

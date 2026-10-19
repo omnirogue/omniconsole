@@ -78,21 +78,21 @@ export function SessionSidebarToolbar(props: {
               <FolderPlus className="size-3.5" />
             </Button>
           </SessionFolderNamePopover>
-          <Button
-            size="icon-xs"
-            variant="ghost"
-            className="text-muted-foreground"
-            disabled={!folders.loaded}
-            aria-label={translate('projects.create.open', 'New project')}
-            title={translate('projects.create.open', 'New project')}
-            data-session-project-create=""
-            onClick={openProjectCreate}
-          >
-            <FolderKanban className="size-3.5" />
-          </Button>
         </>
       )}
-      <NewConversationButton palette />
+      <Button
+        size="icon-xs"
+        variant="ghost"
+        className="text-muted-foreground"
+        disabled={!folders.loaded}
+        aria-label={translate('projects.create.open', 'New project')}
+        title={translate('projects.create.open', 'New project')}
+        data-session-project-create=""
+        onClick={openProjectCreate}
+      >
+        <FolderKanban className="size-3.5" />
+      </Button>
+      <NewConversationButton />
     </div>
   )
 }

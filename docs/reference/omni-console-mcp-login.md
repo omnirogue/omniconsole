@@ -7,7 +7,7 @@ On every signed-in **local** spawn, OmniConsole makes sure the Claude profile's 
 ```json
 "omni-console": {
   "type": "http",
-  "url": "https://console.example.com/mcp",
+  "url": "https://console.omnisi.ai/mcp",
   "headersHelper": "/Applications/OmniConsole.app/Contents/Resources/mcp/omni-console-mcp-headers.sh"
 }
 ```

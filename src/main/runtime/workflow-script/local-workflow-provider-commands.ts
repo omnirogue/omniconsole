@@ -300,7 +300,8 @@ export async function workflowLaunchCommand(
       model,
       effort,
       attemptId: input.attemptId,
-      schema: input.call.schema
+      schema: input.call.schema,
+      ...(input.budget ? { maxBudgetUsd: input.budget.reservedUsd } : {})
     })
     return { program: 'claude', args, cwd, env, input: prompt }
   }
@@ -311,7 +312,8 @@ export async function workflowLaunchCommand(
       effort,
       attemptId: input.attemptId,
       access: mode.access,
-      ...(mode.output === 'schema' ? { schema: input.call.schema } : {})
+      ...(mode.output === 'schema' ? { schema: input.call.schema } : {}),
+      ...(input.budget ? { maxBudgetUsd: input.budget.reservedUsd } : {})
     }),
     // Claude's file tools resolve against its working directory, so it runs in the workspace.
     cwd: mode.root ?? cwd,

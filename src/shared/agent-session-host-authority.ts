@@ -1,3 +1,4 @@
+import type { WorkAdmission } from './work-contract-admission'
 import type { LaunchCause } from './launch-cause'
 import type { SessionPrepRoutingReceipt } from './session-prep-types'
 import type { AgentLaunchAccountReceipt, AgentLaunchEffectiveModel } from './agent-launch-account'
@@ -156,6 +157,8 @@ export type RuntimeCreateAgentSessionRequest = {
   viewMode?: 'terminal' | 'chat'
   /** Resolved by the host after its replay check and recorded on the tab it creates. */
   agentTemplateId?: string
+  /** Work contract v2 (snake_case, as the BFF writes it); checked before anything starts. */
+  workContract?: unknown
 }
 
 export type RuntimeCreateAgentSessionResult = {
@@ -166,6 +169,8 @@ export type RuntimeCreateAgentSessionResult = {
   launch?: AgentLaunchEffectiveModel
   /** Router selection is a launch choice, not evidence of the model served. */
   routing?: SessionPrepRoutingReceipt
+  /** Set by the RPC method on hosts that check work contracts. */
+  workAdmission?: WorkAdmission
 }
 
 export type RuntimeAgentSessionRpcCaller = {

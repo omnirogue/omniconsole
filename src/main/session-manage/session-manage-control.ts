@@ -28,6 +28,8 @@ import { remoteExecutionRefusal } from './session-manage-locality'
 import { afterApplied, SessionManageRefusal } from './session-manage-refusal'
 import { assertUnattendedPolicy } from './session-manage-unattended'
 import { relocatedAwayRefusal } from '../session-host-owner/session-host-relocated-away'
+import type { SessionRestartResult } from '../../shared/session-resume-types'
+import { restartWithHookProof, type SessionRestartProofDeps } from './session-restart-proof'
 
 /** Working with no terminal output for this long reads as hung (agent TUIs animate while busy). */
 export const SESSION_HUNG_AFTER_MS = 10 * 60_000
@@ -45,9 +47,11 @@ export type SessionControlDeps = {
   /** Re-read after an interrupt: is the agent still in its turn? */
   stillWorking(handle: string, receiver: TerminalAgentProcessProof): Promise<boolean>
   resume(
-    target: { paneKey?: string; tabId?: string; onlySleptPane?: true },
+    target: { paneKey?: string; tabId?: string; onlySleptPane?: true; keepCheckpoint?: true },
     launchCause?: LaunchCause
   ): Promise<SessionManageResumeReply>
+  confirmRestarted: SessionRestartProofDeps['confirmRestarted']
+  keepCheckpoint: SessionRestartProofDeps['keepCheckpoint']
   rename(
     target: { paneKey?: string; tabId?: string },
     title: string,
@@ -223,7 +227,7 @@ async function unstickHung(
 export async function restartSession(
   deps: SessionControlDeps,
   input: Input
-): Promise<SessionManageActionResult> {
+): Promise<SessionManageActionResult | SessionRestartResult> {
   assertControllable(input, 'restart')
   const { entry, row } = input.target
   const name = `“${entry.title}”`
@@ -245,7 +249,7 @@ export async function restartSession(
       summary: `Would resume ${name}: the same ${entry.agent} conversation, in a new tab; nothing is re-sent (dry run: nothing changed).`
     }
   }
-  const reply = await deps.resume(rowTarget(row), {
+  const proof = await restartWithHookProof(deps, row, name, {
     trigger: input.actor.kind === 'steward' ? 'steward-resume' : 'session-resume',
     parentPaneKey: row.paneKey ?? undefined,
     actor:
@@ -256,7 +260,7 @@ export async function restartSession(
             ...(input.actor.kind === 'pane' ? { paneKey: input.actor.paneKey } : {})
           }
   })
-  return { ...base(input, 'restart'), summary: reply.summary }
+  return { ...base(input, 'restart'), ...proof }
 }
 
 export async function renameSession(

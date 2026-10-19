@@ -54,6 +54,16 @@ async function finishLaunchPostSteps(
   if (unbound) {
     warnings.push(unbound)
   }
+  if (ctx.input.ephemeral || record.post.ephemeral) {
+    try {
+      await client.call('agentSession.scheduleFinish', {
+        terminal: terminal.handle,
+        action: 'end'
+      })
+    } catch {
+      // Older hosts without agentSession.scheduleFinish fall back to host/BFF ephemeral sweep.
+    }
+  }
   // A lost answer keeps the post steps open, so re-running the same command binds it then.
   const bound = record.post.contract ? await bindContract(ctx, record, warnings) : true
   if (bound) {

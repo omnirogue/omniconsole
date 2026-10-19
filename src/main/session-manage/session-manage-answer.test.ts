@@ -229,6 +229,7 @@ describe('session answer', () => {
     ).rejects.toThrow('hard stop')
     const prompt = question('Yes')
     prompt.ask = describeSessionPrompt('question', 'Deploy now?', prompt.options, true)
+    prompt.subject = 'Deploy now?'
     await expect(setup(prompt).run({ kind: 'choose', choice: 1 })).rejects.toThrow('hard stop')
     await expect(setup(prompt).run({ kind: 'deny' })).rejects.toThrow('require a permission prompt')
   })
@@ -241,6 +242,7 @@ describe('session answer', () => {
       prompt.options,
       true
     )
+    prompt.subject = 'Should I git\npush origin feature?'
     expect(() =>
       selectSessionAnswer(prompt, { kind: 'choose', choice: 1 }, { kind: 'cli' })
     ).toThrow('hard stop')

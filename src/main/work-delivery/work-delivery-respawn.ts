@@ -3,10 +3,13 @@
  * `createAgentSession` on a verified account with room, the same way a session transfer launches.
  */
 
+import { stat } from 'node:fs/promises'
+import { basename, dirname, isAbsolute, join, relative } from 'node:path'
 import type { RuntimeCreateAgentSessionRequest } from '../../shared/agent-session-host-authority'
 import { parseSessionReference, type SessionReferenceAgent } from '../../shared/session-reference'
 import type { OrcaRuntimeService } from '../runtime/omni-runtime'
 import { WorkDeliveryHold, messageOf, type WorkPane } from './work-delivery-claimer-types'
+import { workDeliveryEstatePaths, type WorkDeliveryEstatePaths } from './work-delivery-estate-paths'
 import type { ClaimableDelivery, WorkDeliveryTarget } from './work-delivery-kind'
 
 type RespawnRuntime = Pick<
@@ -55,13 +58,74 @@ export function freshStartRequest(input: {
   }
 }
 
+const inside = (parent: string, path: string): boolean => {
+  const rel = relative(parent, path)
+  return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel))
+}
+
+/**
+ * Where a replacement may start, nearest first: the recorded folder; for a worktree
+ * (`<parent>/<repo>-worktrees/...`) its repository's main checkout; then each enclosing folder up
+ * to the Work root. Folders outside the Work root are never offered except the recorded one.
+ */
+export function candidateRespawnFolders(
+  folder: string,
+  paths: Pick<WorkDeliveryEstatePaths, 'workRoot' | 'prototypesDir'>
+): string[] {
+  const candidates = [folder]
+  const add = (candidate: string) => {
+    if (!candidates.includes(candidate)) {
+      candidates.push(candidate)
+    }
+  }
+  let worktreeRepo: string | null = null
+  for (let current = folder; dirname(current) !== current; current = dirname(current)) {
+    const name = basename(current)
+    if (name.endsWith('-worktrees') && name.length > '-worktrees'.length) {
+      worktreeRepo = name.slice(0, -'-worktrees'.length)
+      break
+    }
+  }
+  if (worktreeRepo) {
+    add(join(paths.prototypesDir, worktreeRepo))
+  }
+  if (inside(paths.workRoot, folder)) {
+    for (
+      let current = dirname(folder);
+      inside(paths.workRoot, current);
+      current = dirname(current)
+    ) {
+      add(current)
+      if (current === dirname(current)) {
+        break
+      }
+    }
+  }
+  if (worktreeRepo) {
+    add(paths.workRoot)
+  }
+  return candidates
+}
+
+export type RespawnFolderOptions = {
+  paths?: Pick<WorkDeliveryEstatePaths, 'workRoot' | 'prototypesDir'>
+  /** True when the folder is on disk; a folder that exists is never swapped for another. */
+  exists?: (folder: string) => Promise<boolean>
+}
+
+const folderOnDisk = async (folder: string): Promise<boolean> =>
+  (await stat(folder).catch(() => null))?.isDirectory() ?? false
+
 export async function respawnFreshSession(
   runtime: RespawnRuntime,
   delivery: ClaimableDelivery,
   target: WorkDeliveryTarget,
   brief: string,
-  operationId: string
-): Promise<WorkPane & { title: string; ref: string; conversationId: string | null }> {
+  operationId: string,
+  options: RespawnFolderOptions = {}
+): Promise<
+  WorkPane & { title: string; ref: string; conversationId: string | null; folder: string }
+> {
   const agent = parseSessionReference(target.ref)?.agent ?? 'claude'
   if (!target.folder) {
     throw new WorkDeliveryHold(
@@ -69,16 +133,39 @@ export async function respawnFreshSession(
       'Its folder is not recorded, so a fresh session has nowhere to start.'
     )
   }
-  const readiness = await runtime
-    .agentLaunchReadiness({ worktree: `path:${target.folder}`, agent, preview: false })
-    .catch((error: unknown) => {
-      throw new WorkDeliveryHold('not_found', `Its folder cannot be opened: ${messageOf(error)}`)
-    })
+  const readinessIn = (folder: string) =>
+    runtime.agentLaunchReadiness({ worktree: `path:${folder}`, agent, preview: false })
+  let folder = target.folder
+  let readiness: Awaited<ReturnType<typeof readinessIn>> | null = null
+  let firstError: unknown = null
+  try {
+    readiness = await readinessIn(folder)
+  } catch (error) {
+    firstError = error
+  }
+  // Why only when it is gone: a folder that exists but refuses is held, never replaced.
+  if (!readiness && !(await (options.exists ?? folderOnDisk)(target.folder))) {
+    const paths = options.paths ?? workDeliveryEstatePaths()
+    for (const candidate of candidateRespawnFolders(target.folder, paths).slice(1)) {
+      readiness = await readinessIn(candidate).catch(() => null)
+      if (readiness) {
+        folder = candidate
+        break
+      }
+    }
+  }
+  if (!readiness) {
+    throw new WorkDeliveryHold('not_found', `Its folder cannot be opened: ${messageOf(firstError)}`)
+  }
+  const prompt =
+    folder === target.folder
+      ? brief
+      : `Its original folder ${target.folder} no longer exists, so you start in ${folder}.\n\n${brief}`
   const request = freshStartRequest({
     operationId,
-    folder: target.folder,
+    folder,
     agent,
-    brief,
+    brief: prompt,
     target,
     account: { hostId: readiness.workspace.hostId, runtimeId: readiness.runtimeId }
   })
@@ -102,6 +189,7 @@ export async function respawnFreshSession(
     archived: false,
     title: created.terminal.title ?? delivery.workItem,
     ref: `pane:${paneKey}`,
+    folder,
     conversationId: runtime.getReportedProviderSessionsForPane(paneKey)[0]?.id ?? null
   }
 }

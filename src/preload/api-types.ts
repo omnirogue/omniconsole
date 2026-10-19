@@ -6,6 +6,7 @@ import type { TaskPriority, TaskPlan } from '../shared/task-details'
 import type { RoomsApi } from '../shared/rooms'
 import type { BackofficeConnectionTest } from '../shared/backoffice-connection'
 import type { ConsoleWorkflowApi } from '../shared/console-workflow-types'
+import type { DeliverablesHubResult } from '../shared/deliverables-hub'
 import type { ConsoleHandoffApi } from '../shared/console-handoff-contract'
 import type { ConsoleAdvertisingApi } from '../shared/console-advertising-contract'
 import type { ConsoleCompaniesApi } from '../shared/console-companies-contract'
@@ -146,6 +147,10 @@ export type BackofficeApi = AccountSyncApi & {
 
 export type PreloadApi = LocalOllamaPreloadApi & {
   alerts: RoutineAlertApi
+  deliverablesHub?: {
+    search: (query: string, refresh?: boolean) => Promise<DeliverablesHubResult>
+    resolve: (relativePath: string, modifiedAt: number) => Promise<string>
+  }
   consoleWorkflows: ConsoleWorkflowApi
   consoleHandoffs?: ConsoleHandoffApi
   /** Sal's companies view; the web client answers that it is unavailable. */

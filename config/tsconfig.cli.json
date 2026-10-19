@@ -7,6 +7,7 @@
     "../src/main/agent-hooks/hook-stdin-contract.ts",
     "../src/main/agent-hooks/hook-agent-pid-script.ts",
     "../src/main/agent-hooks/hook-post-command.ts",
+    "../src/main/agent-hooks/hook-answer-ack-script.ts",
     "../src/main/agent-hooks/hook-config-write-path.ts",
     "../src/main/agent-hooks/hooks-json-read.ts",
     "../src/main/agent-hooks/installer-utils.ts",

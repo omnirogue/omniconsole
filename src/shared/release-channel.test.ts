@@ -29,7 +29,7 @@ import { compareAppVersions } from './app-version'
 describe('release channel', () => {
   it.each(['arm64', 'x64'])('uses the current mirror DMG for %s', (arch) => {
     expect(getDirectDownloadUrl('v1.5.2', arch)).toBe(
-      `https://console.example.com/updates/v1.5.2/OmniConsole-1.5.2-macos-${arch}.dmg`
+      `https://app.omnisi.ai/updates/v1.5.2/OmniConsole-1.5.2-macos-${arch}.dmg`
     )
   })
 

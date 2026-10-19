@@ -6,7 +6,7 @@ import {
 } from './session-ledger-env'
 
 export const OMNI_CONSOLE_MCP_NAME = 'omni-console'
-export const OMNI_CONSOLE_MCP_URL = 'https://console.example.com/mcp'
+export const OMNI_CONSOLE_MCP_URL = 'https://console.omnisi.ai/mcp'
 /** The team's OmniSI Cloud connector (Pages, Decisions, Shared Tools); WorkOS OAuth. */
 export const OMNISI_MCP_NAME = 'omnisi'
 export const OMNISI_MCP_URL = 'https://app.omnisi.ai/mcp'

@@ -14,7 +14,6 @@ import type {
 } from '../../shared/session-manage-relay'
 import {
   sessionManageActorTitle,
-  type SessionManageActionResult,
   type SessionManageActor,
   type SessionManageEntry
 } from '../../shared/session-manage-types'
@@ -24,7 +23,7 @@ import {
   type SessionReference
 } from '../../shared/session-reference'
 import { buildConversationResumeCommand } from '../../shared/conversation-resume-command'
-import type { SessionResumeResult } from '../../shared/session-resume-types'
+import type { SessionRestartResult, SessionResumeResult } from '../../shared/session-resume-types'
 import { SessionManagePartialError, SessionManageRefusal } from './session-manage-refusal'
 import type { LocatedTranscript } from './session-transcript-locate'
 import { relocatedAwayRefusal } from '../session-host-owner/session-host-relocated-away'
@@ -53,11 +52,8 @@ export type SessionResumeDeps = SessionResumeRestore & {
   organization(reference: SessionReference): Promise<SessionManageConversationOrganization | null>
   locate(reference: SessionReference): Promise<LocatedTranscript[]>
   transcriptCwd(reference: SessionReference, path: string): Promise<string | null>
-  /** `session restart` on an exited row with a checkpoint. */
-  restart(
-    row: SessionManageSidebarRow,
-    entry: SessionManageEntry
-  ): Promise<SessionManageActionResult>
+  /** `session restart` on an exited row with a checkpoint, confirmed by the new pane's agent hooks. */
+  restart(row: SessionManageSidebarRow, entry: SessionManageEntry): Promise<SessionRestartResult>
   launch(input: {
     reference: SessionReference
     transcriptPath: string
@@ -141,7 +137,8 @@ async function resumeHeldRow(
   const unarchived = row.archived && (await unarchiveResumed(deps, entry))
   return {
     ...base,
-    outcome: 'restarted',
+    outcome: restarted.outcome,
+    ...(restarted.reason ? { reason: restarted.reason } : {}),
     summary: `${restarted.summary}${unarchived ? ' It was archived, so it was unarchived.' : ''}`
   }
 }

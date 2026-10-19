@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { sessionDocumentLink } from './session-document-link'
 
-const origin = 'https://console.example.com'
+const origin = 'https://app.omnisi.ai'
 
 describe('explicit session document links', () => {
   it('recognizes exact Slite and configured artifact routes', () => {
@@ -19,7 +19,7 @@ describe('explicit session document links', () => {
     for (const url of [
       `${origin}.evil.test/a/1a0d30b4f32c7abb9`,
       'https://other.test/a/1a0d30b4f32c7abb9',
-      'https://user@console.example.com/a/1a0d30b4f32c7abb9',
+      'https://user@app.omnisi.ai/a/1a0d30b4f32c7abb9',
       `${origin}/a/1a0d30b4f32c7abb9/content`,
       `${origin}/a/1a0d30b4f32c7abb9?download=1`,
       'http://example.slite.com/app/docs/X3P_WfcLxXPaiG',

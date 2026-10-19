@@ -19,7 +19,7 @@ permissions:
 jobs:
   loc:
     name: test vs non-test LoC
-    runs-on: ubuntu-latest
+    runs-on: ${{ (vars.OMNI_CI_GITHUB_HOSTED == 'true' || contains(github.event.pull_request.labels.*.name, 'ci-github-hosted')) && 'ubuntu-24.04' || fromJSON('["self-hosted","Linux","omni-ci"]') }}
     timeout-minutes: 2
     steps:
       # Why no checkout: the Files API already has per-file additions/deletions.

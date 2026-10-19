@@ -121,6 +121,45 @@ describe('prompts held for a busy session', () => {
     expect(report).toHaveBeenCalledWith(expect.objectContaining({ state: 'expired' }))
   })
 
+  it('keeps an unsent expiry on top of session pending until its requester has seen it', async () => {
+    const { pending } = engine({ current: busy })
+    await pending.start()
+    await pending.hold(held())
+    await pending.hold(held({ id: 'held-2', expiresAt: clock + 120 * 60_000 }))
+    clock += 31 * 60_000
+    await pending.sweep()
+
+    const other = { kind: 'pane' as const, paneKey: 'tab-5:leaf-5', title: 'Reviewer' }
+    const seenByOther = await pending.listFor(other, false)
+    expect(seenByOther.map((entry) => [entry.id, entry.state])).toEqual([
+      ['held-1', 'expired'],
+      ['held-2', 'waiting']
+    ])
+    expect(pending.list().find((entry) => entry.id === 'held-1')?.seenAt).toBeUndefined()
+
+    const seenByRequester = await pending.listFor(actor, false)
+    expect(seenByRequester.map((entry) => entry.id)).toEqual(['held-1', 'held-2'])
+    expect(seenByRequester[0]?.seenAt).toBeUndefined()
+    expect(onDisk().find((entry) => entry.id === 'held-1')?.seenAt).toBe(clock)
+
+    expect((await pending.listFor(actor, false)).map((entry) => entry.id)).toEqual(['held-2'])
+    expect((await pending.listFor(actor, true)).map((entry) => entry.id)).toEqual([
+      'held-1',
+      'held-2'
+    ])
+  })
+
+  it('surfaces a send cut off by a restart (unknown) the same way', async () => {
+    const { pending } = engine({ current: busy })
+    await pending.start()
+    await pending.hold(held({ state: 'delivering' }))
+    const restarted = engine({ current: busy })
+    await restarted.pending.start()
+    const listed = await restarted.pending.listFor(actor, false)
+    expect(listed).toEqual([expect.objectContaining({ id: 'held-1', state: 'unknown' })])
+    expect(await restarted.pending.listFor(actor, false)).toEqual([])
+  })
+
   it('keeps holding when the free owner is not open to a new prompt yet', async () => {
     const target = { current: free as SessionManageEntry | null }
     const { pending, report } = engine(target, {

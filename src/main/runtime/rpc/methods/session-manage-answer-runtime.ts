@@ -74,7 +74,7 @@ async function respondStructured(
   if (!result.ok) {
     throw new SessionManageRefusal(`The prompt response was refused: ${result.refusal.message}`)
   }
-  // The provider path journals answers even when its provider cannot confirm delivery.
+  // Journaled only after the agent took it; an agent failure refuses above with the prompt still open.
   return { status: 'recorded' }
 }
 

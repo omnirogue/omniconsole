@@ -70,9 +70,7 @@ describe('follow-up request parser', () => {
     expect(
       parseFollowUpRequest('once done send the final deliverables', now).recipientNames
     ).toEqual([])
-    expect(
-      parseFollowUpRequest('see console.example.com, e.g. the docs', now).deliverables
-    ).toBeNull()
+    expect(parseFollowUpRequest('see app.omnisi.ai, e.g. the docs', now).deliverables).toBeNull()
   })
 
   it('parses due phrases in local time and rolls a passed weekday or time forward', () => {

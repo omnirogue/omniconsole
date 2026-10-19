@@ -25,6 +25,26 @@ function writeSchema(name: string) {
   return method.params
 }
 
+const PANE = 'tab-a:11111111-1111-4111-8111-111111111111'
+
+/** A pane whose proven agent is `agentPid`, read against the real process table. */
+function paneAgentRuntime(agentPid: number) {
+  return {
+    shareArtifact: vi.fn().mockResolvedValue({ status: 'ok' }),
+    updateArtifact: vi.fn().mockResolvedValue({ status: 'ok' }),
+    getTerminalPaneKey: vi.fn().mockReturnValue(PANE),
+    getTerminalWorktreeIdForPaneKey: vi.fn().mockReturnValue('wt-1'),
+    getTerminalHandleForPaneKey: vi.fn().mockReturnValue('term-1'),
+    resolveTerminalContext: vi.fn().mockReturnValue({ worktreeId: 'wt-1', connectionId: null }),
+    readTerminalProcessEvidence: vi.fn().mockResolvedValue({
+      proof: { pid: agentPid, agent: 'claude', ptyId: 'pty-1' },
+      tree: { kind: 'other' }
+    }),
+    assertTerminalAgentProcess: vi.fn().mockResolvedValue(undefined),
+    getReportedProviderSessionsForPane: vi.fn().mockReturnValue([])
+  }
+}
+
 function requestMethod(name: string): RpcMethod {
   const method = ARTIFACT_METHODS.find((candidate) => candidate.name === name)
   if (!method || isStreamingMethod(method)) {
@@ -170,20 +190,39 @@ describe('artifact RPC schemas', () => {
 
   it('resolves the terminal to its session before the service sees the request', async () => {
     const method = requestMethod('artifacts.update')
-    const pane = 'tab-a:11111111-1111-4111-8111-111111111111'
-    const runtime = {
-      updateArtifact: vi.fn().mockResolvedValue({ status: 'ok' }),
-      getTerminalPaneKey: vi.fn().mockReturnValue(pane),
-      getTerminalWorktreeIdForPaneKey: vi.fn().mockReturnValue('wt-1')
-    }
+    const runtime = paneAgentRuntime(process.ppid)
     await method.handler({ ...validRequest, origin: { terminalHandle: 'term-1' } }, {
-      runtime
+      runtime,
+      callerPid: process.pid
     } as never)
     expect(runtime.updateArtifact).toHaveBeenCalledWith({
       ...validRequest,
-      origin: { paneKey: pane, worktreeId: 'wt-1' }
+      origin: { paneKey: PANE, worktreeId: 'wt-1' },
+      verifiedSession: {}
     })
   })
+
+  it.runIf(process.platform !== 'win32')(
+    'publishes unbound when the calling process is not under the pane agent',
+    async () => {
+      const info = vi.spyOn(console, 'info').mockImplementation(() => undefined)
+      const method = requestMethod('artifacts.share')
+      // The caller's parent is not a process of the agent (this test process).
+      const runtime = paneAgentRuntime(process.pid)
+      runtime.shareArtifact.mockResolvedValue({ status: 'ok', value: { shareUrl: 'u' } })
+      const result = await method.handler(
+        { ...validRequest, origin: { terminalHandle: 'term-1' } },
+        { runtime, callerPid: process.ppid } as never
+      )
+      const reason = 'this command was not started by the agent in its terminal'
+      expect(runtime.shareArtifact).toHaveBeenCalledWith({ ...validRequest, unboundReason: reason })
+      expect(result).toEqual({
+        status: 'ok',
+        value: { shareUrl: 'u', sessionBinding: { state: 'unbound', reason } }
+      })
+      info.mockRestore()
+    }
+  )
 
   it('registers the renderer-safe session record list', () => {
     const method = requestMethod('artifacts.sessionRecords')

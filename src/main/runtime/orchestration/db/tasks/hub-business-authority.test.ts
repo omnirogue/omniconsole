@@ -71,7 +71,7 @@ describe('hub-bound task business authority', () => {
           data: {
             taskId: task.id,
             hubTaskId: 'btk_testauthority',
-            omniosUrl: 'https://console.example.com'
+            omniosUrl: 'https://app.omnisi.ai'
           }
         })
       )

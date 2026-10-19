@@ -135,6 +135,8 @@ export async function runRequestFromFlags(
     ...(flags.has('depth') ? { depth: text(flags, 'depth') ?? '' } : {}),
     ...(flags.has('focus-finding') ? { focusFinding: text(flags, 'focus-finding') ?? '' } : {}),
     ...(flags.get('no-earlier-runs') === true ? { skipEarlierRuns: true } : {}),
+    // Only when given: a runtime from before budgets refuses the key instead of running unmetered.
+    ...(flags.has('budget-root') ? { budgetRoot: text(flags, 'budget-root') ?? '' } : {}),
     ...(spec !== undefined ? { spec } : {})
   })
   if (parsed.success && parsed.data.models) {

@@ -306,7 +306,7 @@ describe('reviewRespawnBrief', () => {
       context: {
         slug: 'plan',
         title: 'Launch Plan',
-        shareUrl: 'https://console.example.com/a/plan',
+        shareUrl: 'https://app.omnisi.ai/a/plan',
         continuationCapsule: {
           goal: 'Ship reliable decision routing',
           repo: 'omnirogue/omni-console',

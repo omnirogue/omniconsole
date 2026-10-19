@@ -11,10 +11,10 @@ function record(
 ): ArtifactSessionRecord {
   return {
     slug,
-    shareUrl: `https://console.example.com/a/${slug}`,
+    shareUrl: `https://app.omnisi.ai/a/${slug}`,
     sourceKey: `/elsewhere/${slug}.html`,
     savedAt: 1,
-    contentUrl: `https://console.example.com/a/${slug}/content`,
+    contentUrl: `https://app.omnisi.ai/a/${slug}/content`,
     origin: null,
     ...overrides
   }

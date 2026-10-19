@@ -1,7 +1,8 @@
-import type {
-  SessionContinueWhenIdleResult,
-  SessionPendingDelivery,
-  SessionPendingListResult
+import {
+  isUnseenUnsentDelivery,
+  type SessionContinueWhenIdleResult,
+  type SessionPendingDelivery,
+  type SessionPendingListResult
 } from '../shared/session-pending-delivery-types'
 import type { SessionResumeResult } from '../shared/session-resume-types'
 
@@ -45,7 +46,17 @@ export function formatSessionWhenIdle(result: SessionContinueWhenIdleResult): st
 }
 
 export function formatSessionPending(result: SessionPendingListResult): string {
-  return result.deliveries.length
-    ? result.deliveries.map(formatDelivery).join('\n')
-    : 'No prompts are held for busy sessions.'
+  if (!result.deliveries.length) {
+    return 'No prompts are held for busy sessions.'
+  }
+  const unsent = result.deliveries.filter(isUnseenUnsentDelivery)
+  const rest = result.deliveries.filter((delivery) => !isUnseenUnsentDelivery(delivery))
+  return lines([
+    unsent.length
+      ? `NOT SENT (${unsent.length}): these held prompts never reached their session. Decide what to do with each.`
+      : null,
+    ...unsent.map(formatDelivery),
+    unsent.length && rest.length ? '' : null,
+    ...rest.map(formatDelivery)
+  ])
 }

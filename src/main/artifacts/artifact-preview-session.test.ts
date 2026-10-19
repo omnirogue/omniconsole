@@ -39,7 +39,7 @@ import {
   isArtifactPreviewSession
 } from './artifact-preview-session'
 
-const API = 'https://console.example.com'
+const API = 'https://app.omnisi.ai'
 const CONTENT = `${API}/a/plan/content`
 
 function details(url: string, resourceType = 'mainFrame') {

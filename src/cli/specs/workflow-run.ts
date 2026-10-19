@@ -17,7 +17,7 @@ export const WORKFLOW_RUN_COMMAND_SPECS: CommandSpec[] = [
     path: ['workflow', 'run'],
     summary: 'Run a built-in workflow template headless through the app and follow it to the end',
     usage:
-      'omni workflow run --template <discover|evolve> [--other --template <improve|find|decide|investigate|council|best-of-n|quick-discover>] (--prompt <text> | --prompt-file <file>) [--depth quick|thorough] [--focus-finding <run>:<n>] [--routes <claude,codex,…>] [--models <tier | step=models;…>] [--runs-on fleet|local] [--host <name> [--force-host <reason>]] [--requested-by <person> [--requested-by-id <emp_id>] --request <their words>] [--spec-file <override.json>] [--worktree <selector>] [--operation-id <uuid>] [--origin cli|benchmark] [--no-earlier-runs] [--no-follow] [--json]',
+      'omni workflow run --template <discover|evolve> [--other --template <improve|find|decide|investigate|council|best-of-n|quick-discover>] (--prompt <text> | --prompt-file <file>) [--depth quick|thorough] [--focus-finding <run>:<n>] [--routes <claude,codex,…>] [--models <tier | step=models;…>] [--runs-on fleet|local] [--host <name> [--force-host <reason>]] [--requested-by <person> [--requested-by-id <emp_id>] --request <their words>] [--spec-file <override.json>] [--worktree <selector>] [--operation-id <uuid>] [--origin cli|benchmark] [--no-earlier-runs] [--budget-root <id>] [--no-follow] [--json]',
     allowedFlags: [
       ...GLOBAL_FLAGS,
       'template',
@@ -38,6 +38,7 @@ export const WORKFLOW_RUN_COMMAND_SPECS: CommandSpec[] = [
       'operation-id',
       'origin',
       'no-earlier-runs',
+      'budget-root',
       'focus-finding',
       'no-follow',
       'target',
@@ -69,6 +70,7 @@ export const WORKFLOW_RUN_COMMAND_SPECS: CommandSpec[] = [
       '--focus-finding <run>:<n> digs into a finding from that completed Discover page in the same workspace. It seeds the brief and removes that title from the earlier-runs list; use --depth quick for one focused round.',
       'Keep --operation-id for retries: one request uses one workflow conversation and execution. Reusing it for different work is refused.',
       '--origin benchmark marks evaluation runs explicitly so they can be separated from ordinary conversations; it never changes execution permissions.',
+      '--budget-root <id> spends an approved OmniSI budget root (created by an operator; agents cannot create or raise one): every model call is admitted against it before it starts, and the run stops when the root is stopped, exhausted or out of time. While the app enforces budgets (OMNI_AGENT_BUDGET_ENFORCE=true) a run without one is refused, and only Claude seats can run, because their CLI holds each call to its reservation. A benchmark root never reaches OmniOS.',
       'discover and quick-discover show their finders up to 50 titles that the last 5 completed runs of the same template on the same workspace and context already reported, as "report only if materially new". --no-earlier-runs starts without that list; --origin benchmark runs never get it, and OMNI_WORKFLOW_EARLIER_RUNS=0 in the app\'s environment turns it off for every run.',
       'Opens the workflow conversation in the workspace (the current one by default), starts it as Start does, and follows it: progress goes to stderr, the report to stdout.',
       '--depth (discover only, refused for any other template): quick runs one Find and Verify round; thorough, the default, repeats them until nothing new turns up (at most two rounds). Without the flag the request carries no depth, so a runtime from before it still starts Discover.',

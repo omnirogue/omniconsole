@@ -111,6 +111,7 @@ export function launchRecordFromPlan(
       ...(args.input.contract
         ? { contract: { ...args.input.contract, agent: args.input.provider } }
         : {}),
+      ...(args.input.ephemeral ? { ephemeral: true } : {}),
       done: false
     },
     sends: [],

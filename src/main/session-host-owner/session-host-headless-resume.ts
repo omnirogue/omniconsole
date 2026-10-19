@@ -38,6 +38,11 @@ export function headlessSessionResume(
       },
       { actor: { kind: 'cli' }, ref: `${row.agent}:${row.providerSessionId}@local`, dryRun: false }
     )
-    return { summary: resumed.summary, tabId: resumed.tabId ?? null }
+    // Why the pane: this resume already waited for its agent's report; the restart proof re-reads it.
+    return {
+      summary: resumed.summary,
+      tabId: resumed.tabId ?? null,
+      paneKey: resumed.paneKey ?? null
+    }
   }
 }

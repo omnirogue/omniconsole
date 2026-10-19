@@ -27,6 +27,7 @@ import { SessionProjectContextChips } from './SessionProjectContextChips'
 import { SessionProjectFilterBar } from './SessionProjectFilterBar'
 import { SessionProjectHeader } from './SessionProjectHeader'
 import { SessionProjectLibrary } from './SessionProjectLibrary'
+import { SessionProjectMultiThreadLauncher } from './SessionProjectMultiThreadLauncher'
 import { SessionProjectRoutines } from './SessionProjectRoutines'
 import { useProjectSessionDrop } from './use-project-session-drop'
 import { useProjectReviewLaunch } from './use-project-review-launch'
@@ -136,6 +137,11 @@ export function SessionProjectPage({
           <div className="mx-auto max-w-5xl space-y-6">
             <SessionProjectContextChips folderId={folder.id} settings={settings} />
             <WorkDispatchComposer project={{ folderId: folder.id, name: folder.name }} />
+            <SessionProjectMultiThreadLauncher
+              folder={folder}
+              settings={settings}
+              threads={threads}
+            />
             <SessionProjectFilterBar
               threads={threads}
               counts={counts}

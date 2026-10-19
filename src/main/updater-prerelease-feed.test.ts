@@ -156,10 +156,8 @@ describe('fetchNewerReleaseTag', () => {
       const { fetchNewerReleaseTag } = await import('./updater-prerelease-feed')
 
       expect(await fetchNewerReleaseTag('1.4.0')).toBe('v1.4.1')
-      expect(manifestUrls).toEqual([`https://console.example.com/updates/v1.4.1/${manifestName}`])
-      expect(assetUrls).toEqual([
-        'https://console.example.com/updates/v1.4.1/Orca-1.4.1-arm64-mac.zip'
-      ])
+      expect(manifestUrls).toEqual([`https://app.omnisi.ai/updates/v1.4.1/${manifestName}`])
+      expect(assetUrls).toEqual(['https://app.omnisi.ai/updates/v1.4.1/Orca-1.4.1-arm64-mac.zip'])
       expect(netRequestMock).toHaveBeenCalledTimes(platform === 'win32' ? 1 : 0)
     }
   )

@@ -14,7 +14,7 @@ export const SESSION_SEARCH_COMMAND_SPECS: CommandSpec[] = [
     positionalArgs: SESSION_SEARCH_QUERY_WORDS,
     examples: [
       'omni session search Uma',
-      'omni session search https://console.example.com/a/1a0d42a7df36eefc2',
+      'omni session search https://app.omnisi.ai/a/1a0d42a7df36eefc2',
       'omni session search omnirogue production --limit 5',
       'omni session search "side menu" --json'
     ],

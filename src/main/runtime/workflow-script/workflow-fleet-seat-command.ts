@@ -49,6 +49,8 @@ export function workflowFleetSeatCommand(input: {
   mode: WorkflowLaunchMode
   schema: unknown
   timeoutMs: number
+  /** A budgeted call's reservation, held by the seat's own CLI. */
+  budget?: { reservedUsd: number }
 }): WorkflowFleetSeatCommand {
   const { dispatch } = input.placement
   const directory = `${dispatch.root}/attempts/${input.attemptId}`
@@ -59,6 +61,9 @@ export function workflowFleetSeatCommand(input: {
   let cwd = directory
   const env: Record<string, string> = {}
   if (input.seat.agent === 'codex') {
+    if (input.budget) {
+      throw new Error('A budgeted run cannot hold a Codex seat to its reservation.')
+    }
     const model = workflowCliModel('codex', input.seat.model)
     const effort = input.seat.effort ?? 'medium'
     const schemaPath = `${directory}/schema.json`
@@ -104,7 +109,8 @@ export function workflowFleetSeatCommand(input: {
         model,
         effort,
         attemptId: input.attemptId,
-        schema: input.schema as Parameters<typeof buildWorkflowClaudeArgs>[0]['schema']
+        schema: input.schema as Parameters<typeof buildWorkflowClaudeArgs>[0]['schema'],
+        ...(input.budget ? { maxBudgetUsd: input.budget.reservedUsd } : {})
       })
     } else {
       args = buildWorkflowClaudeStreamArgs({
@@ -112,6 +118,7 @@ export function workflowFleetSeatCommand(input: {
         effort,
         attemptId: input.attemptId,
         access: input.mode.access,
+        ...(input.budget ? { maxBudgetUsd: input.budget.reservedUsd } : {}),
         ...(input.mode.output === 'schema'
           ? {
               schema: input.schema as Parameters<typeof buildWorkflowClaudeStreamArgs>[0]['schema']

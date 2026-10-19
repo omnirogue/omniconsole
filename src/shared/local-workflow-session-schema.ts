@@ -48,6 +48,7 @@ const localWorkflowDraftSchema = z.object({
   request: z.string().optional(),
   skipEarlierRuns: z.literal(true).optional(),
   focusFinding: z.string().optional(),
+  budgetRootId: z.string().optional(),
   council: z.object({ memberIds: z.array(z.string()) }).optional(),
   concurrency: z.number(),
   callLimit: z.number(),

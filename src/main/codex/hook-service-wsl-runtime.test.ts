@@ -347,11 +347,11 @@ describe('Codex WSL runtime hook install', () => {
     expect(script).toContain('--data-binary @-')
     expect(script).toContain('--data-urlencode "payload@-"')
     expect(script).toContain('if send_codex_hook curl; then')
-    expect(script).toContain('if send_codex_hook "$windows_curl" 3 5; then')
+    expect(script).toContain('if send_codex_hook "$windows_curl" 3 5 1; then')
   })
 
   it.skipIf(process.platform === 'win32')(
-    'relays prompt context from the listener and keeps status events silent',
+    'relays the listener reply for prompt, answer and Stop events and keeps status events silent',
     () => {
       const plan = createTestPlan()
       const root = dirname(plan.configPath)
@@ -366,7 +366,8 @@ describe('Codex WSL runtime hook install', () => {
       writeFileSync(join(binDir, 'curl'), `#!/bin/sh\ncat >/dev/null\nprintf '%s' '${reply}'\n`, {
         mode: 0o755
       })
-      for (const event of ['UserPromptSubmit', 'Stop']) {
+      const relayed = ['UserPromptSubmit', 'Stop', 'PostToolUse', 'SessionStart']
+      for (const event of [...relayed, 'PreToolUse', 'SubagentStop']) {
         const result = spawnSync('sh', ['-c', _internals.getManagedScript('posix')], {
           input: JSON.stringify({ hook_event_name: event, prompt: 'Proposed: a useful idea' }),
           encoding: 'utf-8',
@@ -380,7 +381,7 @@ describe('Codex WSL runtime hook install', () => {
           }
         })
         expect(result.status).toBe(0)
-        expect(result.stdout.trim()).toBe(event === 'UserPromptSubmit' ? reply : '')
+        expect(result.stdout.trim()).toBe(relayed.includes(event) ? reply : '')
       }
     }
   )

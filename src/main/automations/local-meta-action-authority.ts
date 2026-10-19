@@ -22,7 +22,7 @@ import {
   OLDACS_ROUTINE_ID
 } from './typesafe-advertising-local-scope'
 
-const ORIGIN = 'https://console.example.com'
+const ORIGIN = 'https://app.omnisi.ai'
 const REFUSAL =
   'Local Meta status actions are not authorized for this routine and signed-in person.'
 const MAX_CONFIGURATION_BYTES = 4096

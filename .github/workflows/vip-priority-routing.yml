@@ -1,0 +1,28 @@
+name: VIP priority routing
+
+on:
+  pull_request:
+    paths:
+      - scripts/ops/vip_priority_route.py
+      - scripts/ops/test_vip_priority_route.py
+      - .github/workflows/vip-priority-routing.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  routing:
+    runs-on: [self-hosted, Linux, omni-ci]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check syntax
+        run: python -m py_compile scripts/ops/vip_priority_route.py scripts/ops/test_vip_priority_route.py
+      - name: Check routing and CLI contracts
+        run: python -m unittest discover -s scripts/ops -p test_vip_priority_route.py -v

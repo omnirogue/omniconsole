@@ -5,6 +5,7 @@ import { discoverExistingAccountDirectories } from '../main/rate-limits/existing
 import { probeSelectedAccountUsage } from '../main/rate-limits/selected-account-usage'
 import { claudeConfigDirEnvPatch } from '../main/claude/claude-config-dir-pin'
 import type { ProviderRateLimits } from '../shared/rate-limit-types'
+import { accountQuotaBurnRiskFromUsage } from '../shared/account-quota-burn'
 import {
   SESSION_PREP_ACCOUNT_METHOD,
   sessionPrepAccountRequest,
@@ -120,6 +121,9 @@ function verifiedHeadroom(
   }
   const known = windows.filter((window) => window !== null)
   if (usage.status !== 'ok' || known.length === 0) {
+    return null
+  }
+  if (accountQuotaBurnRiskFromUsage(usage, Date.now())) {
     return null
   }
   const remainingPercent = Math.min(...known.map((window) => 100 - window.usedPercent))

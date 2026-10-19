@@ -29,12 +29,12 @@ export const MAIN_RELEASE_REPO = isSamNextCandidate
   : 'omnirogue/omniconsole'
 /** Where the app actually downloads builds and updater manifests from. GitHub's asset CDN was
  *  measured at ~40 min for a 200 MB DMG, so omni-dev mirrors every release from the GitHub repo
- *  (systemd timer `omniconsole-updates-mirror`) into https://console.example.com/updates/<tag>/,
+ *  (systemd timer `omniconsole-updates-mirror`) into https://app.omnisi.ai/updates/<tag>/,
  *  with `latest` pointing at the newest non-prerelease. GitHub stays the source of truth for the
  *  release list (atom feed) and release notes. */
 export const UPDATES_DOWNLOAD_BASE = isSamNextCandidate
-  ? 'https://console.example.com/updates/main-next'
-  : 'https://console.example.com/updates'
+  ? 'https://app.omnisi.ai/updates/main-next'
+  : 'https://app.omnisi.ai/updates'
 
 /** Direct DMG link for a version on the mirror — what the in-app Download button opens while
  *  macOS builds are unsigned and cannot be installed by Squirrel.Mac. */

@@ -1,4 +1,4 @@
-import { samWorkPlan } from './example-work-plan'
+import { samWorkPlan } from './sal-work-plan'
 import { workPlanFixtureContext } from '../work-plan-context'
 import { compileWorkPlanExecution } from '../../../work-plan-compile'
 import { reviseSessionOutcomeSet } from '../../../session-outcome-state'

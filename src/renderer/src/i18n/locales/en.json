@@ -11928,6 +11928,17 @@
             "title": "Handoffs without a task",
             "description": "Send a file or a request to a person without creating a task card; make it a task later."
           }
+        },
+        "omniSiPreviews": {
+          "search": {
+            "title": "OmniSI previews",
+            "description": "Shows OmniSI panels whose service or data is not live yet: Model Arena, Brand Kits, Assets, Spend Guard, the chat prompt cost badge, and the Evolve quality-cost and judge audit views.",
+            "keywordOmniSi": "omnisi",
+            "keywordArena": "arena",
+            "keywordBrandKit": "brand kit",
+            "keywordSpend": "spend"
+          },
+          "toggleLabel": "Toggle OmniSI previews"
         }
       },
       "right": {
@@ -12822,7 +12833,8 @@
             "folderWorkspaces": "Attached worktrees",
             "parentPrChecks": "PR Checks",
             "sessionArtifact": "Artifact",
-            "picture": "Picture"
+            "picture": "Picture",
+            "deliverablesHub": "Deliverables Hub"
           },
           "right": {
             "panel": {
@@ -16507,6 +16519,25 @@
           "actionsUnavailable": "Plugin actions are not available in this client.",
           "messageTooLarge": "Message exceeds the size limit.",
           "tooManyRequests": "Too many requests."
+        },
+        "deliverables": {
+          "launched": "Code Builder launched in a new worktree.",
+          "subtitle": "Markdown plans on this computer",
+          "searchPlaceholder": "Search titles and contents",
+          "search": "Search deliverables",
+          "refresh": "Refresh deliverables",
+          "repository": "Code Builder repository",
+          "chooseRepository": "Choose build repository",
+          "summary": "{{total}} deliverables · {{root}}",
+          "loading": "Loading Plans…",
+          "skipped": "{{skipped}} files skipped",
+          "desktopOnly": "Available in the desktop app.",
+          "empty": "No matching Markdown plans.",
+          "open": "Open",
+          "launchIn": "Launch Codex in {{repo}}",
+          "chooseFirst": "Choose a build repository",
+          "launching": "Launching…",
+          "launch": "Launch Code Builder in Worktree"
         }
       },
       "link": {
@@ -16911,7 +16942,8 @@
           "reconnectCopy": "Sign in again to view and manage the artifacts shared through your account.",
           "signInAgainAction": "Sign in again",
           "unconfiguredCopy": "OmniConsole account sign-in is not configured on this machine yet.",
-          "openAccountSettings": "Open account settings"
+          "openAccountSettings": "Open account settings",
+          "specBatches": "Spec batches"
         },
         "copySuccess": "Artifact link copied",
         "copyFailed": "Could not copy artifact link",
@@ -17027,7 +17059,8 @@
           "undoConflicts": "{{total}} changed since and were left as they are: {{names}}",
           "nothing": "Nothing to change: {{reasons}}.",
           "undo": "Undo",
-          "skippedNames": "{{total}} skipped: {{names}}"
+          "skippedNames": "{{total}} skipped: {{names}}",
+          "buildBatch": "Build 5 draft PRs"
         },
         "lifecycle": {
           "noSession": "No session",
@@ -17101,6 +17134,33 @@
           "reopen": "Reopen",
           "removeSuccessor": "Remove successor",
           "openSession": "Open session"
+        },
+        "specBatch": {
+          "reviewUnavailable": "Review unavailable",
+          "title": "Spec to draft PR batches",
+          "description": "Select five approved text specs, confirm their GitHub destinations, then start five independent builders on this computer.",
+          "batchStatus": "Batch status",
+          "verifiedDraftPrs": "{{verified}}/5 verified draft PRs",
+          "refresh": "Refresh",
+          "newBatch": "New batch",
+          "stopFutureSteps": "Stop future steps",
+          "workspacePending": "Workspace pending",
+          "openWorkspace": "Open workspace",
+          "openBuilder": "Open builder",
+          "openDraftPr": "Open draft PR #{{number}}",
+          "batchManifest": "Batch manifest",
+          "revision": "Revision {{revision}}",
+          "approvedForTarget": "Approved for this target",
+          "needsApproval": "Needs exact implementation approval and GitHub target",
+          "targetRepository": "Target repository",
+          "baseBranchFor": "Base branch for {{name}}",
+          "baseBranch": "Base branch",
+          "agentCodex": "Codex",
+          "agentClaude": "Claude",
+          "build": "Build 5 draft PRs",
+          "selectFive": "Select exactly five pages in Artifacts to prepare a new batch.",
+          "recentBatches": "Recent batches",
+          "draftPrs": "{{verified}}/5 draft PRs"
         }
       },
       "BrowserCookieImportMachineNotice": {
@@ -18141,7 +18201,11 @@
         "delete": "Delete",
         "preferredModelPlaceholder": "ollama/qwen3-coder:30b",
         "saveFailed": "Could not save the template.",
-        "limitReached": "You already have {{max}} custom templates. Delete one to add another."
+        "limitReached": "You already have {{max}} custom templates. Delete one to add another.",
+        "preferredAgent": "Preferred agent",
+        "memory": "Memory file",
+        "defaultSkills": "Default-loaded skills (Tier 1)",
+        "callableSkills": "Callable skills (Tier 2)"
       },
       "instructionFiles": {
         "saved": "Saved {{path}}.",
@@ -21001,6 +21065,15 @@
   "localRuns": {
     "admitTitle": "Admit this graph to the console",
     "admitHelp": "The stages are seeded from your graph; the card, preview and approval still happen here before any job starts."
+  },
+  "decisionsTitlebar": {
+    "label": "Decisions waiting: {{count}}",
+    "tooltip": "Pages waiting for a decision: {{pages}} · Need you: {{needsYou}}. Click to open Decisions.",
+    "setting": {
+      "title": "Decisions badge in the titlebar",
+      "description": "Shows how many decisions are waiting for you in the titlebar. Clicking it opens Decisions; it never answers anything.",
+      "toggleLabel": "Toggle decisions badge"
+    }
   },
   "decisions": {
     "justNow": "just now",
@@ -26549,7 +26622,9 @@
   },
   "sessionQuestions": {
     "inlineAnswers": "Answer session questions from Needs you",
-    "inlineAnswersHint": "Each question a session asks shows in Needs you with its options as buttons, so you can answer without opening the terminal."
+    "inlineAnswersHint": "Each question a session asks shows in Needs you with its options as buttons, so you can answer without opening the terminal.",
+    "turnEndQuestions": "Treat a reply that ends in a question as waiting for you",
+    "turnEndQuestionsHint": "When a Claude or Codex reply ends by asking you something, show it as waiting in the sidebar, Needs you and OmniOS Questions. Sign-in links always show. Off by default, because an Outcome run would stop for you at each such question."
   },
   "jev": {
     "controlsUnavailable": "JEV controls are unavailable on this host. Update or reconnect it, then refresh.",
@@ -26654,7 +26729,7 @@
     "defaultDescription": "Project and global instructions only",
     "agentTitle": "Agent · applies to every model",
     "newAgent": "New agent…",
-    "customize": "Customize workspace…",
+    "customize": "Create Project",
     "customizeSummary": "In {{target}} · {{agent}}",
     "notAppliedToCustomModel": "Agent templates are not applied to custom-model launches yet; this session starts without one.",
     "unknownTarget": "Selected workspace",
@@ -26885,7 +26960,14 @@
     "no": "no",
     "ageSeconds": "{{count}} s ago",
     "ageMinutes": "{{count}} min ago",
-    "workerValue": "pid {{pid}} · {{verdict}}{{detail}}"
+    "workerValue": "pid {{pid}} · {{verdict}}{{detail}}",
+    "warmStart": {
+      "open": "Warm-start from local winner"
+    },
+    "judgeAudit": {
+      "loading": "Loading the judge audit…",
+      "unavailable": "Judge audit unavailable: {{reason}}"
+    }
   },
   "projects": {
     "inherited": {
@@ -26966,7 +27048,9 @@
       "searchRepos": "Search repos…",
       "reposChosen": "{{count}} chosen",
       "noReposMatch": "No repos match “{{query}}”.",
-      "addedRepoNoRemote": "{{names}} added, but without a remote other computers cannot find it. Add a remote, then tick it here."
+      "addedRepoNoRemote": "{{names}} added, but without a remote other computers cannot find it. Add a remote, then tick it here.",
+      "universalBundleTitle": "Universal Project Format (.omni-project/ v0.1.0)",
+      "universalBundleHelp": "Projects materialize canonical .omni-project/ bundles (project.json, instructions/project.md, context/brief.md, memory/records/*.json, pinned skills & bots) plus native AGENTS.md, CLAUDE.md, and GEMINI.md projections. Use omni-projects MCP tools (import_project, export_project, transfer_project, transfer_skill, context_resolve) or omni-cross-sync to share across OmniConsole, Claude, Codex, Grok Bot, Kimi, and Gemini."
     },
     "suggestion": {
       "open": "Set up project",
@@ -27973,5 +28057,17 @@
   "summary": {
     "person": "1-to-1 decision",
     "personSurvey": "1-to-1 survey"
+  },
+  "omniSiMcpExplorer": {
+    "unavailable": "The OmniSI tool catalog is not available in this window.",
+    "entryTitle": "OmniSI tools",
+    "entryDescription": "Browse the tools, parameters and input schemas your OmniSI connection exposes to agents.",
+    "browse": "Browse tools"
+  },
+  "omnirogueTools": {
+    "serviceUnavailable": "This OmniRogue service is not live yet.",
+    "arena": "Model Arena",
+    "brandKits": "Brand Kits",
+    "assets": "Assets"
   }
 }

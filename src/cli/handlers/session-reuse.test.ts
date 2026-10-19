@@ -3,7 +3,7 @@ import { parseArgs } from '../args'
 import type { RuntimeClient } from '../runtime-client'
 import { SESSION_MANAGE_HANDLERS } from './session-manage'
 import { SESSION_REUSE_HANDLERS } from './session-reuse'
-import { formatSessionWhenIdle } from '../session-reuse-format'
+import { formatSessionPending, formatSessionWhenIdle } from '../session-reuse-format'
 
 const ORIGINAL_EXIT_CODE = process.exitCode
 const REF = 'claude:2f0c9f4e-8d1a-4c7e-9b8e-0e6f3f2a1b7c@local'
@@ -127,5 +127,28 @@ describe('omni session pending', () => {
     expect(list).toHaveBeenCalledWith('sessionManage.pending', { all: true })
     const cancel = await run(['session', 'pending', '--cancel', 'held-1'], { deliveries: [] })
     expect(cancel).toHaveBeenCalledWith('sessionManage.pending', { cancel: 'held-1' })
+  })
+
+  it('puts held prompts that never reached their session first, until they are seen', () => {
+    const base = {
+      createdAt: Date.UTC(2026, 8, 25, 12),
+      expiresAt: Date.UTC(2026, 8, 25, 12, 30),
+      actor: { kind: 'cli' as const },
+      target: { paneKey: 'tab-2:leaf-2', tabId: 'tab-2', title: 'Parser fix' },
+      text: 'Also cover the export path'
+    }
+    const text = formatSessionPending({
+      deliveries: [
+        { ...base, id: 'held-1', state: 'waiting' },
+        { ...base, id: 'held-2', state: 'expired', note: 'It was not free within 30 minutes.' },
+        { ...base, id: 'held-3', state: 'expired', seenAt: Date.UTC(2026, 8, 25, 13) }
+      ]
+    }).split('\n')
+    expect(text[0]).toBe(
+      'NOT SENT (1): these held prompts never reached their session. Decide what to do with each.'
+    )
+    expect(text[1]).toBe('expired · “Parser fix” · pane tab-2:leaf-2 · held-2')
+    expect(text.indexOf('waiting · “Parser fix” · pane tab-2:leaf-2 · held-1')).toBeGreaterThan(1)
+    expect(text.filter((line) => line.startsWith('NOT SENT'))).toHaveLength(1)
   })
 })

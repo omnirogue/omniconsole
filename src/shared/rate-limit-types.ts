@@ -137,6 +137,12 @@ export type RateLimitState = {
   grokAuthConfigured: boolean
   /** Kimi CLI login (OAuth token or API-key provider) in the resolved Kimi home; absent = unknown. */
   kimiAuthConfigured?: boolean
+  /**
+   * A Gemini API key exists on that host (environment, ~/.gemini/.env or credential vault). The
+   * `gemini` quota feed reads Google OAuth only, so a key login never shows there. Absent = older
+   * host.
+   */
+  geminiAuthConfigured?: boolean
   claudeTarget: RateLimitRuntimeTarget
   codexTarget: RateLimitRuntimeTarget
   inactiveClaudeAccounts: InactiveAccountUsage[]

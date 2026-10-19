@@ -25,6 +25,7 @@ import type { LaunchManifestReport } from '../shared/launch-manifest'
 import type { RuntimeTerminalCreate } from '../shared/runtime-types'
 import type { SessionContextAttachment } from '../shared/session-context-attachments'
 import { writeDurableSecureJsonFile } from '../shared/secure-file'
+import { WORK_CONTRACT_REFUSAL_CODES } from '../shared/work-contract-admission'
 import { RuntimeClientError } from './runtime/types'
 
 export const LAUNCH_RECORDS_DIR_NAME = 'agent-launch-operations'
@@ -93,6 +94,8 @@ export type AgentLaunchRecord = {
     projectItems?: SessionContextAttachment[]
     /** `--contract`: its Acceptance lines, bound to a verify step once the session exists. */
     contract?: { title: string; acceptance: string[]; agent: 'claude' | 'codex' }
+    /** `--ephemeral`: arm When finished -> End so the session closes automatically when done (unless a question is open). */
+    ephemeral?: boolean
     done: boolean
   }
   sends: AgentLaunchSend[]
@@ -183,7 +186,8 @@ const NOT_STARTED_CODES: ReadonlySet<string> = new Set([
   'agent_session_operation_expired',
   'agent_session_operation_conflict',
   'agent_session_legacy_required',
-  ...AGENT_LAUNCH_REFUSAL_CODES
+  ...AGENT_LAUNCH_REFUSAL_CODES,
+  ...WORK_CONTRACT_REFUSAL_CODES
 ])
 
 export type SettledLaunchSend = {

@@ -216,7 +216,7 @@ export function refreshArtifactShareRecordExpiration(
   scope: ArtifactShareScope,
   expected: { slug: string; editToken: string },
   expiresAt: string,
-  origin?: ArtifactSessionOrigin,
+  origin?: ArtifactSessionOrigin | null,
   sourceReview?: ArtifactSourceReview
 ): void {
   const records = readRecords(profileId, userDataPath, { sourceKey, ...expected })
@@ -234,8 +234,8 @@ export function refreshArtifactShareRecordExpiration(
     cloudOrganizationId: scope.cloudOrganizationId,
     expiresAt,
     savedAt: Date.now(),
-    // Why: the latest terminal to publish owns the preview; a write without one keeps the old owner.
-    ...(origin ? { origin } : {}),
+    // Why: the latest terminal owns the preview; none keeps the old owner, null (refused) clears it.
+    ...(origin !== undefined ? { origin: origin ?? undefined } : {}),
     sourceReview
   }
   writeSecureJsonFile(recordPath(profileId, userDataPath), records)

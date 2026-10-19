@@ -12,6 +12,7 @@ import { ORCHESTRATION_COMMAND_SPECS } from './orchestration'
 import { COMPUTER_COMMAND_SPECS } from './computer'
 import { ENVIRONMENT_COMMAND_SPECS } from './environment'
 import { AGENT_HOOK_COMMAND_SPECS } from './agent-hooks'
+import { ANSWERS_COMMAND_SPECS } from './answers'
 import { DIAGNOSTICS_COMMAND_SPECS } from './diagnostics'
 import { WORK_COMMAND_SPECS } from './work'
 import { EMULATOR_COMMAND_SPECS } from './emulator'
@@ -53,6 +54,7 @@ export const COMMAND_SPECS: CommandSpec[] = [
   ...ORCHESTRATION_COMMAND_SPECS,
   ...COMPUTER_COMMAND_SPECS,
   ...AGENT_HOOK_COMMAND_SPECS,
+  ...ANSWERS_COMMAND_SPECS,
   ...DIAGNOSTICS_COMMAND_SPECS,
   ...WORK_COMMAND_SPECS,
   ...INTROSPECTION_COMMAND_SPECS,

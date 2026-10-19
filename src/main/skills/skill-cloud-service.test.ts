@@ -118,9 +118,7 @@ describe('SkillCloudService bearer links', () => {
     vi.stubEnv('ORCA_CLOUD_AUTH_TOKEN', 'desktop-e2e-token')
 
     await expect(
-      new SkillCloudService(userDataPath()).listOwnedShares({
-        apiUrl: 'https://console.example.com'
-      })
+      new SkillCloudService(userDataPath()).listOwnedShares({ apiUrl: 'https://app.omnisi.ai' })
     ).rejects.toThrow('available only in development builds')
   })
 })

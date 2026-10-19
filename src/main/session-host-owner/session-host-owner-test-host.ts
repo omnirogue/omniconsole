@@ -207,6 +207,8 @@ export function ownerTestHost(input: {
         lastOutputAt: async () => null,
         stillWorking: async () => false,
         resume: async () => ({ summary: 'Resumed.', tabId: 'tab-2' }),
+        confirmRestarted: async () => ({ state: 'unconfirmed' as const }),
+        keepCheckpoint: async () => false,
         rename: async () => {
           throw new Error('not used')
         },

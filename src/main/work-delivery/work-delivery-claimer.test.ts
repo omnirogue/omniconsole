@@ -17,6 +17,7 @@ import {
 import type {
   ClaimableDelivery,
   WorkDeliveryKindAdapter,
+  WorkDeliveryResolution,
   WorkDeliveryTarget
 } from './work-delivery-kind'
 
@@ -60,6 +61,9 @@ function harness(
     loginCut?: WorkDeliveryDeps['loginCut']
     turns?: boolean
     agentStarts?: boolean
+    /** The adapter confirms by transcript, which shows this proof (null: nothing found). */
+    proof?: string | null
+    resolution?: WorkDeliveryResolution
   } = {}
 ) {
   const receipts: WorkDeliveryReceipt[] = []
@@ -91,14 +95,17 @@ function harness(
     resolve: async () => null,
     text: (d) => `reply: ${d.text}`,
     respawnBrief: (d) => `brief: ${d.text}`,
-    ...(options.restore ? { restoreDeleted: async () => {} } : {})
+    ...(options.restore ? { restoreDeleted: async () => {} } : {}),
+    ...(options.proof !== undefined ? { confirmByTranscript: true as const } : {})
   }
   const deps: WorkDeliveryDeps = {
     api,
     adapters: new Map([['jira', adapter]]),
     hostId: () => 'host_mac',
     hostLabel: 'MacBook',
-    resolveTarget: async () => ({ ...TARGET, ...options.target }),
+    resolveTarget: async () =>
+      options.resolution !== undefined ? options.resolution : { ...TARGET, ...options.target },
+    deliveredInTranscript: vi.fn(async () => options.proof ?? null),
     findHolder: vi.fn(async () => options.holder ?? { kind: 'live' as const, pane: PANE }),
     windowAttached: () => true,
     unarchive: vi.fn(async () => {}),
@@ -144,7 +151,8 @@ describe('WorkDeliveryClaimer', () => {
       PANE,
       expect.anything(),
       h.id,
-      'reply: Iris: the button is still blue'
+      'reply: Iris: the button is still blue',
+      expect.objectContaining({ key: DELIVERY.key })
     )
     expect(h.receipts).toEqual([{ state: 'claimed', step: 'queued' }])
 
@@ -569,5 +577,128 @@ describe('WorkDeliveryClaimer', () => {
     await h.claimer.pass()
     expect(h.deps.enqueue).not.toHaveBeenCalled()
     expect(h.receipts).toEqual([{ state: 'working' }, { state: 'done' }])
+  })
+})
+
+describe('WorkDeliveryClaimer reconcile by receipt', () => {
+  const PROOF = 'its text is a user turn in transcript conv-1.jsonl'
+
+  it('settles a decision a receipt shows already delivered, without sending it', async () => {
+    const h = harness({
+      resolution: { delivered: 'receipt', evidence: 'choices read decision 758', ref: null }
+    })
+    await h.claimer.pass()
+    expect(h.deps.findHolder).not.toHaveBeenCalled()
+    expect(h.deps.enqueue).not.toHaveBeenCalled()
+    expect(h.receipts).toEqual([{ state: 'typed' }, { state: 'working' }, { state: 'done' }])
+  })
+
+  it('never asks the transcript for a kind that does not opt in', async () => {
+    const h = harness({ delivery: { state: 'claimed', step: 'queued' }, holder: { kind: 'none' } })
+    await h.claimer.pass()
+    expect(h.deps.deliveredInTranscript).not.toHaveBeenCalled()
+    expect(h.receipts.at(-1)).toMatchObject({ state: 'held', heldReason: 'unverifiable' })
+  })
+
+  it('does not send a second copy when the text is already a user turn in its transcript', async () => {
+    const h = harness({ proof: PROOF, holder: { kind: 'none' } })
+    await h.claimer.pass()
+    expect(h.deps.resume).not.toHaveBeenCalled()
+    expect(h.deps.enqueue).not.toHaveBeenCalled()
+    expect(h.receipts).toEqual([{ state: 'typed' }, { state: 'working' }, { state: 'done' }])
+  })
+
+  it('follows a proven delivery whose live agent is still on its turn', async () => {
+    const h = harness({ proof: PROOF })
+    h.setBusy(true)
+    await h.claimer.pass()
+    expect(h.receipts).toEqual([{ state: 'typed' }, { state: 'working' }])
+    expect(h.claimer.watched()).toEqual([DELIVERY.key])
+    h.setBusy(false)
+    await h.claimer.pass()
+    h.advance(WORK_DELIVERY_DONE_IDLE_GAP_MS)
+    await h.claimer.pass()
+    expect(h.receipts.at(-1)).toEqual({ state: 'done' })
+  })
+
+  it('settles a handover whose session closed once its transcript shows the text', async () => {
+    const h = harness({
+      proof: PROOF,
+      delivery: { state: 'typed', step: 'queued' },
+      holder: { kind: 'none' }
+    })
+    await h.claimer.pass()
+    expect(h.deps.resume).not.toHaveBeenCalled()
+    expect(h.receipts).toEqual([{ state: 'working' }, { state: 'done' }])
+  })
+
+  it('keeps never-a-second-copy when the transcript lags behind a handover', async () => {
+    // Session closed: nothing in the transcript (yet) is no evidence it was not sent.
+    const closed = harness({
+      proof: null,
+      delivery: { state: 'claimed', step: 'queued' },
+      holder: { kind: 'none' }
+    })
+    await closed.claimer.pass()
+    expect(closed.deps.deliveredInTranscript).toHaveBeenCalledOnce()
+    expect(closed.deps.resume).not.toHaveBeenCalled()
+    expect(closed.deps.respawn).not.toHaveBeenCalled()
+    expect(closed.deps.enqueue).not.toHaveBeenCalled()
+    expect(closed.receipts).toEqual([
+      expect.objectContaining({ state: 'held', heldReason: 'unverifiable' })
+    ])
+    // Live, but its entry failed without proof it never left: still held, never re-queued.
+    const failed = harness({ proof: null, delivery: { state: 'claimed', step: 'queued' } })
+    failed.queue.set(failed.id, 'failed')
+    await failed.claimer.pass()
+    expect(failed.deps.enqueue).not.toHaveBeenCalled()
+    expect(failed.receipts.at(-1)).toMatchObject({ state: 'held', heldReason: 'unverifiable' })
+  })
+
+  it('still re-sends an entry the queue proves never left', async () => {
+    const h = harness({ proof: null, delivery: { state: 'claimed', step: 'queued' } })
+    h.queue.set(h.id, 'failed-unsent')
+    await h.claimer.pass()
+    expect(h.deps.enqueue).toHaveBeenCalledOnce()
+  })
+
+  it('settles a watched entry gone from the queue on transcript proof, holds it without', async () => {
+    const proven = harness({ proof: null })
+    await proven.claimer.pass()
+    vi.mocked(proven.deps.deliveredInTranscript!).mockResolvedValueOnce(PROOF)
+    proven.queue.set(proven.id, 'sending')
+    await proven.claimer.pass()
+    expect(proven.receipts.slice(-3)).toEqual([
+      { state: 'typed' },
+      { state: 'working' },
+      { state: 'done' }
+    ])
+    const unproven = harness({ proof: null })
+    await unproven.claimer.pass()
+    unproven.queue.set(unproven.id, 'sending')
+    await unproven.claimer.pass()
+    expect(unproven.receipts.at(-1)).toMatchObject({ state: 'held', heldReason: 'unverifiable' })
+  })
+
+  it('starts a replacement when its folder is gone (not_found), in the folder the refusal named', async () => {
+    const h = harness({ holder: { kind: 'none' }, target: { folder: undefined } })
+    vi.mocked(h.deps.resume).mockRejectedValueOnce(
+      new WorkDeliveryHold(
+        'not_found',
+        'Its folder /Users/maintainer/omni-ide-worktrees/gone is not a workspace OmniConsole has open.',
+        '/Users/maintainer/omni-ide-worktrees/gone'
+      )
+    )
+    await h.claimer.pass()
+    expect(h.deps.respawn).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        folder: '/Users/maintainer/omni-ide-worktrees/gone',
+        transcript: 'gone'
+      }),
+      expect.any(String),
+      expect.any(String)
+    )
+    expect(h.receipts.at(-1)).toMatchObject({ state: 'typed', step: 'respawned' })
   })
 })

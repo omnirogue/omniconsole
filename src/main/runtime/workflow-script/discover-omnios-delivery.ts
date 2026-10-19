@@ -100,6 +100,10 @@ function skipReason(
   if (snapshot.host.isolated) {
     return 'an isolated run (benchmark or --no-earlier-runs)'
   }
+  // A benchmark root's runs never reach the business approval publisher, after a restart too.
+  if (snapshot.budget?.benchmark) {
+    return 'a benchmark budget root'
+  }
   return null
 }
 

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { WorkflowTimeoutContinuation } from './workflow-timeout-continuation'
 import type { WorkflowProcessReceiptIdentity } from './workflow-process-receipt-identity'
 import type { LocalWorkflowRoute } from '../../../shared/local-workflow-seats'
@@ -19,6 +20,16 @@ import type { WorkflowProgramCall } from './workflow-program-context'
 import { assertWorkflowSchemaContract } from './workflow-schema-contract'
 import { WorkflowCallLaunchError, workflowAccountFailure } from './workflow-launch-failure'
 import type { WorkflowScriptSlots } from './workflow-script-slots'
+import type { WorkflowCallBudget } from './workflow-call-budget'
+import { admitWorkflowAttempt } from './workflow-attempt-budget'
+import {
+  runWithWorkflowAccount,
+  workflowReceiptCommit,
+  WorkflowAttemptUnverifiableError,
+  WorkflowHostLostError,
+  WorkflowNoLaunchError,
+  type WorkflowAttemptAccount
+} from './workflow-attempt-outcomes'
 
 export type WorkflowTerminalReceipt = {
   attemptId: string
@@ -27,40 +38,13 @@ export type WorkflowTerminalReceipt = {
   liveness: 'exited'
 }
 
-/**
- * What a launch shares besides host capacity (an account login). It is asked once the call holds a
- * slot, before an attempt is reserved: it runs `work` under the account (`done`), or reports the
- * account taken, and `busy` settles once it is free again.
- */
-export type WorkflowAttemptAccount = <T>(
-  call: WorkflowProgramCall,
-  work: () => Promise<T>,
-  signal: AbortSignal
-) => Promise<{ done: T } | { busy: () => Promise<void> }>
-
-/**
- * Takes a slot, then the call's account. While the account is taken the slot goes back and the
- * call waits holding nothing, so it never holds a slot while it waits for an account, nor an
- * account while it waits for a slot. Each try decides afresh, just before the attempt would start.
- */
-export async function runWithWorkflowAccount<T>(
-  slots: Pick<WorkflowScriptSlots, 'run'>,
-  account: WorkflowAttemptAccount | undefined,
-  call: WorkflowProgramCall,
-  work: () => Promise<T>,
-  signal: AbortSignal
-): Promise<T> {
-  for (;;) {
-    const held = await slots.run(
-      async () => (account ? account(call, work, signal) : { done: await work() }),
-      signal
-    )
-    if ('done' in held) {
-      return held.done
-    }
-    await held.busy()
-  }
-}
+export {
+  runWithWorkflowAccount,
+  WorkflowAttemptUnverifiableError,
+  WorkflowHostLostError,
+  WorkflowNoLaunchError,
+  type WorkflowAttemptAccount
+} from './workflow-attempt-outcomes'
 
 export type WorkflowAttemptLaunch = ((input: {
   call: WorkflowProgramCall
@@ -73,32 +57,14 @@ export type WorkflowAttemptLaunch = ((input: {
    */
   rejection?: string | null
   signal: AbortSignal
+  /** Present on budgeted runs: the adapter must hold the call to this reservation. */
+  budget?: { reservedUsd: number }
   /** Adapter owns termination even if this callback rejects publication after stop. */
   recordPreparation: (identity: WorkflowProcessReceiptIdentity) => void
   recordLaunch: (processReceiptRef: string) => void
   recordNoLaunch: (reason: string) => void
 }) => Promise<{ result: ProcessResult; receipt: WorkflowTerminalReceipt }>) & {
   account?: WorkflowAttemptAccount
-}
-
-/** An adapter failure without exit evidence must close admission, not buy another attempt. */
-export class WorkflowAttemptUnverifiableError extends Error {}
-export class WorkflowNoLaunchError extends Error {}
-
-/**
- * The launch's own process exited (its receipt proves it), but contact with the computer the
- * seat ran on was lost. With `retryMessage`, exit was confirmed and only the call fails.
- * Otherwise the attempt remains pending and closes admission until remote reconciliation.
- */
-export class WorkflowHostLostError extends WorkflowAttemptUnverifiableError {
-  constructor(
-    message: string,
-    readonly launched: { result: ProcessResult; receipt: WorkflowTerminalReceipt },
-    readonly retryMessage?: string
-  ) {
-    super(message)
-    this.name = 'WorkflowHostLostError'
-  }
 }
 
 /** Host injects its shared admission authority and one certified provider adapter. */
@@ -116,6 +82,9 @@ export function createDurableWorkflowAgent(input: {
   cacheOnly?: boolean
   seatFailures?: Map<string, string>
   launch: WorkflowAttemptLaunch
+  /** The run's root budget: each attempt is admitted after it is prepared, before it launches. */
+  budget?: WorkflowCallBudget
+  budgetSeat?: (seatId: string) => { model: string; effort?: string | null; accountId?: string }
   attestNativeResult?: (input: {
     call: WorkflowProgramCall
     attemptId: string
@@ -139,17 +108,11 @@ export function createDurableWorkflowAgent(input: {
     const fingerprint = input.seatFingerprint(call.seatId)
     const route = input.route(call.seatId)
     const inputDigest = workflowCallDigest(call, fingerprint, route)
-    const withReceipt = <T>(commit: () => T): T => {
-      try {
-        return commit()
-      } catch (cause) {
-        const error = new WorkflowAttemptUnverifiableError(
-          'Workflow receipt requires reconciliation',
-          { cause }
-        )
-        input.closeAdmission(error)
-        throw error
-      }
+    const withReceipt = workflowReceiptCommit(input.closeAdmission)
+    // A replayed saved output is recorded as reuse: no provider call and no attempt.
+    const reused = (cached: unknown) => {
+      input.budget?.reuse(call.id, randomUUID())
+      return cached
     }
     const prepare = (cacheOnly = input.cacheOnly) =>
       input.store.prepare({
@@ -168,7 +131,7 @@ export function createDurableWorkflowAgent(input: {
       try {
         const replayed = prepare(true)
         if ('cached' in replayed) {
-          return replayed.cached
+          return reused(replayed.cached)
         }
       } catch (cause) {
         if (!(cause instanceof WorkflowCacheMissError)) {
@@ -189,18 +152,31 @@ export function createDurableWorkflowAgent(input: {
       const attempt = async () => {
         const prepared = prepare()
         if ('cached' in prepared) {
-          return { accepted: true as const, value: prepared.cached }
+          return { accepted: true as const, value: reused(prepared.cached) }
         }
         const unavailable = seatFailures.get(call.seatId)
         if (unavailable) {
           input.store.recordNoLaunch(prepared.attemptId, input.fence, unavailable.slice(0, 2048))
           throw new WorkflowCallLaunchError(unavailable)
         }
+        const metered = await admitWorkflowAttempt({
+          budget: input.budget,
+          seat: input.budgetSeat?.(call.seatId),
+          attemptId: prepared.attemptId,
+          callId: call.id,
+          route,
+          signal: input.signal,
+          refused: (refusal) => {
+            input.store.recordNoLaunch(prepared.attemptId, input.fence, refusal.message)
+            input.closeAdmission(refusal)
+          }
+        })
         let launched: Awaited<ReturnType<WorkflowAttemptLaunch>>
         try {
           launched = await input.launch({
             call: continuation.call(),
             ...prepared,
+            ...(metered ? { budget: metered.grant } : {}),
             problems,
             rejection,
             signal: input.signal,
@@ -212,10 +188,14 @@ export function createDurableWorkflowAgent(input: {
           })
         } catch (cause) {
           if (cause instanceof WorkflowNoLaunchError) {
+            await metered?.notSent(cause.message)
             problems = cause.message
             return { accepted: false as const }
           }
           if (cause instanceof WorkflowHostLostError) {
+            await (cause.retryMessage
+              ? metered?.launched(cause.launched.result, 'failed')
+              : metered?.unknown())
             if (!cause.retryMessage) {
               input.closeAdmission(cause)
               throw cause
@@ -230,6 +210,7 @@ export function createDurableWorkflowAgent(input: {
             )
             throw new Error(cause.message, { cause })
           }
+          await metered?.unknown()
           const error = new WorkflowAttemptUnverifiableError(
             'Workflow attempt needs exit reconciliation',
             { cause }
@@ -238,6 +219,7 @@ export function createDurableWorkflowAgent(input: {
           throw error
         }
         if (input.signal.aborted) {
+          await metered?.launched(launched.result, 'cancelled')
           withReceipt(() =>
             input.store.settleFailure(
               prepared.attemptId,
@@ -274,6 +256,7 @@ export function createDurableWorkflowAgent(input: {
           if (cause instanceof WorkflowAnswerRejectedError || !workflowAccountFailure(problems)) {
             launchOnly = false
           }
+          await metered?.launched(launched.result, 'failed')
           if (
             !withReceipt(() =>
               input.store.settleFailure(
@@ -288,6 +271,7 @@ export function createDurableWorkflowAgent(input: {
           }
           return { accepted: false as const }
         }
+        await metered?.launched(launched.result, 'ok', parsed.usage, parsed.providerRequestId)
         const receipt = {
           ...launched.receipt,
           providerSessionId: parsed.providerSessionId,

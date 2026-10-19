@@ -25,7 +25,7 @@ function manifest() {
       sha: 'abcdef1234567',
       baseBranch: 'main-next'
     },
-    trail: { ledgerUrl: 'https://console.example.com/?ledger=ldg_1' },
+    trail: { ledgerUrl: 'https://app.omnisi.ai/?ledger=ldg_1' },
     memo: 'Take it from here.',
     files: [
       {
@@ -107,7 +107,7 @@ describe('handoff manifest', () => {
   it('summarizes the routes and trail for the memo', () => {
     expect(handoffMemoLines(manifest())).toEqual([
       'Branch: handoff/chn_1 @ abcdef123456 (omnirogue/omni-ide)',
-      'Trail: https://console.example.com/?ledger=ldg_1',
+      'Trail: https://app.omnisi.ai/?ledger=ldg_1',
       'Files: 1 by git, 1 on the thread, 1 on the card (see handoff-manifest.json)'
     ])
     expect(handoffMemoLines({ files: [] })).toEqual([])

@@ -6,10 +6,13 @@ import {
   extractToolResponseText
 } from '../interactive-tool'
 import { readLastAssistantFromTranscript } from '../transcript-lines'
+import { turnEndAsyncAskPrompt } from '../turn-end-question'
 
 export function extractClaudeToolFields(
   eventName: unknown,
-  hookPayload: Record<string, unknown>
+  hookPayload: Record<string, unknown>,
+  /** Claude itself only: its answers are guarded to a proven Claude process; Claude-shaped agents are not. */
+  options?: { turnEndAsks?: boolean }
 ): ToolSnapshot {
   const update: ToolSnapshot = {}
   if (eventName === 'PostToolUseFailure') {
@@ -58,6 +61,14 @@ export function extractClaudeToolFields(
       if (lastFromTranscript) {
         update.lastAssistantMessage = lastFromTranscript
       }
+    }
+    // Why on Stop only: the ask is pending once the turn is over (`done`, or `monitoring` while
+    // background work such as Monitor runs); a lead tool event is plain `working` and hides it.
+    const asked = options?.turnEndAsks
+      ? turnEndAsyncAskPrompt(hookPayload, update.lastAssistantMessage)
+      : undefined
+    if (asked) {
+      update.interactivePrompt = asked
     }
   }
   return update

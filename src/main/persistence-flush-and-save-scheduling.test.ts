@@ -381,6 +381,7 @@ describe('Store', () => {
           tab1: {
             root: { type: 'leaf' as const, leafId: TEST_LEAF_1 },
             activeLeafId: TEST_LEAF_1,
+            ptyIdsByLeafId: { [TEST_LEAF_1]: 'pty1' },
             expandedLeafId: null
           }
         }

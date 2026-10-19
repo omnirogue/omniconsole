@@ -12,6 +12,7 @@ import { translate } from '@/i18n/i18n'
 import { callRuntimeRpc } from '@/runtime/runtime-rpc-client'
 import { findTabSleepingAgentRecord } from '@/components/native-chat/native-chat-tab-sleeping-record'
 import { launchSleepingAgentSession } from '@/lib/sleeping-agent-session-launch'
+import * as resumeCheckpoint from '@/lib/resume-checkpoint-hold'
 import {
   isMirrorRecordRelaunchRefused,
   mirrorRecordRelaunchRefusalReason
@@ -44,6 +45,7 @@ import {
 import { answerOmniosQuestion } from './omnios-question-answer'
 
 const TOAST_DURATION_MS = 12_000
+type ResumeRequest = Extract<SessionManageRendererRequest, { kind: 'resumeSession' }>
 
 function description(): string {
   return translate(
@@ -72,20 +74,14 @@ function requireSession(target: { paneKey?: string; tabId?: string }): SidebarSe
 
 /** The name the person set on the tab, or null when the tab shows its generated name. */
 function customTitleOf(tabId: string): string | null {
-  const state = useAppStore.getState()
-  for (const tabs of Object.values(state.tabsByWorktree)) {
-    const tab = tabs.find((entry) => entry.id === tabId)
-    if (tab) {
-      return tab.customTitle ?? null
-    }
-  }
-  for (const tabs of Object.values(state.unifiedTabsByWorktree)) {
-    const tab = tabs.find((entry) => entry.id === tabId || entry.entityId === tabId)
-    if (tab) {
-      return tab.customLabel ?? null
-    }
-  }
-  return null
+  const { tabsByWorktree, unifiedTabsByWorktree } = useAppStore.getState()
+  const tab = Object.values(tabsByWorktree)
+    .flat()
+    .find((entry) => entry.id === tabId)
+  const unified = Object.values(unifiedTabsByWorktree)
+    .flat()
+    .find((entry) => entry.id === tabId || entry.entityId === tabId)
+  return (tab ? tab.customTitle : unified?.customLabel) ?? null
 }
 
 function rename(request: {
@@ -153,11 +149,7 @@ function rename(request: {
 }
 
 /** A review wake after a restart: only a pane hibernation slept, whose PTY the daemon says is gone. */
-async function resumeSleptPane(request: {
-  paneKey?: string
-  tabId?: string
-  launchTabId?: string
-}): Promise<SessionManageResumeReply> {
+async function resumeSleptPane(request: ResumeRequest): Promise<SessionManageResumeReply> {
   const session = requireSession(request)
   // Nothing else runs between this check and resume().
   if (!session.paneKey || !(await sleptPaneParkedNow(session.paneKey))) {
@@ -169,11 +161,7 @@ async function resumeSleptPane(request: {
 }
 
 /** The "Resume conversation" path: the same provider session reopened in a new tab. */
-function resume(request: {
-  paneKey?: string
-  tabId?: string
-  launchTabId?: string
-}): SessionManageResumeReply {
+function resume(request: ResumeRequest): SessionManageResumeReply {
   const session = requireSession(request)
   const records = useAppStore.getState().sleepingAgentSessionsByPaneKey ?? {}
   const record =
@@ -193,7 +181,7 @@ function resume(request: {
         : `“${session.label}” ran on another computer, which no longer lists it, so it is not restarted from here. Resume it on that computer.`
     )
   }
-  let tabId: string | null = null
+  let tabId = null as string | null
   const launched = launchSleepingAgentSession(record, {
     ...(request.launchTabId ? { tabId: request.launchTabId } : {}),
     suppressNavigation: true,
@@ -209,6 +197,11 @@ function resume(request: {
     'Resumed “{{session}}”: the same conversation, in a new tab',
     { session: session.label }
   )
+  if (request.keepCheckpoint && tabId) {
+    // Main reports it once the new pane's agent hooks confirm the conversation, or says why not.
+    resumeCheckpoint.setAsideResumeCheckpoint(tabId, record)
+    return { summary, tabId, paneKey: resumeCheckpoint.launchedTabPaneKey(tabId) }
+  }
   toast(summary, { description: description(), duration: TOAST_DURATION_MS })
   return { summary, tabId }
 }
@@ -295,6 +288,8 @@ export function answerSessionManageRequest(request: SessionManageRendererRequest
       return rename(request)
     case 'resumeSession':
       return request.onlySleptPane ? resumeSleptPane(request) : resume(request)
+    case 'keepResumeCheckpoint':
+      return resumeCheckpoint.keepResumeCheckpoint(request.tabId, request.onto)
     case 'paneParkedBySleep':
       return sleptPaneParkedNow(request.paneKey)
     case 'forgetSleptPane':
@@ -307,7 +302,10 @@ export function answerSessionManageRequest(request: SessionManageRendererRequest
       return showSidebarSession(requireSession(request), request)
     case 'scheduleFinish':
       // Same "When finished: End" a person can pick; the finish tick closes it once verified.
-      scheduleWhenFinished(requireSession(request), { action: request.action })
+      scheduleWhenFinished(
+        requireSession(request),
+        request.action ? { action: request.action === 'archive' ? 'save' : request.action } : null
+      )
       return { scheduled: true }
     case 'readSidebarCounts':
       return readRenderedSidebarCounts()

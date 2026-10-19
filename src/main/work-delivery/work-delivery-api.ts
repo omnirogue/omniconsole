@@ -25,6 +25,9 @@ export type WorkDeliveryReceipt = {
   revived?: string
   respawnedRef?: string
   owner?: Partial<WorkDeliveryOwner>
+  /** How the text reached the session (hook-first pilot) and claim-to-confirmation time; additive. */
+  path?: string
+  latencyMs?: number
 }
 
 export type WorkOwnerBinding = Partial<WorkDeliveryOwner> & {
@@ -119,7 +122,9 @@ export function workDeliveryApiOver(send: Send): WorkDeliveryApi {
           ...(receipt.detail ? { detail: receipt.detail } : {}),
           ...(receipt.revived ? { revived: receipt.revived } : {}),
           ...(receipt.respawnedRef ? { respawned_ref: receipt.respawnedRef } : {}),
-          ...(receipt.owner ? { owner: receipt.owner } : {})
+          ...(receipt.owner ? { owner: receipt.owner } : {}),
+          ...(receipt.path ? { path: receipt.path } : {}),
+          ...(receipt.latencyMs !== undefined ? { latency_ms: receipt.latencyMs } : {})
         }
       }),
     bindOwner: (workItem, binding) =>

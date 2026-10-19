@@ -93,5 +93,11 @@ export const SESSION_HANDLER_GROUPS: readonly HandlerGroup[] = [
     name: 'session-transfer',
     keys: ['session handoff', 'session consolidate'],
     load: async () => (await import('./handlers/session-transfer.js')).SESSION_TRANSFER_HANDLERS
+  },
+  {
+    // Answers reaching sessions: the hook-first delivery pilot's report.
+    name: 'answers',
+    keys: ['answers pilot-report'],
+    load: async () => (await import('./handlers/answers.js')).ANSWERS_HANDLERS
   }
 ]

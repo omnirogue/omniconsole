@@ -1,12 +1,25 @@
 import type { AgentHookSource } from '../../shared/agent-hook-relay'
 import { ORCA_HOOK_RAW_JSON_TRANSPORT } from '../../shared/agent-hook-types'
+import {
+  buildPosixHookAnswerAckFunctionLines,
+  buildPosixHookAnswerSplitLines,
+  posixHookPrintReplyCommand
+} from './hook-answer-ack-script'
 
 export function buildPosixAgentHookPostCommand(
   source: AgentHookSource,
-  options: { curlCommand?: string; indent?: string } = {}
+  options: {
+    curlCommand?: string
+    indent?: string
+    /** Shell variable that is `1` on a retry past the hook's deadline (the reply may carry no answer). */
+    lateVar?: string
+  } = {}
 ): string[] {
   const curlCommand = options.curlCommand ?? 'curl'
   const indent = options.indent ?? '  '
+  const late = options.lateVar
+    ? [`  ${indent}-H "X-Omni-Agent-Hook-Late: \${${options.lateVar}:-0}" \\`]
+    : []
   return [
     `if [ "\${ORCA_AGENT_HOOK_TRANSPORT:-}" = "${ORCA_HOOK_RAW_JSON_TRANSPORT}" ] && command -v base64 >/dev/null 2>&1 && command -v tr >/dev/null 2>&1; then`,
     // Old raw-JSON receivers require exactly six fields; their endpoint advertises v1.
@@ -26,6 +39,7 @@ export function buildPosixAgentHookPostCommand(
     `  ${indent}-H "X-Omni-Agent-Hook-Meta-Encoding: base64" \\`,
     `  ${indent}-H "X-Orca-Agent-Hook-Meta: \${orca_hook_metadata}" \\`,
     `  ${indent}-H "X-Omni-Agent-Hook-Meta: \${orca_hook_metadata}" \\`,
+    ...late,
     `  ${indent}--data-binary @-`,
     'else',
     `  printf '%s' "$payload" | ${curlCommand} -sS -X POST "http://127.0.0.1:\${ORCA_AGENT_HOOK_PORT}/hook/${source}" \\`,
@@ -34,6 +48,7 @@ export function buildPosixAgentHookPostCommand(
     `  ${indent}-H "Content-Type: application/x-www-form-urlencoded" \\`,
     `  ${indent}-H "X-Orca-Agent-Hook-Token: \${ORCA_AGENT_HOOK_TOKEN}" \\`,
     `  ${indent}-H "X-Omni-Agent-Hook-Token: \${ORCA_AGENT_HOOK_TOKEN}" \\`,
+    ...late,
     `  ${indent}--data-urlencode "paneKey=\${ORCA_PANE_KEY}" \\`,
     `  ${indent}--data-urlencode "tabId=\${ORCA_TAB_ID}" \\`,
     `  ${indent}--data-urlencode "launchToken=\${ORCA_AGENT_LAUNCH_TOKEN}" \\`,
@@ -47,16 +62,29 @@ export function buildPosixAgentHookPostCommand(
   ]
 }
 
-/** Shell flag the reply-aware post reads; set only for a UserPromptSubmit payload. */
+/** Shell flag the reply-aware post reads; set only for an event whose reply is relayed. */
 const POSIX_HOOK_REPLY_FLAG = 'orca_hook_reply'
+
+/** Ends the hook early; an answer event still prints the neutral object it would have printed (#14818). */
+export const POSIX_HOOK_EARLY_EXIT = 'orca_hook_exit'
 
 /**
  * Claude-compatible hooks parse stdout as hook output, so the neutral `{}` (#14818) goes out as
- * soon as the event is known, while a UserPromptSubmit holds its stdout for the listener's reply.
+ * soon as the event is known, while UserPromptSubmit, SessionStart, PostToolUse and Stop hold
+ * their stdout for the listener's reply (an OmniOS answer, or the next-step pointer). Timing is
+ * unchanged: the listener hands out an answer only while it can still reach the hook in time.
  */
-export function buildPosixUserPromptSubmitReplyGateLines(): string[] {
+export function buildPosixHookReplyGateLines(): string[] {
   return [
-    `case "$payload" in *'"hook_event_name":"UserPromptSubmit"'*) ${POSIX_HOOK_REPLY_FLAG}=1 ;; *) printf "{}\\n" ;; esac`
+    'case "$payload" in',
+    `  *'"hook_event_name":"PostToolUse"'*|*'"hook_event_name":"Stop"'*|*'"hook_event_name":"SessionStart"'*) ${POSIX_HOOK_REPLY_FLAG}=answer ;;`,
+    `  *'"hook_event_name":"UserPromptSubmit"'*) ${POSIX_HOOK_REPLY_FLAG}=1 ;;`,
+    '  *) printf "{}\\n" ;;',
+    'esac',
+    `${POSIX_HOOK_EARLY_EXIT}() {`,
+    `  if [ "\${${POSIX_HOOK_REPLY_FLAG}:-}" = answer ]; then printf "{}\\n"; fi`,
+    '  exit 0',
+    '}'
   ]
 }
 
@@ -67,9 +95,16 @@ export function buildPosixUserPromptSubmitReplyGateLines(): string[] {
  */
 export function buildPosixAgentHookPostWithReplyLines(
   source: AgentHookSource,
-  options: { onFailure: string; curlCommand?: string; replyValidatorCommand?: string }
+  options: {
+    onFailure: string
+    curlCommand?: string
+    replyValidatorCommand?: string
+    /** Claude-compatible: strip an OmniOS answer's ack line, then acknowledge once printed. */
+    answerAck?: boolean
+  }
 ): string[] {
   return [
+    ...(options.answerAck ? buildPosixHookAnswerAckFunctionLines() : []),
     'orca_hook_post() {',
     ...buildPosixAgentHookPostCommand(source, {
       curlCommand: options.curlCommand,
@@ -83,7 +118,14 @@ export function buildPosixAgentHookPostWithReplyLines(
           `  orca_hook_response=$(printf '%s' "$orca_hook_response" | ${options.replyValidatorCommand} 2>/dev/null) || orca_hook_response=`
         ]
       : []),
-    `  case "$orca_hook_response" in '{'*) printf '%s\\n' "$orca_hook_response" ;; *) printf "{}\\n" ;; esac`,
+    ...(options.answerAck
+      ? [
+          ...buildPosixHookAnswerSplitLines('  '),
+          `  case "$orca_hook_response" in '{'*) ${posixHookPrintReplyCommand()} ;; *) printf "{}\\n" ;; esac`
+        ]
+      : [
+          `  case "$orca_hook_response" in '{'*) printf '%s\\n' "$orca_hook_response" ;; *) printf "{}\\n" ;; esac`
+        ]),
     'else',
     `  orca_hook_post >/dev/null 2>&1 || ${options.onFailure}`,
     'fi'

@@ -4,18 +4,14 @@ import { parseSkillShareId } from './skill-share-link'
 describe('parseSkillShareId', () => {
   it('accepts durable OmniConsole links and bare identifiers', () => {
     expect(parseSkillShareId('share_123')).toBe('share_123')
-    expect(parseSkillShareId('https://console.example.com/skills/share/share_123')).toBe(
-      'share_123'
-    )
-    expect(parseSkillShareId('https://console.example.com/skills/share/share_123/')).toBe(
-      'share_123'
-    )
+    expect(parseSkillShareId('https://app.omnisi.ai/skills/share/share_123')).toBe('share_123')
+    expect(parseSkillShareId('https://app.omnisi.ai/skills/share/share_123/')).toBe('share_123')
     expect(parseSkillShareId('omni://skills/share/share_123')).toBe('share_123')
   })
 
   it('rejects attacker origins and lookalike paths', () => {
     expect(parseSkillShareId('https://attacker.test/skills/share/share_123')).toBeNull()
-    expect(parseSkillShareId('https://console.example.com/skills/share/share_123/more')).toBeNull()
+    expect(parseSkillShareId('https://app.omnisi.ai/skills/share/share_123/more')).toBeNull()
     expect(parseSkillShareId('javascript:share_123')).toBeNull()
   })
 })

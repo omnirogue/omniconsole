@@ -3,7 +3,7 @@ import { Profiler } from 'react'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { WorkPlanComposerDialog } from './WorkPlanComposerDialog'
-import { samWorkPlan } from '../../../../../shared/__fixtures__/work-plan/example-work-plan'
+import { samWorkPlan } from '../../../../../shared/__fixtures__/work-plan/sal-work-plan'
 import { workPlanFixtureContext } from '../../../../../shared/__fixtures__/work-plan/work-plan-context'
 import { workPlanFromShape } from '../../../../../shared/work-plan-shapes'
 import {

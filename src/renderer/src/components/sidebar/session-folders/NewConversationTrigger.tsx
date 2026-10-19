@@ -26,9 +26,13 @@ export function NewConversationTrigger({
     <DropdownMenuTrigger asChild>
       <Button
         {...hover}
-        size="icon-xs"
+        size={folderName === undefined ? 'xs' : 'icon-xs'}
         variant="ghost"
-        className="shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        className={
+          folderName === undefined
+            ? 'shrink-0 gap-1.5 px-2 text-xs font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+            : 'shrink-0 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+        }
         // Why two markers: tests and tours find the one toolbar "+" by data-new-conversation.
         data-new-conversation={folderName === undefined ? '' : undefined}
         data-new-conversation-folder={folderName === undefined ? undefined : ''}
@@ -54,8 +58,17 @@ export function NewConversationTrigger({
           }
         }}
       >
-        <Plus className={folderName === undefined ? 'size-4' : 'size-3.5'} aria-hidden />
-        <span className="sr-only">{label}</span>
+        {folderName === undefined ? (
+          <>
+            <span className="capitalize">{label}</span>
+            <Plus className="size-4" aria-hidden />
+          </>
+        ) : (
+          <>
+            <Plus className="size-3.5" aria-hidden />
+            <span className="sr-only">{label}</span>
+          </>
+        )}
       </Button>
     </DropdownMenuTrigger>
   )

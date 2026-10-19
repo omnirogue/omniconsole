@@ -96,6 +96,6 @@ describe('office projection backoffice navigation', () => {
         ...state(),
         settings: {} as AppState['settings']
       })
-    ).toBe('https://console.example.com/sessions/ses_reply')
+    ).toBe('https://app.omnisi.ai/sessions/ses_reply')
   })
 })

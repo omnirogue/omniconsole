@@ -58,7 +58,7 @@ describe('workspace source policy', () => {
         type: 'issue',
         number: 0,
         title: 'Create campaign content',
-        url: 'https://console.example.com/work',
+        url: 'https://app.omnisi.ai/work',
         hubTaskId: 'btk_1234',
         hubStateRevision: 0,
         hubNextAction: 'Create the first draft'

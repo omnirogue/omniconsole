@@ -12,8 +12,10 @@ import {
   type DiscoverFindingFilter,
   type DiscoverReportItem
 } from './discover-run-text'
+import { DiscoverHypothesisMatrix } from '../discover/DiscoverHypothesisMatrix'
 import { DiscoverFindingCard } from './DiscoverFindingCard'
 import { DiscoverReport } from './DiscoverReport'
+import { discoverRunHypothesisMatrix } from './discover-run-hypothesis-matrix'
 import { discoverFindingAwaitsVotes } from './local-workflow-labels'
 import { WorkflowAgentList } from './WorkflowAgentList'
 import { WorkflowCallBody, type WorkflowCallHandlers } from './WorkflowCallBody'
@@ -243,8 +245,18 @@ function stageBody(stage: WorkflowStageModel, props: DiscoverViewProps): ReactNo
         </div>
       )
     case 'verify':
-    case 'refute':
-      return stage.calls.length ? agents : null
+    case 'refute': {
+      const matrix = discoverRunHypothesisMatrix(run)
+      if (!matrix.hypotheses.length) {
+        return stage.calls.length ? agents : null
+      }
+      return (
+        <div className="space-y-3">
+          {stage.calls.length ? agents : null}
+          <DiscoverHypothesisMatrix hypotheses={matrix.hypotheses} lenses={matrix.lenses} />
+        </div>
+      )
+    }
     case 'rank':
       return singleCallStage(
         stage,

@@ -227,14 +227,40 @@ describe('bringing a finished Discover run to OmniOS', () => {
       at: expect.any(String),
       attempts: 1
     })
-    const reply = { ok: true, result: { shareUrl: 'https://console.example.com/a/1a2b3c' } }
+    const reply = { ok: true, result: { shareUrl: 'https://app.omnisi.ai/a/1a2b3c' } }
     await writeFile(join(d.root, 'run-1', 'published.json'), JSON.stringify(reply))
-    expect(discoverOmniosStatus(d.root, 'run-1')?.url).toBe('https://console.example.com/a/1a2b3c')
+    expect(discoverOmniosStatus(d.root, 'run-1')?.url).toBe('https://app.omnisi.ai/a/1a2b3c')
     await writeFile(
       join(d.root, 'run-1', 'published.json'),
       JSON.stringify({ result: { shareUrl: 'javascript:alert(1)' } })
     )
     expect(discoverOmniosStatus(d.root, 'run-1')?.url).toBeUndefined()
+  })
+
+  it('never publishes a benchmark budget root, including on restart recovery', async () => {
+    const d = await deps()
+    const json = JSON.stringify({
+      snapshot: {
+        ...snapshot(),
+        budget: {
+          rootId: '11111111-1111-4111-8111-111111111111',
+          benchmark: true,
+          maxInputTokens: 1,
+          maxOutputTokens: 1
+        }
+      }
+    })
+    d.db
+      .prepare('UPDATE local_workflow_executions SET snapshot_json=?, snapshot_digest=? WHERE id=?')
+      .run(json, workflowEvidenceDigest(json), 'run-1')
+    expect(await deliverDiscoverToOmnios(d, 'run-1')).toEqual({
+      outcome: 'skipped',
+      reason: 'a benchmark budget root'
+    })
+    await reconcileDiscoverDeliveries({ ...d, view: async () => view })
+    await reconcileDiscoverDeliveries({ ...d, view: async () => view })
+    expect(d.launches).toEqual([])
+    expect(discoverOutbox(d.db).read('run-1')).toBeFalsy()
   })
 
   it('recovers completed CLI runs after restart without following or rerunning them', async () => {
@@ -247,7 +273,7 @@ describe('bringing a finished Discover run to OmniOS', () => {
     await reconcileDiscoverDeliveries({ ...d, view: async () => view })
     expect(d.launches).toHaveLength(1)
     expect((await deliverDiscoverToOmnios(d, 'run-1')).outcome).toBe('pending')
-    const url = 'https://console.example.com/a/published'
+    const url = 'https://app.omnisi.ai/a/published'
     await writeFile(
       join(d.root, 'run-1', 'published.json'),
       JSON.stringify({ ok: true, result: { shareUrl: url } })

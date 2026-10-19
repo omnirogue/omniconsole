@@ -9,7 +9,7 @@ export const ORCHESTRATION_GATE_HANDLERS: Record<string, CommandHandler> = {
     const decisionScope = getOptionalStringFlag(flags, 'decision-scope')
     if (decisionScope === 'business') {
       throw new Error(
-        'Business decisions belong to omnios; use https://console.example.com or omni-console MCP.'
+        'Business decisions belong to omnios; use https://app.omnisi.ai or omni-console MCP.'
       )
     }
     const result = await callOrchestrationMutation<{

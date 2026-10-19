@@ -3,9 +3,10 @@
  * the proof `omni session continue|ask` binds a queued prompt to, and re-checks before each write.
  *
  * A process counts when it sits in the terminal's foreground process group (`+` in `ps stat`),
- * descends from the PTY's own root process, and its command line is a recognized agent's. A hook PID alone
- * cannot identify an agent: it may have been reused since the report. A shell, a stopped job, another
- * program, or an agent that replaced the original one (a different pid or start time) never does.
+ * is or descends from the PTY's own root process, and its command line is a recognized agent's.
+ * A hook PID alone cannot identify an agent: it may have been reused since the report. A shell, a
+ * stopped job, another program, or an agent that replaced the original one (a different pid or
+ * start time) never does.
  */
 
 import { recognizeAgentProcessFromCommandLine } from '../../shared/agent-process-recognition'
@@ -83,13 +84,20 @@ function inForeground(row: ProcessTableRow): boolean {
   return row.stat.includes('+')
 }
 
-/** Every process under `rootPid`, found once from the table. */
-function descendantsOf(
+/**
+ * `rootPid` itself and every process under it, found once from the table. Why the root too: a
+ * shell that exec'd its agent leaves the agent as the PTY's own process, with nothing under it.
+ */
+function processTreeOf(
   rows: readonly ProcessTableRow[],
   rootPid: number
 ): (ProcessTableRow & { parentAgent: boolean })[] {
   const children = new Map<number, ProcessTableRow[]>()
+  let root: ProcessTableRow | undefined
   for (const row of rows) {
+    if (row.pid === rootPid) {
+      root = row
+    }
     const siblings = children.get(row.ppid)
     if (siblings) {
       siblings.push(row)
@@ -98,8 +106,9 @@ function descendantsOf(
     }
   }
   const found: (ProcessTableRow & { parentAgent: boolean })[] = []
-  const pending = (children.get(rootPid) ?? []).map((row) => ({ row, parentAgent: false }))
-  const seen = new Set<number>([rootPid])
+  const start = root ? [root] : (children.get(rootPid) ?? [])
+  const pending = start.map((row) => ({ row, parentAgent: false }))
+  const seen = new Set<number>()
   while (pending.length > 0) {
     const { row, parentAgent } = pending.pop()!
     if (seen.has(row.pid)) {
@@ -115,13 +124,13 @@ function descendantsOf(
   return found
 }
 
-/** The foreground agent process under `rootPid`, or null when none is proven. */
+/** The foreground agent process at or under `rootPid`, or null when none is proven. */
 export function findForegroundAgentProcess(
   rows: readonly ProcessTableRow[],
   rootPid: number,
   reporterPid: number | null
 ): Pick<TerminalAgentProcessProof, 'pid' | 'agent' | 'via'> | null {
-  const tree = descendantsOf(rows, rootPid)
+  const tree = processTreeOf(rows, rootPid)
   // A stopped job (Ctrl-Z) leaves the foreground unproven either way.
   if (tree.some((row) => row.stat.includes('T'))) {
     return null
@@ -153,7 +162,7 @@ export function agentProcessStillHolds(
   proof: Pick<TerminalAgentProcessProof, 'rootPid' | 'pid' | 'startTimeMs'>,
   observedStartTimeMs: number | null
 ): boolean {
-  const row = descendantsOf(rows, proof.rootPid).find((candidate) => candidate.pid === proof.pid)
+  const row = processTreeOf(rows, proof.rootPid).find((candidate) => candidate.pid === proof.pid)
   if (
     !row ||
     !inForeground(row) ||
@@ -178,13 +187,10 @@ export function classifyTerminalProcessTree(
   rootPid: number,
   reporterPid: number | null
 ): TerminalProcessTree {
-  const tree = descendantsOf(rows, rootPid)
-  // Why the root too: a shell that exec'd its agent leaves the agent as the PTY's own process.
-  const root = rows.find((row) => row.pid === rootPid)
-  if (!root) {
+  if (!rows.some((row) => row.pid === rootPid)) {
     return { kind: 'other' }
   }
-  const all = [root, ...tree]
+  const all = processTreeOf(rows, rootPid)
   if (all.some((row) => row.stat.includes('T'))) {
     return { kind: 'stopped' }
   }

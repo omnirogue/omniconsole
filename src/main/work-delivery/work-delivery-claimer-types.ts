@@ -8,6 +8,7 @@ import type {
   WorkDeliveryHeldReason,
   WorkDeliveryKind,
   WorkDeliveryKindAdapter,
+  WorkDeliveryResolution,
   WorkDeliveryTarget
 } from './work-delivery-kind'
 
@@ -55,7 +56,9 @@ export function queueEntryState(entry: PromptQueueEntry | undefined): QueueEntry
 export class WorkDeliveryHold extends Error {
   constructor(
     readonly reason: WorkDeliveryHeldReason,
-    message: string
+    message: string,
+    /** The folder a `not_found` refusal named, for a fresh start when the target recorded none. */
+    readonly folder?: string
   ) {
     super(message)
   }
@@ -69,12 +72,16 @@ export type WorkDeliveryDeps = {
   resolveTarget(
     adapter: WorkDeliveryKindAdapter,
     delivery: ClaimableDelivery
-  ): Promise<WorkDeliveryTarget | null>
+  ): Promise<WorkDeliveryResolution>
   findHolder(target: WorkDeliveryTarget): Promise<WorkHolder>
   windowAttached(): boolean
   unarchive(pane: WorkPane, reason: string): Promise<void>
   /** Resumes the same conversation; throws WorkDeliveryHold when refused before anything started. */
-  resume(target: WorkDeliveryTarget, reason: string): Promise<WorkPane>
+  resume(
+    target: WorkDeliveryTarget,
+    reason: string,
+    delivery?: ClaimableDelivery
+  ): Promise<WorkPane>
   /** One fresh session with the brief as its first prompt (sent by the launch itself).
    *  `operationId` is already recorded in OmniOS as this delivery's one fresh start. */
   respawn(
@@ -82,8 +89,16 @@ export type WorkDeliveryDeps = {
     target: WorkDeliveryTarget,
     brief: string,
     operationId: string
-  ): Promise<WorkPane & { ref: string; conversationId: string | null }>
-  enqueue(pane: WorkPane, target: WorkDeliveryTarget, id: string, text: string): Promise<boolean>
+  ): Promise<WorkPane & { ref: string; conversationId: string | null; folder?: string }>
+  enqueue(
+    pane: WorkPane,
+    target: WorkDeliveryTarget,
+    id: string,
+    text: string,
+    delivery?: ClaimableDelivery,
+    /** `guardConversation`: the write itself refuses once the pane runs another conversation. */
+    options?: { guardConversation?: boolean }
+  ): Promise<boolean>
   queueState(pane: WorkPane, id: string): QueueEntryState
   /** The agent has a turn in flight (true), is free (false), or cannot be read (null). */
   busy(pane: WorkPane): Promise<boolean | null>
@@ -108,6 +123,15 @@ export type WorkDeliveryDeps = {
     target: WorkDeliveryTarget,
     pane: WorkPane
   ): Promise<'typed' | 'not_open'>
+  /**
+   * The delivered text found as a user turn in the target's transcript (bounded tail read), as
+   * evidence for the audit log; null when it is not there or cannot be read. Absence is never
+   * evidence that it was not sent.
+   */
+  deliveredInTranscript?(
+    target: WorkDeliveryTarget,
+    delivery: ClaimableDelivery
+  ): Promise<string | null>
   audit(delivery: ClaimableDelivery, summary: string): void
   now(): number
 }

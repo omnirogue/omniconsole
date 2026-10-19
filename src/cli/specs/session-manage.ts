@@ -214,7 +214,7 @@ export const SESSION_MANAGE_COMMAND_SPECS: CommandSpec[] = [
       'omni session restart --pane tab-1:leaf-2 --dry-run'
     ],
     notes: [
-      'An exited session is resumed the way its "Resume conversation" button does: the same provider session, reopened in a new tab from its checkpoint; nothing is re-sent. Without a checkpoint it is refused: omni session resume --ref reopens it from its transcript instead, and also reopens a conversation whose tab was closed.',
+      'An exited session is resumed the way its "Resume conversation" button does: the same provider session, reopened in a new tab from its checkpoint; nothing is re-sent. It is resumed (outcome restarted) only once the new pane’s agent itself reports that conversation, within 30 s; otherwise the outcome is started_unconfirmed with the reason, and with no report at all its checkpoint is kept on the new tab. Without a checkpoint it is refused: omni session resume --ref reopens it from its transcript instead, and also reopens a conversation whose tab was closed.',
       'A live session that is working but has printed nothing for 10 minutes reads as hung: it is interrupted (Keep going off) and restart waits up to 15 s for it to return to its prompt in the same conversation. Anything else live is refused. Unknown and unverifiable sessions are never restarted, and a chat-view session resumes from its own tab.',
       TARGET_NOTE,
       ACTOR_NOTE,

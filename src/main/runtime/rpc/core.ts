@@ -100,6 +100,8 @@ export type RpcContext = {
   orchestrationCompatibilityEvidence?: OrchestrationCompatibilityEvidence
   // Why: set only by Unix-socket admission, for a caller bound to an automatic cleanup run.
   unattendedCaller?: SessionManageUnattended
+  // Why: Unix-socket admission only; the local CLI's pid for process-tree checks, never authority.
+  callerPid?: number
   // Why: only the compatibility authority router can set this trusted scope; user params cannot bypass Run consumer binding.
   legacyCoordinatorRunId?: string
   legacyCoordinatorAuthority?: LegacyCoordinatorAuthorityProof

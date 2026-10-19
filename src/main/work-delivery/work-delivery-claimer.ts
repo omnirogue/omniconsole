@@ -29,12 +29,16 @@ import {
   type WorkPane
 } from './work-delivery-claimer-types'
 import {
+  isAlreadyDelivered,
   respawnMayHaveStarted,
   type ClaimableDelivery,
   type WorkDeliveryHeldReason,
   type WorkDeliveryKind,
-  type WorkDeliveryTarget
+  type WorkDeliveryResolution
 } from './work-delivery-kind'
+import { WorkDeliveryElsewhereBackoff } from './work-delivery-elsewhere-backoff'
+import { settleDelivered, transcriptProof } from './work-delivery-proof'
+import { followHandedOver, settleProven } from './work-delivery-reconcile'
 import {
   followUpDeliveries,
   loginBlocks,
@@ -44,15 +48,18 @@ import {
   type ClaimerLedger
 } from './work-delivery-watch'
 import { notSentHold, prepareHandover } from './work-delivery-turn-follow'
+import { restoreDeletedTarget } from './work-delivery-restore'
 
 export * from './work-delivery-claimer-types'
 
 export class WorkDeliveryClaimer {
   private readonly watching = new Map<string, Watch>()
   private readonly ledger: ClaimerLedger
+  private readonly elsewhere: WorkDeliveryElsewhereBackoff
   private running = false
 
   constructor(private readonly deps: WorkDeliveryDeps) {
+    this.elsewhere = new WorkDeliveryElsewhereBackoff(deps)
     this.ledger = {
       deps: this.deps,
       watching: this.watching,
@@ -87,7 +94,7 @@ export class WorkDeliveryClaimer {
         return
       }
       let claims = 0
-      for (const offered of listed.value) {
+      for (const offered of this.elsewhere.due(listed.value, hostId)) {
         if (claims >= MAX_CLAIMS_PER_PASS) {
           break
         }
@@ -131,10 +138,11 @@ export class WorkDeliveryClaimer {
     hostId: string,
     delivery: ClaimableDelivery,
     reason: WorkDeliveryHeldReason,
-    message: string
+    message: string,
+    elsewhere = false
   ) {
     this.watching.delete(delivery.key)
-    this.deps.audit(delivery, `held (${reason}): ${message}`)
+    this.elsewhere.logHold(delivery, hostId, elsewhere, `held (${reason}): ${message}`)
     await this.receipt(hostId, delivery, {
       state: 'held',
       heldReason: reason,
@@ -144,20 +152,27 @@ export class WorkDeliveryClaimer {
 
   private async deliver(hostId: string, delivery: ClaimableDelivery): Promise<void> {
     const adapter = this.deps.adapters.get(delivery.kind)!
-    let target: WorkDeliveryTarget | null
+    let resolved: WorkDeliveryResolution
     try {
-      target = await this.deps.resolveTarget(adapter, delivery)
+      resolved = await this.deps.resolveTarget(adapter, delivery)
     } catch (error) {
       return error instanceof WorkDeliveryHold
         ? this.hold(hostId, delivery, error.reason, error.message)
         : this.hold(hostId, delivery, 'error', messageOf(error))
     }
+    if (isAlreadyDelivered(resolved)) {
+      const summary = `done${resolved.ref ? ` in ${resolved.ref}` : ''} (${resolved.evidence})`
+      const typedAlready = delivery.state === 'typed' || delivery.state === 'working'
+      return settleDelivered(this.ledger, hostId, delivery, summary, typedAlready)
+    }
+    let target = resolved
     if (!target) {
       return this.hold(
         hostId,
         delivery,
         'not_found',
-        'No session is bound to this work on this computer.'
+        'No session is bound to this work on this computer.',
+        true
       )
     }
     const queueId = workDeliveryQueueId(delivery.key)
@@ -165,68 +180,34 @@ export class WorkDeliveryClaimer {
       delivery.state === 'typed' || delivery.step === 'queued' || delivery.step === 'peer_sent'
     let restored = false
     if (target.deleted) {
-      if (handedOver || respawnMayHaveStarted(delivery)) {
-        return this.hold(
-          hostId,
-          delivery,
-          'unverifiable',
-          'It was already handed to a session that is no longer open, so it is not sent a second time.'
-        )
+      const back = await restoreDeletedTarget(
+        this.ledger,
+        hostId,
+        adapter,
+        delivery,
+        target,
+        handedOver
+      )
+      if (!back) {
+        return
       }
-      if (!adapter.restoreDeleted || !this.deps.restoreDeleted) {
-        return this.hold(
-          hostId,
-          delivery,
-          'protection',
-          'The person deleted this conversation; it is not brought back without them.'
-        )
-      }
-      const login = await loginBlocks(this.deps, target)
-      if (login) {
-        return this.hold(hostId, delivery, 'login_failed', login)
-      }
-      try {
-        await this.deps.restoreDeleted(adapter, delivery, target)
-      } catch (error) {
-        return this.hold(hostId, delivery, 'protection', messageOf(error))
-      }
-      await this.receipt(hostId, delivery, { state: 'claimed', step: 'restored' })
-      target = { ...target, deleted: false }
+      target = back
       restored = true
     }
     const holder: WorkHolder = restored ? { kind: 'none' } : await this.deps.findHolder(target)
     if (holder.kind === 'blocked') {
-      return this.hold(hostId, delivery, 'unverifiable', holder.reason)
+      return this.hold(hostId, delivery, 'unverifiable', holder.reason, true)
     }
-    // Typed already (a lease that ran out mid-delivery): never type again, only follow it up.
+    // Typed already: only followed up. Never typed: a copy already in its transcript is not sent again.
     if (handedOver) {
-      if (holder.kind !== 'live') {
-        return this.hold(
-          hostId,
-          delivery,
-          'unverifiable',
-          'It was already handed to a session that is no longer open, so it is not sent a second time.'
-        )
-      }
-      const state = this.deps.queueState(holder.pane, queueId)
-      if (state === 'missing' || state === 'sending' || state === 'failed') {
-        return this.hold(
-          hostId,
-          delivery,
-          'unverifiable',
-          'Whether the session received it cannot be confirmed, so it is not sent a second time.'
-        )
-      }
-      if (state !== 'failed-unsent') {
-        watchDelivery(
-          this.ledger,
-          delivery,
-          target,
-          holder.pane,
-          queueId,
-          state === 'delivered' ? 'typed' : 'queued'
-        )
+      if (await followHandedOver(this.ledger, hostId, delivery, target, holder, queueId)) {
         return
+      }
+    } else if (!restored) {
+      const proof = await transcriptProof(this.deps, delivery, target)
+      if (proof) {
+        const pane = holder.kind === 'live' ? holder.pane : null
+        return settleProven(this.ledger, hostId, delivery, target, pane, proof)
       }
     }
     if (respawnMayHaveStarted(delivery)) {
@@ -275,7 +256,11 @@ export class WorkDeliveryClaimer {
         )
       }
       try {
-        pane = await this.deps.resume(target, `A reply on ${delivery.workItem} needs this session`)
+        pane = await this.deps.resume(
+          target,
+          `A reply on ${delivery.workItem} needs this session`,
+          delivery
+        )
         await this.receipt(hostId, delivery, {
           state: 'claimed',
           step: target.archived ? 'unarchived' : 'resumed'
@@ -289,11 +274,15 @@ export class WorkDeliveryClaimer {
           // Something may have started: never retried automatically, never a second copy.
           return this.hold(hostId, delivery, 'unverifiable', messageOf(error))
         }
-        if (error.reason !== 'transcript_gone' || adapter.noRespawn) {
+        // Why not_found too: its folder is gone, so a replacement starts in a candidate folder.
+        const replaceable = error.reason === 'transcript_gone' || error.reason === 'not_found'
+        if (!replaceable || adapter.noRespawn) {
           return this.hold(hostId, delivery, error.reason, error.message)
         }
+        const folder = target.folder ?? error.folder
         return respawnDelivery(this.ledger, hostId, adapter, delivery, {
           ...target,
+          ...(folder ? { folder } : {}),
           transcript: 'gone'
         })
       }
@@ -322,7 +311,7 @@ export class WorkDeliveryClaimer {
     const text = adapter.text(delivery, target)
     let queued: boolean
     try {
-      queued = await this.deps.enqueue(pane, target, queueId, text)
+      queued = await this.deps.enqueue(pane, target, queueId, text, delivery)
     } catch (error) {
       return this.hold(hostId, delivery, 'error', messageOf(error))
     }

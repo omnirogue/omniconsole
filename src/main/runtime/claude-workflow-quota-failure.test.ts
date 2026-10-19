@@ -1,4 +1,4 @@
-import { appendFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -160,7 +160,8 @@ describe('Claude workflow quota evidence', () => {
 
   it('does not revive a quota wall after its provider-reported reset', () => {
     const f = fixture()
-    const writeReset = (resetsAt: number) =>
+    let rewrites = 0
+    const writeReset = (resetsAt: number) => {
       writeFileSync(
         f.child,
         jsonl({
@@ -168,6 +169,12 @@ describe('Claude workflow quota evidence', () => {
           quotaLimits: { ...f.error.quotaLimits, resetsAt }
         })
       )
+      // Why: the tail reader caches by size, mtime and ctime. On Linux two same-size rewrites inside one
+      // coarse clock tick looked unchanged, so CI read the previous null result (17 Oct 2026).
+      rewrites += 1
+      const at = new Date(failedAt + rewrites * 1_000)
+      utimesSync(f.child, at, at)
+    }
     writeReset(Date.now() / 1_000 - 1)
     expect(f.read()).toBeNull()
     writeReset(Date.now() / 1_000 + 60)

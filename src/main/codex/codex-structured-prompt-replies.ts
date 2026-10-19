@@ -1,4 +1,5 @@
 import type { CodexAppServerConnection } from './codex-app-server-connection'
+import { AgentSessionPromptGoneError } from '../native-chat/agent-session-wire/structured-agent-session-prompt-error'
 import {
   CODEX_PROMPT_MAX_ANSWER_BYTES,
   MAX_CODEX_PROMPT_JOURNAL_BINDINGS,
@@ -310,8 +311,8 @@ export function applyCodexPromptAnswer(
   return { answers }
 }
 
-/** Throws for a prompt Codex is no longer waiting on, which the wire reports as
- *  "recorded but not confirmed" rather than as a delivered answer. */
+/** Throws `AgentSessionPromptGoneError` for a prompt Codex is no longer waiting on: the wire then
+ *  cancels it, never reporting it as a delivered answer. */
 export function answerCodexPrompt(
   registry: CodexPromptRegistry,
   connection: Pick<CodexAppServerConnection, 'respond'>,
@@ -320,7 +321,7 @@ export function answerCodexPrompt(
 ): void {
   const prompt = registry.find(itemId)
   if (!prompt) {
-    throw new Error(`codex app-server is no longer waiting on ${itemId}`)
+    throw new AgentSessionPromptGoneError(`codex app-server is no longer waiting on ${itemId}`)
   }
   const reply = applyCodexPromptAnswer(prompt, optionId)
   if (reply === null) {

@@ -1,6 +1,8 @@
 import { SessionTagPicker } from './SessionTagPicker'
 import { useMemo, useState } from 'react'
 import {
+  Archive,
+  ArchiveRestore,
   BookmarkMinus,
   History,
   MessageSquare,
@@ -20,8 +22,6 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
-import { callRuntimeRpc } from '@/runtime/runtime-rpc-client'
-import { toast } from 'sonner'
 import { conversationViewKey } from '@/lib/conversation-view'
 import type { SessionChainRowInfo } from '@/lib/session-chain-runner'
 import { getSessionFolderId, isSavedSessionFolder } from '@/lib/session-folders'
@@ -37,6 +37,7 @@ import { ConversationArchiveButton } from './ConversationArchiveButton'
 import { PersonalHideButton } from './PersonalHideButton'
 import { ROW_HOVER_REVEAL, ROW_HOVER_YIELD } from './session-row-reveal'
 import { useDeleteSidebarSessions } from './session-delete'
+import { retainWorkerAsConversation } from './session-sidebar-row-actions'
 import { SessionSleepMenuItem } from './SessionSleepMenuItem'
 import { SessionWorkflowRecheckMenuItem } from './SessionWorkflowRecheckMenuItem'
 import { isArchivedOnController, noteArchivedOnController } from '@/lib/mirrored-workflow-archive'
@@ -108,37 +109,11 @@ export function SessionSidebarRowActions({
     }
     setRetaining(true)
     try {
-      const result = await callRuntimeRpc<{
-        dispatchId: string
-        state: string
-        reason?: string
-      }>({ kind: 'local' }, 'orchestration.workerRetain', {
-        dispatch: workerDispatchId,
-        expectedPaneKey: session.paneKey,
-        expectedProcessIncarnation: workerProcessIncarnation
+      await retainWorkerAsConversation({
+        workerDispatchId,
+        workerProcessIncarnation,
+        paneKey: session.paneKey
       })
-      if (
-        result.dispatchId !== workerDispatchId ||
-        result.state !== 'retained' ||
-        result.reason !== 'user_requested'
-      ) {
-        toast(
-          translate(
-            'conversations.keepWorkerStale',
-            'This worker identity changed. Refresh and try again.'
-          )
-        )
-        return
-      }
-      toast(translate('conversations.keepWorkerSuccess', 'Worker kept as a conversation.'))
-      window.dispatchEvent(new Event('omni.worker-lineage-refresh'))
-    } catch {
-      toast(
-        translate(
-          'conversations.keepWorkerFailure',
-          'Could not keep this worker as a conversation. Check its current ownership state.'
-        )
-      )
     } finally {
       setRetaining(false)
     }
@@ -349,6 +324,33 @@ export function SessionSidebarRowActions({
                       >
                         <BookmarkMinus className="size-3.5" />
                         {translate('conversations.removeFromSaved', 'Remove from Saved Sessions')}
+                      </Button>
+                    ) : null}
+                    {archivedByHand || !archived || ownerArchived ? (
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        role="menuitem"
+                        className="w-full justify-start gap-2"
+                        disabled={ledgerRefusal !== null}
+                        title={ledgerRefusal ?? undefined}
+                        onClick={() => {
+                          if (ownerArchived && !archivedByHand) {
+                            noteArchivedOnController(session)
+                          } else {
+                            archiveSessionsByPerson([key], !archivedByHand)
+                          }
+                          setMoreOpen(false)
+                        }}
+                      >
+                        {archivedByHand || ownerArchived ? (
+                          <ArchiveRestore className="size-3.5" />
+                        ) : (
+                          <Archive className="size-3.5" />
+                        )}
+                        {archivedByHand || ownerArchived
+                          ? translate('conversations.unarchive', 'Unarchive')
+                          : translate('conversations.archive', 'Archive')}
                       </Button>
                     ) : null}
                     <SessionSleepMenuItem session={session} onDone={() => setMoreOpen(false)} />

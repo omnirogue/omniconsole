@@ -63,7 +63,7 @@ beforeEach(async () => {
       turn('user', 'ok can you make a handoff for uma to fix the failing CIs', 3),
       turn(
         'assistant',
-        'The handoff is at https://console.example.com/a/1a0d42a7df36eefc2 and prod-omnirogue deploys keep failing CI. OPENAI_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz0123456789',
+        'The handoff is at https://app.omnisi.ai/a/1a0d42a7df36eefc2 and prod-omnirogue deploys keep failing CI. OPENAI_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz0123456789',
         4
       )
     ].join('')
@@ -83,7 +83,7 @@ beforeEach(async () => {
     join(dir, `${IDS.sidecar}.jsonl`),
     turn(
       'user',
-      'You suggest what the person should ask Claude to do next, after its turn finished. Uma handoff prod-omnirogue https://console.example.com/a/1a0d42a7df36eefc2',
+      'You suggest what the person should ask Claude to do next, after its turn finished. Uma handoff prod-omnirogue https://app.omnisi.ai/a/1a0d42a7df36eefc2',
       1
     )
   )
@@ -100,7 +100,7 @@ afterEach(() => {
 describe('session search ranking', () => {
   it('finds the session by a name, a review-page URL and a paraphrase of its branch', () => {
     expect(search('Uma')[0]).toBe(IDS.handoff)
-    expect(search('https://console.example.com/a/1a0d42a7df36eefc2')).toEqual([IDS.handoff])
+    expect(search('https://app.omnisi.ai/a/1a0d42a7df36eefc2')).toEqual([IDS.handoff])
     expect(search('omnirogue production')[0]).toBe(IDS.handoff)
   })
 
@@ -128,7 +128,7 @@ describe('session search ranking', () => {
         .map((entry) => entry.text)
         .join(' ')
     ).not.toContain('sk-proj-')
-    expect(session.summary).toContain('https://console.example.com/a/1a0d42a7df36eefc2')
+    expect(session.summary).toContain('https://app.omnisi.ai/a/1a0d42a7df36eefc2')
     expect(session.summarySource).toBe('extractive')
   })
 

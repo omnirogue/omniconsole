@@ -59,7 +59,11 @@ function artifactWriteOrigin(): ArtifactWriteOrigin | undefined {
   if (worktreeId) {
     origin.worktreeId = worktreeId
   }
-  return Object.keys(origin).length > 0 ? origin : undefined
+  if (Object.keys(origin).length === 0) {
+    return undefined
+  }
+  const claudeSessionId = process.env.CLAUDE_CODE_SESSION_ID?.trim()
+  return claudeSessionId ? { ...origin, claudeSessionId } : origin
 }
 
 function artifactContentType(path: string): ArtifactWriteRequest['contentType'] | null {

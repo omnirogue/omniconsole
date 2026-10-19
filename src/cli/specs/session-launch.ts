@@ -8,7 +8,7 @@ export const SESSION_LAUNCH_COMMAND_SPECS: CommandSpec[] = [
     summary:
       "Launch Claude or Codex on any computer with that computer's verified account capacity",
     usage:
-      'omni session launch --provider claude|codex (--prompt-file <path|-> | --prompt "<text>" | --contract <json|->) [--worktree <selector> | --project <name|id> [--name <worktree name>]] [--host <computer>|auto] [--model <model>] [--effort <effort>] [--title <title>] [--title-origin yours|generated|unknown] [--folder <id|path>] [--agent-args <flags>] [--agent-template <id>] [--again] [--dry-run] [--json] [--operation-id <id> [--controller-runtime-id <uuid>]]',
+      'omni session launch --provider claude|codex (--prompt-file <path|-> | --prompt "<text>" | --contract <json|->) [--worktree <selector> | --project <name|id> [--name <worktree name>]] [--host <computer>|auto] [--model <model>] [--effort <effort>] [--title <title>] [--title-origin yours|generated|unknown] [--folder <id|path>] [--agent-args <flags>] [--agent-template <id>] [--ephemeral] [--again] [--dry-run] [--json] [--operation-id <id> [--controller-runtime-id <uuid>]]',
     allowedFlags: [
       ...GLOBAL_FLAGS,
       'worktree',
@@ -27,6 +27,7 @@ export const SESSION_LAUNCH_COMMAND_SPECS: CommandSpec[] = [
       'agent-args',
       'managed-tools-file',
       'agent-template',
+      'ephemeral',
       'again',
       'dry-run',
       'project',
@@ -55,6 +56,7 @@ export const SESSION_LAUNCH_COMMAND_SPECS: CommandSpec[] = [
       '--agent-args replaces the provider flags the host would add by default (for Claude that includes --dangerously-skip-permissions), so pass the complete set, quoted for a POSIX shell on the host. Model and effort from --model and --effort are still added unless the args already carry them.',
       'In a project (--folder naming a project folder, or a folder inside one) the session inherits the project settings as the desktop launcher does: a "Project: <name>" line, the project default agent (or its copy of --agent-template), a one-line pointer to omni folder project naming the project agents usable as subagents, then its brief, repos, docs, files and skills resolved for the executing host. Items the host lacks are listed and left out.',
       '--contract <path|-> takes the fields of the implement task template as one JSON object (objective, owner, host, branch, scope, acceptance one check per line, evidence; optional outOfScope and context) and renders the brief from them, numbering Acceptance A1, A2, … and asking for one "A1 PASS|FAIL — …" line per item at the end. On the host that runs it, the session then gets a verify step: when its first turn ends, a separate seat re-runs every Acceptance line, only passed lines count, and a failure stops for the owner with the failing lines. The command waits for that binding (up to 4 minutes, while the session starts its first turn); a lost answer is retried by running the same command again, which never launches a second session. At most 32 Acceptance checks; an incomplete contract is refused and nothing launches. Any work qualifies, in a repository or a plain folder: the verify seat judges what it can observe, wherever the work landed. It works from any terminal or agent that can run omni: Claude, Codex, Omnigent or a plain shell.',
+      '--ephemeral arms When finished: End on the new session, the choice a person can pick: its window closes the tab once the executing host confirms the work finished and nothing is queued, proposed, held or awaited, and never closes a pinned tab. A re-run of the same command arms it again if an earlier run was interrupted. A host without agentSession.scheduleFinish ignores the flag without a warning, so the session then stays open.',
       TITLE_ORIGIN_NOTE,
       AGENT_TEMPLATE_LAUNCH_NOTE,
       "Local launches adopt their terminal into this computer's sidebar without selecting a workspace or tab; a launch on a paired computer stays in the background in that computer's sidebar (omni session list --environment <name>). If the desktop is unavailable, keep the returned terminal handle and reveal it later; never relaunch to repair visibility. --folder and --agent-template need this computer as the controller. Filing or title failures are returned beside the created terminal and must not trigger another launch."

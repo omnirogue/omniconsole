@@ -3,7 +3,7 @@ import { commitWorkPlan, type WorkPlanCommitRequest } from './work-plan-commit'
 import { compileWorkPlanExecution } from './work-plan-compile'
 import { workPlanFromChain } from './work-plan-read'
 import { workPlanNotation } from './work-plan-notation'
-import { samWorkPlan } from './__fixtures__/work-plan/wp2/example-work-plan'
+import { samWorkPlan } from './__fixtures__/work-plan/wp2/sal-work-plan'
 import { goldenChain } from './__fixtures__/work-plan/wp2/compiled-chain'
 import {
   workPlanFixtureContext,

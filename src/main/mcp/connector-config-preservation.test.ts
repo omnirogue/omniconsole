@@ -33,7 +33,7 @@ describe('connector choices across config refresh and relaunch', () => {
     const result = preserveAccountConnectorConfig(
       home,
       '',
-      '[mcp_servers.omni-console]\nurl="https://console.example.com/mcp"'
+      '[mcp_servers.omni-console]\nurl="https://console.omnisi.ai/mcp"'
     )
     expect(result).toContain('enabled = false')
     expect(result).not.toContain('https://omnios')

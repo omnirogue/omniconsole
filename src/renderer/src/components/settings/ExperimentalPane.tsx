@@ -6,11 +6,12 @@ import { SearchableSetting } from './SearchableSetting'
 import { matchesSettingsSearch } from './settings-search'
 import { getExperimentalPaneSearchEntries, getExperimentalSearchEntry } from './experimental-search'
 import { HiddenExperimentalGroup } from './HiddenExperimentalGroup'
-import { NumberField, SettingsSwitch } from './SettingsFormControls'
+import { NumberField, SettingsSwitch, SettingsSwitchRow } from './SettingsFormControls'
 import { translate } from '@/i18n/i18n'
 import { NativeChatExperimentalSetting } from './NativeChatExperimentalSetting'
 import { AgentDashboardExperimentalSetting } from './AgentDashboardExperimentalSetting'
 import { EphemeralVmsExperimentalSetting } from './EphemeralVmsExperimentalSetting'
+import { OmniSiPreviewsExperimentalSetting } from './OmniSiPreviewsExperimentalSetting'
 import { IdleAutoCloseExperimentalSetting } from './IdleAutoCloseExperimentalSetting'
 import { CommandCenterExperimentalSetting } from './CommandCenterExperimentalSetting'
 import { resolveAgentSleepPolicy } from '@/lib/agent-sleep-policy'
@@ -324,6 +325,34 @@ export function ExperimentalPane({
       ) : null}
 
       <EphemeralVmsExperimentalSetting settings={settings} updateSettings={updateSettings} />
+
+      <OmniSiPreviewsExperimentalSetting settings={settings} updateSettings={updateSettings} />
+
+      <SearchableSetting
+        title={translate('decisionsTitlebar.setting.title', 'Decisions badge in the titlebar')}
+        description={translate(
+          'decisionsTitlebar.setting.description',
+          'Shows how many decisions are waiting for you in the titlebar. Clicking it opens Decisions; it never answers anything.'
+        )}
+        keywords={['decisions', 'badge', 'titlebar', 'review']}
+        id="decisions-titlebar-badge"
+      >
+        <SettingsSwitchRow
+          label={translate('decisionsTitlebar.setting.title', 'Decisions badge in the titlebar')}
+          description={translate(
+            'decisionsTitlebar.setting.description',
+            'Shows how many decisions are waiting for you in the titlebar. Clicking it opens Decisions; it never answers anything.'
+          )}
+          ariaLabel={translate('decisionsTitlebar.setting.toggleLabel', 'Toggle decisions badge')}
+          checked={settings.experimentalDecisionsTitlebarBadge === true}
+          onChange={() =>
+            updateSettings({
+              experimentalDecisionsTitlebarBadge:
+                settings.experimentalDecisionsTitlebarBadge !== true
+            })
+          }
+        />
+      </SearchableSetting>
 
       {hiddenExperimentalUnlocked ? <HiddenExperimentalGroup /> : null}
     </div>

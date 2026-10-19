@@ -139,13 +139,15 @@ export function redactString(input: string): string {
 export function redactValue(
   value: unknown,
   mode: RedactorMode = 'client',
-  seen = new WeakSet<object>()
+  seen = new WeakSet<object>(),
+  /** Only sign-in-link-redaction.ts passes another; every other caller gets rules 1–4. */
+  redactText: (input: string) => string = redactString
 ): unknown {
   if (value === null || value === undefined) {
     return value
   }
   if (typeof value === 'string') {
-    return redactString(value)
+    return redactText(value)
   }
   if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
     return value
@@ -155,7 +157,7 @@ export function redactValue(
       return '[Circular]'
     }
     seen.add(value)
-    return value.map((entry) => redactValue(entry, mode, seen))
+    return value.map((entry) => redactValue(entry, mode, seen, redactText))
   }
   if (value instanceof Date) {
     return value
@@ -171,7 +173,7 @@ export function redactValue(
       if (shouldDropAttributeKey(k, mode) && !isTokenCount(k, v)) {
         continue
       }
-      out[k] = redactValue(v, mode, seen)
+      out[k] = redactValue(v, mode, seen, redactText)
     }
     return out
   }

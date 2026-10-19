@@ -33,7 +33,7 @@ const published = {
   change: 'created' as const,
   item: {
     artifact: { slug: 'artifact-a' },
-    shareUrl: 'https://console.example.com/a/artifact-a'
+    shareUrl: 'https://app.omnisi.ai/a/artifact-a'
   }
 }
 

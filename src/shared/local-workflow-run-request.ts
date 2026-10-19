@@ -59,6 +59,8 @@ export const localWorkflowRunRequestSchema = z
     depth: z.enum(['quick', 'thorough']).optional(),
     /** `--no-earlier-runs`: start without the list of what earlier runs on this target found. */
     skipEarlierRuns: z.literal(true).optional(),
+    /** `--budget-root <id>`: the approved OmniSI budget root every call of this run spends. */
+    budgetRoot: z.string().uuid().optional(),
     focusFinding: z
       .string()
       .regex(/^[a-zA-Z0-9_-]{1,128}:[1-9][0-9]{0,3}$/)

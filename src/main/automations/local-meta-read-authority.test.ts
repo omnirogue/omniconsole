@@ -30,7 +30,7 @@ const TOKEN = 'acme_meta_fixture_token_123456789'
 const grant = {
   version: 1,
   enabled: true,
-  origin: 'https://console.example.com',
+  origin: 'https://app.omnisi.ai',
   clerkUserId: 'user_reviewed123',
   employeeId: 'emp_sal',
   company: OLDACS_COMPANY,

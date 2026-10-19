@@ -35,6 +35,7 @@ export const AGENT_KIND_VALUES = [
   'cursor',
   'droid',
   'kimi',
+  'deepseek',
   'mistral-vibe',
   'qwen-code',
   'rovo',

@@ -106,6 +106,28 @@ describe('launch account verdict', () => {
     ).toMatchObject({ state: 'fresh', remainingPercent: 60, boundBy: 'weekly' })
   })
 
+  it('excludes accounts approaching a 5-hour or weekly 429 before ranking them', () => {
+    expect(
+      classify({
+        fiveHour: { remainingPercent: 15, resetsAt: NOW + 3_600_000 * 3, windowMinutes: 300 }
+      })
+    ).toMatchObject({
+      state: 'limited',
+      reason: '5-hour quota may run out in about 22 min at the window-average burn rate'
+    })
+    expect(
+      classify({
+        weekly: { remainingPercent: 11, resetsAt: NOW + 86_400_000 * 6, windowMinutes: 10080 }
+      })
+    ).toMatchObject({
+      state: 'limited',
+      reason: 'weekly quota may run out in about 178 min at the window-average burn rate'
+    })
+    expect(
+      classify({ weekly: { remainingPercent: 9, resetsAt: null, windowMinutes: 10080 } })
+    ).toMatchObject({ state: 'limited', reason: 'weekly quota has 10% or less remaining' })
+  })
+
   it('requires and counts a fresh Fable window for a Fable model', () => {
     expect(launchFableRule('claude', 'fable-1')).toBe('require')
     expect(classify({}, 'require')).toMatchObject({ state: 'unknown', reason: 'no Fable reading' })
@@ -212,6 +234,27 @@ describe('verified launch account choice', () => {
       row({ accountId: id, choiceId: `managed:${id}`, isDefault })
     expect(choose([at('c'), at('b', true), at('a')]).pick?.row.choiceId).toBe('managed:b')
     expect(choose([at('c'), at('a')]).pick?.row.choiceId).toBe('managed:a')
+  })
+
+  it('chooses a safe account over a higher-balance account on pace to hit 429', () => {
+    const risky = row({
+      isDefault: true,
+      fiveHour: { remainingPercent: 25, resetsAt: NOW + 4 * 3_600_000, windowMinutes: 300 },
+      weekly: { remainingPercent: 90, resetsAt: NOW + 86_400_000, windowMinutes: 10080 }
+    })
+    const safe = row({
+      accountId: 'b',
+      choiceId: 'managed:b',
+      email: 'b@x',
+      fiveHour: { remainingPercent: 20, resetsAt: NOW + 3_600_000, windowMinutes: 300 },
+      weekly: { remainingPercent: 20, resetsAt: NOW + 86_400_000, windowMinutes: 10080 }
+    })
+    const choice = choose([risky, safe])
+    expect(choice.pick?.row.choiceId).toBe('managed:b')
+    expect(choice.verdicts[0]?.verdict).toMatchObject({
+      state: 'limited',
+      reason: '5-hour quota may run out in about 20 min at the window-average burn rate'
+    })
   })
 
   it('never picks usable, checking, limited or signed-out rows and names each in the refusal', () => {

@@ -25,6 +25,30 @@ export type OmniRogueDoctorReport = {
   stages: OmniRogueDoctorCheck[]
 }
 
+// Structural copies of main's gateway health snapshot, MCP catalog tool and session spend snapshot.
+export type OmniRogueGatewayHealthProbe = {
+  state: 'unknown' | 'healthy' | 'degraded' | 'unauthorized' | 'unreachable'
+  checkedAt: number | null
+  latencyMs: number | null
+  modelCount: number
+  missingProviders: string[]
+}
+export type OmniSiMcpCatalogTool = {
+  name: string
+  title?: string
+  description?: string
+  inputSchema?: Record<string, unknown>
+}
+export type OmniSiMcpCatalogSearch = { tools: OmniSiMcpCatalogTool[]; total: number }
+export type OmniRogueSessionSpend = {
+  sessionId: string
+  spentCredits: number
+  reservedCredits: number
+  budgetCredits: number | null
+  requestCount: number
+  updatedAt: number | null
+}
+
 export type OmniRogueAccountApi = {
   status: () => Promise<OmniRogueAccountState>
   getStatus: () => Promise<OmniRogueAccountState>
@@ -60,12 +84,26 @@ export type OmniRogueGatewayApi = {
     ptyId?: string
   }) => Promise<OmniRogueGatewaySession>
   onSessionChanged: (callback: (session: OmniRogueGatewaySession) => void) => () => void
+  /** One on-demand probe of the gateway model catalog. */
+  checkHealth: () => Promise<OmniRogueGatewayHealthProbe>
+}
+
+export type OmniRogueMcpApi = {
+  /** Ranked OmniSI MCP tools; an empty query returns the whole catalog. */
+  searchOmniSiTools: (args: { query: string; refresh?: boolean }) => Promise<OmniSiMcpCatalogSearch>
+}
+
+export type OmniRogueSpendApi = {
+  listSessions: () => Promise<OmniRogueSessionSpend[]>
+  onSessionChanged: (callback: (spend: OmniRogueSessionSpend) => void) => () => void
 }
 
 export type OmniRogueApi = {
   account: OmniRogueAccountApi
   credits: OmniRogueCreditsApi
   gateway: OmniRogueGatewayApi
+  mcp: OmniRogueMcpApi
+  spend: OmniRogueSpendApi
 }
 
 export function createOmniRogueApi(
@@ -122,6 +160,22 @@ export function createOmniRogueApi(
         ipcRenderer.on('omnirogue:gateway:session-changed', listener)
         return () => {
           ipcRenderer.removeListener('omnirogue:gateway:session-changed', listener)
+        }
+      },
+      checkHealth: () => ipcRenderer.invoke('omnirogue:gateway:check-health')
+    },
+    mcp: {
+      searchOmniSiTools: (args) => ipcRenderer.invoke('omnirogue:mcp:search-omnisi-tools', args)
+    },
+    spend: {
+      listSessions: () => ipcRenderer.invoke('omnirogue:spend:list-sessions'),
+      onSessionChanged: (callback) => {
+        const listener = (_event: IpcRendererEvent, spend: OmniRogueSessionSpend): void => {
+          callback(spend)
+        }
+        ipcRenderer.on('omnirogue:spend:session-changed', listener)
+        return () => {
+          ipcRenderer.removeListener('omnirogue:spend:session-changed', listener)
         }
       }
     }

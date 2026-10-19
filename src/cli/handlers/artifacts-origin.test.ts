@@ -28,7 +28,12 @@ function writeCall() {
 }
 
 function stubTerminalEnv(values: Record<string, string>): void {
-  for (const name of ['ORCA_TERMINAL_HANDLE', 'ORCA_PANE_KEY', 'ORCA_WORKTREE_ID']) {
+  for (const name of [
+    'ORCA_TERMINAL_HANDLE',
+    'ORCA_PANE_KEY',
+    'ORCA_WORKTREE_ID',
+    'CLAUDE_CODE_SESSION_ID'
+  ]) {
     vi.stubEnv(name, values[name] ?? '')
   }
 }
@@ -78,6 +83,31 @@ describe('artifact CLI session origin', () => {
       json: false
     })
 
+    const params = call.mock.calls.find(([method]) => method === 'artifacts.share')?.[1]
+    expect(params).not.toHaveProperty('origin')
+  })
+
+  it('adds the Claude session it runs in to a terminal origin, never alone', async () => {
+    stubTerminalEnv({ ORCA_TERMINAL_HANDLE: 'term-1', CLAUDE_CODE_SESSION_ID: 'conv-1' })
+    const call = writeCall()
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    const run = async () =>
+      ARTIFACT_HANDLERS['artifacts share']!({
+        client: { call } as never,
+        cwd: await planFolder(),
+        flags: new Map([['file', 'plan.html']]),
+        json: false
+      })
+
+    await run()
+    expect(call).toHaveBeenCalledWith(
+      'artifacts.share',
+      expect.objectContaining({ origin: { terminalHandle: 'term-1', claudeSessionId: 'conv-1' } })
+    )
+
+    call.mockClear()
+    stubTerminalEnv({ CLAUDE_CODE_SESSION_ID: 'conv-1' })
+    await run()
     const params = call.mock.calls.find(([method]) => method === 'artifacts.share')?.[1]
     expect(params).not.toHaveProperty('origin')
   })

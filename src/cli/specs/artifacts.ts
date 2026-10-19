@@ -123,7 +123,7 @@ export const ARTIFACT_COMMAND_SPECS: CommandSpec[] = [
     ],
     positionalArgs: ['file'],
     examples: [
-      'omni artifacts supersede ./plan-v1.html --by https://console.example.com/a/plan-v2 --json'
+      'omni artifacts supersede ./plan-v1.html --by https://app.omnisi.ai/a/plan-v2 --json'
     ],
     notes: [
       'Any page you own can be superseded, including a plain share or a closed page. The successor must be a live page you can view.',

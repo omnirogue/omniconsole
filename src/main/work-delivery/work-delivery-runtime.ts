@@ -20,6 +20,7 @@ import { sessionActionsLogFor } from '../session-manage/session-actions-log'
 import { resumeConversation } from '../session-manage/session-manage-resume'
 import { runtimeResumeDeps } from '../session-manage/session-manage-resume-runtime'
 import { SessionManageRefusal } from '../session-manage/session-manage-refusal'
+import { locateTranscripts } from '../session-manage/session-transcript-locate'
 import { sessionOrganizationLedgerFor } from '../session-organization/organization-change-ledger'
 import { relayOrganizationMutation } from '../session-organization/organization-relayed-mutation'
 import type { WorkDeliveryApi } from './work-delivery-api'
@@ -33,7 +34,9 @@ import {
 } from './work-delivery-claimer'
 import type { WorkDeliveryKind, WorkDeliveryKindAdapter } from './work-delivery-kind'
 import { isParkedPane, restartParkedPane } from './work-delivery-parked'
+import { workDeliveryConversationGuard } from './work-delivery-conversation-guard'
 import { respawnFreshSession } from './work-delivery-respawn'
+import { findDeliveryInTranscripts } from './work-delivery-transcript-receipt'
 
 const ACTOR = 'work-delivery' as const
 const AGENT_POLL_MS = 500
@@ -73,6 +76,11 @@ export function resumeRefusalReason(message: string): WorkDeliveryHold['reason']
     return 'not_found'
   }
   return 'error'
+}
+
+/** The folder a "not a workspace OmniConsole has open" refusal names. */
+export function refusedFolder(message: string): string | null {
+  return /Its folder (.+?) is not a workspace OmniConsole has open/.exec(message)?.[1] ?? null
 }
 
 export function runtimeWorkDeliveryDeps(input: {
@@ -194,14 +202,16 @@ export function runtimeWorkDeliveryDeps(input: {
         return await paneByKey('paneKey' in resumed ? (resumed.paneKey ?? null) : null)
       } catch (error) {
         if (error instanceof SessionManageRefusal) {
-          throw new WorkDeliveryHold(resumeRefusalReason(error.message), error.message)
+          const reason = resumeRefusalReason(error.message)
+          const folder = reason === 'not_found' ? refusedFolder(error.message) : null
+          throw new WorkDeliveryHold(reason, error.message, folder ?? undefined)
         }
         throw error
       }
     },
     respawn: (delivery, target, brief, operationId) =>
       respawnFreshSession(runtime, delivery, target, brief, operationId),
-    enqueue: async (pane, _target, id, text) => {
+    enqueue: async (pane, target, id, text, _delivery, options) => {
       const source = sourceOf(pane)
       const presence = await readPaneAgentPresence(runtime, source)
       if (presence.kind !== 'proven') {
@@ -214,7 +224,10 @@ export function runtimeWorkDeliveryDeps(input: {
         runtime.removePromptQueueEntry(rowKey, id)
       }
       bindSessionPrompt(rowKey, id, {
-        receiver: presence.proof
+        receiver: presence.proof,
+        ...(options?.guardConversation
+          ? workDeliveryConversationGuard(runtime, pane.paneKey, target.ref)
+          : {})
       })
       enqueueConversationPrompt(runtime, source, {
         id,
@@ -256,6 +269,19 @@ export function runtimeWorkDeliveryDeps(input: {
         }
         await new Promise((resolve) => setTimeout(resolve, AGENT_POLL_MS))
       }
+    },
+    deliveredInTranscript: async (target, delivery) => {
+      const reference = parseSessionReference(target.ref)
+      if (!reference || reference.hostId !== 'local') {
+        return null
+      }
+      const located = await locateTranscripts(reference.agent, reference.sessionId, {
+        userDataPath
+      })
+      return findDeliveryInTranscripts(
+        located.map((entry) => entry.path),
+        delivery
+      )
     },
     audit: (delivery, summary) => {
       void sessionActionsLogFor(userDataPath)

@@ -3,6 +3,7 @@ import type {
   CapacityProvider,
   CapacityWindow
 } from './provider-account-capacity'
+import { accountQuotaBurnRisk } from './account-quota-burn'
 import {
   AGENT_LAUNCH_RECEIPT_MAX_EXCLUDED,
   type AgentLaunchAccountCandidate,
@@ -146,6 +147,16 @@ export function classifyLaunchAccountRow(
         fableAge === null
           ? 'no current Fable reading'
           : `Fable reading ${Math.round(fableAge / 1000)} s old`
+    }
+  }
+  const burnRisk = accountQuotaBurnRisk(row, row.readingAt, options.now)
+  if (burnRisk) {
+    return {
+      state: 'limited',
+      reason:
+        burnRisk.reason === 'low-reserve'
+          ? `${burnRisk.window} quota has 10% or less remaining`
+          : `${burnRisk.window} quota may run out in about ${Math.ceil(burnRisk.minutesToExhaustion)} min at the window-average burn rate`
     }
   }
   const [boundBy, bound] = counted.reduce((min, entry) =>

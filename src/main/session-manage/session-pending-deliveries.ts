@@ -8,12 +8,15 @@
  * it is reported back unsent, and nothing is launched in its place.
  */
 
-import type { SessionManageEntry } from '../../shared/session-manage-types'
+import type { SessionManageActor, SessionManageEntry } from '../../shared/session-manage-types'
 import type {
   SessionPendingDelivery,
   SessionPendingDeliveryState
 } from '../../shared/session-pending-delivery-types'
-import { isSessionPendingDeliverySettled } from '../../shared/session-pending-delivery-types'
+import {
+  isSessionPendingDeliverySettled,
+  isUnseenUnsentDelivery
+} from '../../shared/session-pending-delivery-types'
 import { remoteExecutionRefusal } from './session-manage-locality'
 import { sessionOwnerLoad } from './session-manage-owner-load'
 import { SessionManagePartialError, SessionManageRefusal } from './session-manage-refusal'
@@ -44,6 +47,13 @@ function permanentRefusal(entry: SessionManageEntry): string | null {
   return entry.verdict === 'exited'
     ? `“${entry.title}” exited before it was free, so the prompt was not sent.`
     : null
+}
+
+/** The same pane, or the same kind of caller when no pane is proven. */
+function isRequester(held: SessionManageActor, caller: SessionManageActor): boolean {
+  return held.kind === 'pane'
+    ? caller.kind === 'pane' && caller.paneKey === held.paneKey
+    : held.kind === caller.kind
 }
 
 function minutes(ms: number): string {
@@ -79,6 +89,25 @@ export class SessionPendingDeliveries {
 
   list(): SessionPendingDelivery[] {
     return this.deps.store.list()
+  }
+
+  /**
+   * `omni session pending`: what still waits, plus every prompt that ended unsent and its requester
+   * has not seen, until the requester lists it once (`all` lists everything kept).
+   */
+  async listFor(caller: SessionManageActor, all: boolean): Promise<SessionPendingDelivery[]> {
+    const listed = this.deps.store
+      .list()
+      .filter(
+        (delivery) =>
+          all || !isSessionPendingDeliverySettled(delivery) || isUnseenUnsentDelivery(delivery)
+      )
+    for (const delivery of listed) {
+      if (isUnseenUnsentDelivery(delivery) && isRequester(delivery.actor, caller)) {
+        await this.deps.store.update(delivery.id, { seenAt: this.deps.now() }).catch(() => {})
+      }
+    }
+    return listed
   }
 
   hasWaiting(): boolean {

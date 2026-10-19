@@ -468,6 +468,10 @@ type CoreSettings = {
   experimentalNewWorktreeCardStyle?: boolean
   /** Experimental: per-workspace on-demand environment recipes and setup surface. */
   experimentalEphemeralVms?: boolean
+  /** Experimental: OmniSI panels whose backend or data feed is not live yet (Model Arena, Brand Kits, Assets, Spend Guard, prompt cost, Evolve Pareto and Judge Audit). */
+  experimentalOmniSiPreviews?: boolean
+  /** Experimental: read-only titlebar count of decisions waiting; click opens Decisions. */
+  experimentalDecisionsTitlebarBadge?: boolean
   /**
    * Legacy persisted key for handoffs without a task. Defaults on; saved false keeps
    * task creation for unbound work. Existing task-bound handoffs keep their task.

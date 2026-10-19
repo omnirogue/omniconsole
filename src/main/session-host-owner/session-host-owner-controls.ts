@@ -5,7 +5,7 @@
  */
 
 import type { SessionHostPayloads } from '../../shared/session-host-payload-schema'
-import type { SessionManageActionResult } from '../../shared/session-manage-types'
+import type { SessionRestartResult } from '../../shared/session-resume-types'
 import type { SessionHostPrepared } from '../session-host/session-host-executor'
 import type { SessionHostSettlement } from '../session-host/session-host-settlement'
 import type { SessionAnswerQuarantine } from '../session-manage/session-answer-quarantine'
@@ -31,6 +31,8 @@ export type OwnerControlDeps = {
   control: SessionControlDeps
   answer(session: HostSession): SessionAnswerDeps
   answerQuarantine: SessionAnswerQuarantine
+  /** This computer's own window notice for a restart it carried out (none with no window). */
+  notice?(summary: string): void
 }
 
 function controlTarget(target: OwnerTarget): SessionControlTarget {
@@ -40,8 +42,20 @@ function controlTarget(target: OwnerTarget): SessionControlTarget {
 
 async function settled(run: () => Promise<unknown>): Promise<SessionHostSettlement> {
   try {
-    const result = await run()
-    const summary = (result as Pick<SessionManageActionResult, 'summary'> | null)?.summary
+    const result = (await run()) as Partial<SessionRestartResult> | null
+    const summary = result?.summary
+    // Why completed, with the outcome carried: a restart sends no prompt, so an `unconfirmed`
+    // settlement would hold the turn reserved with nothing to protect and nothing to release it.
+    if (result?.outcome === 'started_unconfirmed') {
+      return {
+        kind: 'completed',
+        result: {
+          ...(summary ? { summary } : {}),
+          outcome: result.outcome,
+          ...(result.reason ? { reason: result.reason } : {})
+        }
+      }
+    }
     return { kind: 'completed', result: summary ? { summary } : {} }
   } catch (error) {
     if (error instanceof SessionManageRefusal) {
@@ -101,7 +115,13 @@ export async function prepareHostRestart(
   const input = { actor: target.actor, target: controlTarget(target) }
   return await checkedThen(
     () => restartSession(deps.control, { ...input, dryRun: true }),
-    () => restartSession(deps.control, { ...input, dryRun: false })
+    async () => {
+      const result = await restartSession(deps.control, { ...input, dryRun: false })
+      if ('outcome' in result) {
+        deps.notice?.(result.summary)
+      }
+      return result
+    }
   )
 }
 

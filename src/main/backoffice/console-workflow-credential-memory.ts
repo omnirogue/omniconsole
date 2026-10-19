@@ -19,8 +19,8 @@ export function rememberConsoleWorkflowCredential(bearer: string): void {
 }
 
 /** Captured credentials stay only in memory, including earlier sessions whose output may arrive late. */
-export function redactConsoleWorkflowMemory(value: unknown): unknown {
-  let safe: unknown = redactConsoleWorkflowValue(value, null)
+export function redactConsoleWorkflowMemory(value: unknown, keepSignInLinks = false): unknown {
+  let safe: unknown = redactConsoleWorkflowValue(value, null, keepSignInLinks)
   let serialized = JSON.stringify(safe)
   for (const [bearer, variants] of credentials) {
     // Why: a full redaction pass per remembered credential made every request cost grow with uptime (#857);
@@ -28,7 +28,7 @@ export function redactConsoleWorkflowMemory(value: unknown): unknown {
     if (!variants.some((variant) => serialized.includes(variant))) {
       continue
     }
-    safe = redactConsoleWorkflowValue(safe, bearer)
+    safe = redactConsoleWorkflowValue(safe, bearer, keepSignInLinks)
     serialized = JSON.stringify(safe)
   }
   return safe

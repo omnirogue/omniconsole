@@ -117,6 +117,11 @@ export type LocalWorkflowDraft = {
   /** Start without the cross-run known list (earlier runs' findings on the same target). */
   skipEarlierRuns?: true
   focusFinding?: string
+  /**
+   * The approved OmniSI budget root this run spends (agent budget controls). Required while this
+   * computer enforces budgets; a host from before budgets rejects the field (strict Start schema).
+   */
+  budgetRootId?: string
   /** Council revision 6: members answer; non-Google members also rank. */
   council?: { memberIds: string[] }
   concurrency: number
@@ -316,6 +321,7 @@ export function createLocalWorkflowGraphDraft(
     scopeIds?: string[]
     skipEarlierRuns?: boolean
     focusFinding?: string
+    budgetRootId?: string
   } & LocalWorkflowLaunchChoice
 ): LocalWorkflowDraft {
   const draft = createLocalWorkflowDraft('council', input.prompt)
@@ -325,6 +331,7 @@ export function createLocalWorkflowGraphDraft(
     ...(input.runsOn ? { runsOn: input.runsOn } : {}),
     ...(input.focusFinding ? { focusFinding: input.focusFinding } : {}),
     ...(input.skipEarlierRuns ? { skipEarlierRuns: true as const } : {}),
+    ...(input.budgetRootId ? { budgetRootId: input.budgetRootId } : {}),
     ...localWorkflowLaunchChoice(input),
     // Shown as "Find it from my description"; sent as is, so older hosts accept it.
     access: input.access ?? 'workspace-read',

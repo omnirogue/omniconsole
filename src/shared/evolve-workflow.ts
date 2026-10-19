@@ -13,7 +13,8 @@ export const EVOLVE_RPC = {
   show: 'evolve.show',
   list: 'evolve.list',
   stop: 'evolve.stop',
-  refresh: 'evolve.refresh'
+  refresh: 'evolve.refresh',
+  auditBundle: 'evolve.auditBundle'
 } as const
 
 export const EVOLVE_RUN_ID_PREFIX = 'evo_'

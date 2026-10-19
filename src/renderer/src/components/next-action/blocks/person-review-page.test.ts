@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { ArtifactReviewStatus } from '../../../../../shared/artifact-review'
 import { resolvePersonReviewPage } from './person-review-page'
 
-const LINK = 'https://console.example.com/a/launch-plan'
+const LINK = 'https://app.omnisi.ai/a/launch-plan'
 
 function status(patch: { isOwner?: boolean; title?: string | null; shareUrl?: string } = {}) {
   return {

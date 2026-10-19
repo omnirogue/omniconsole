@@ -14842,7 +14842,7 @@ describe('OrcaRuntimeService', () => {
       expect.objectContaining({
         env: expect.objectContaining({
           OMNI_TASK_ID: 'btk_authoritative',
-          OMNIOS_URL: 'https://console.example.com',
+          OMNIOS_URL: 'https://app.omnisi.ai',
           SAVED_PROFILE: 'yes',
           KEEP_GLOBAL: 'yes'
         })
@@ -14864,7 +14864,7 @@ describe('OrcaRuntimeService', () => {
                 type: 'issue',
                 number: 1,
                 title: 'Reply to customer',
-                url: 'https://console.example.com',
+                url: 'https://app.omnisi.ai',
                 hubTaskId
               }
             : null
@@ -15099,7 +15099,7 @@ describe('OrcaRuntimeService', () => {
           type: 'issue',
           number: 1,
           title: 'Render customer content',
-          url: 'https://console.example.com',
+          url: 'https://app.omnisi.ai',
           hubTaskId: 'btk_content',
           hubStateRevision: 2,
           hubNextAction: 'Render a draft'
@@ -15114,7 +15114,7 @@ describe('OrcaRuntimeService', () => {
       getForegroundProcess: async () => null
     })
     const observed = vi.spyOn(runtime, 'recordOrchestrationExecutionObservation')
-    const env = { OMNI_TASK_ID: 'btk_content', OMNIOS_URL: 'https://console.example.com' }
+    const env = { OMNI_TASK_ID: 'btk_content', OMNIOS_URL: 'https://app.omnisi.ai' }
     const terminal = await runtime.createTerminal(`path:${TEST_WORKTREE_PATH}`, {
       command: 'cursor-agent',
       launchAgent: 'cursor',
@@ -15162,7 +15162,7 @@ describe('OrcaRuntimeService', () => {
             type: 'issue',
             number: 1,
             title: 'Render customer content',
-            url: 'https://console.example.com',
+            url: 'https://app.omnisi.ai',
             hubTaskId
           }
         })
@@ -15191,7 +15191,7 @@ describe('OrcaRuntimeService', () => {
         })
       }
       const observed = vi.spyOn(runtime, 'recordOrchestrationExecutionObservation')
-      const env = { OMNI_TASK_ID: 'btk_content', OMNIOS_URL: 'https://console.example.com' }
+      const env = { OMNI_TASK_ID: 'btk_content', OMNIOS_URL: 'https://app.omnisi.ai' }
       await expect(
         runtime.createTerminal(`path:${TEST_WORKTREE_PATH}`, {
           command: 'cursor-agent',
@@ -15243,7 +15243,7 @@ describe('OrcaRuntimeService', () => {
           type: 'issue',
           number: 1,
           title: 'Reply to customer',
-          url: 'https://console.example.com',
+          url: 'https://app.omnisi.ai',
           hubTaskId: 'btk_reply'
         }
       }),
@@ -15273,7 +15273,7 @@ describe('OrcaRuntimeService', () => {
     const launched = spawn.mock.calls[0]?.[0]
     expect(launched.env).toMatchObject({
       OMNI_TASK_ID: 'btk_reply',
-      OMNIOS_URL: 'https://console.example.com',
+      OMNIOS_URL: 'https://app.omnisi.ai',
       KEEP_SETTING: 'yes'
     })
     expect(launched.command).toContain('--prefill')
@@ -15323,7 +15323,7 @@ describe('OrcaRuntimeService', () => {
       expect.objectContaining({
         env: expect.objectContaining({
           OMNI_TASK_ID: 'btk_boundlaunch',
-          OMNIOS_URL: 'https://console.example.com',
+          OMNIOS_URL: 'https://app.omnisi.ai',
           KEEP_SETTING: 'yes'
         })
       })
@@ -15334,7 +15334,7 @@ describe('OrcaRuntimeService', () => {
         launchConfig: expect.objectContaining({
           agentEnv: expect.objectContaining({
             OMNI_TASK_ID: 'btk_boundlaunch',
-            OMNIOS_URL: 'https://console.example.com'
+            OMNIOS_URL: 'https://app.omnisi.ai'
           })
         })
       })

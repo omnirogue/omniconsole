@@ -45,7 +45,7 @@ export type HeadlessSleepDeps = {
   read(row: SessionManageSidebarRow): Promise<HeadlessSleepSnapshot | null>
   clear(
     row: SessionManageSidebarRow,
-    options?: { reviewWait?: boolean }
+    options?: { reviewWait?: boolean; rows?: readonly SessionManageSidebarRow[] }
   ): Promise<TerminalAgentProcessProof | null>
   /** Panes waiting on a review decision, read once per pass (artifact-review-sleep-targets.ts). */
   reviewTargets?(): ReadonlyMap<string, ReviewSleepTarget>
@@ -98,10 +98,11 @@ function allowed(
   const config = normalizeAutomaticSessionCleanupProtection(
     settings.automaticSessionCleanupProtection
   )
+  const ignoreStartedToday = reviewWait || snapshot.row.archived
   return (
     automaticSessionCleanupKeep({
-      // Why: the session's own review publish lifts only the started-today hold.
-      config: config && reviewWait ? { ...config, protectStartedToday: false } : config,
+      // Why: the session's own review publish or explicit archive ("Archive = pause") lifts only the started-today hold.
+      config: config && ignoreStartedToday ? { ...config, protectStartedToday: false } : config,
       target: {
         worktreePath: snapshot.row.worktreePath,
         paneKey: snapshot.row.paneKey,
@@ -156,7 +157,7 @@ export function createHeadlessSessionSleep(deps: HeadlessSleepDeps) {
       const authority = deps.authority(row)
       const proof =
         authority && snapshot && allowed(snapshot, deps.settings(), now, reviewWait)
-          ? await deps.clear(row, { reviewWait })
+          ? await deps.clear(row, { reviewWait, rows })
           : null
       if (
         !snapshot ||

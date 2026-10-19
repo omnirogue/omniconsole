@@ -67,6 +67,10 @@ export type ArtifactWriteRequest = {
   audience?: ArtifactAudience
   /** The IDE terminal that ran the command; kept locally, never sent to the server. */
   origin?: ArtifactWriteOrigin
+  /** Main process only: why the command's terminal was not bound; an update clears the old one. */
+  unboundReason?: string
+  /** Main process only: the terminal's conversation when the caller was verified, pinned to publish. */
+  verifiedSession?: { ledgerId?: string; nativeSessionId?: string }
   apiUrl?: string
   authToken?: string
 }

@@ -4,6 +4,7 @@ import {
   EVOLVE_RUN_ID_PATTERN,
   evolveStartRequestSchema
 } from '../../../../shared/evolve-workflow'
+import { fetchEvolveAuditBundle } from '../../evolve/evolve-audit-bundle-client'
 import { getEvolveService } from '../../evolve/evolve-service-registry'
 import { defineMethod, type RpcMethod } from '../core'
 import {
@@ -46,6 +47,18 @@ export const EVOLVE_METHODS: RpcMethod[] = [
     handler: async (params, { runtime }) => ({
       run: await getEvolveService(runtime).refresh(params.id)
     })
+  }),
+  defineMethod({
+    name: EVOLVE_RPC.auditBundle,
+    params: IdParams,
+    // By record id so the renderer never names an arbitrary cloud run.
+    handler: async (params, { runtime }) => {
+      const { cloudRunId } = getEvolveService(runtime).show(params.id)
+      if (!cloudRunId) {
+        throw new Error('Only hosted Evolve runs have an audit bundle.')
+      }
+      return { bundle: await fetchEvolveAuditBundle(cloudRunId) }
+    }
   }),
   defineMethod({
     name: EVOLVE_RPC.stop,

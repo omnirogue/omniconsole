@@ -5,9 +5,7 @@ describe('SkillShareDeepLinkState', () => {
   it('queues a startup share until the renderer consumes it once', () => {
     const state = new SkillShareDeepLinkState()
 
-    expect(state.capture(['omni', 'https://console.example.com/skills/share/share_startup'])).toBe(
-      true
-    )
+    expect(state.capture(['omni', 'https://app.omnisi.ai/skills/share/share_startup'])).toBe(true)
     expect(state.consume()).toBe('share_startup')
     expect(state.consume()).toBeNull()
   })
@@ -16,7 +14,7 @@ describe('SkillShareDeepLinkState', () => {
     const state = new SkillShareDeepLinkState()
     const publish = vi.fn()
 
-    state.capture(['omni', 'https://console.example.com/skills/share/share_first'])
+    state.capture(['omni', 'https://app.omnisi.ai/skills/share/share_first'])
     expect(state.capture(['omni', 'omni://skills/share/share_second'], publish)).toBe(true)
 
     expect(publish).toHaveBeenCalledWith('share_second')
@@ -25,7 +23,7 @@ describe('SkillShareDeepLinkState', () => {
 
   it('ignores untrusted URLs without replacing a pending intent', () => {
     const state = new SkillShareDeepLinkState()
-    state.capture(['omni', 'https://console.example.com/skills/share/share_safe'])
+    state.capture(['omni', 'https://app.omnisi.ai/skills/share/share_safe'])
 
     expect(state.capture(['omni', 'https://attacker.test/skills/share/share_bad'])).toBe(false)
     expect(state.consume()).toBe('share_safe')

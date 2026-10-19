@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { extractSessionWorkLinks } from './session-work-links'
 
-const ORIGIN = 'https://console.example.com'
+const ORIGIN = 'https://app.omnisi.ai'
 const SLITE = 'https://example.slite.com/app/docs/X3P_WfcLxXPaiG'
 const PAGE = `${ORIGIN}/a/1a0d4b88dfada7c9d`
 const CLAUDE = 'https://claude.ai/code/artifact/0b1c2d3e-4f5a-6b7c'

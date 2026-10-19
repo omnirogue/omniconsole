@@ -11,7 +11,13 @@ import type { LaunchPick, LauncherCapability, LauncherProvider } from './resolve
 
 /** Providers with models or accounts to choose before launching. */
 export function providerHasLaunchSubmenu(agent: LauncherProvider): boolean {
-  return agent === 'claude' || agent === 'codex' || agent === 'omp' || agent === 'muse'
+  return (
+    agent === 'claude' ||
+    agent === 'codex' ||
+    agent === 'omp' ||
+    agent === 'muse' ||
+    agent === 'deepseek'
+  )
 }
 
 /** One provider row's submenu body, shared by the "+" menu and the palette's right-click menu. */
@@ -43,10 +49,10 @@ export function LauncherProviderSubmenu(props: {
       </>
     )
   }
-  if (props.agent === 'muse') {
+  if (props.agent === 'muse' || props.agent === 'deepseek') {
     return (
       <NewConversationModelsColumn
-        agent="muse"
+        agent={props.agent}
         models={props.entry.models}
         start={props.start}
         hover={props.hover}

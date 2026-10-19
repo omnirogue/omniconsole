@@ -24,6 +24,8 @@ import { sweepGraphCheckLanes } from './graph/graph-check-lane-sweep'
 import { sweepWorkflowContextFolders } from './context/context-sweep'
 import { scheduleDiscoverToOmnios } from './discover-omnios-delivery'
 import { reconcileDiscoverDeliveries } from './discover-omnios-reconcile'
+import { AgentBudgetClient, resolveAgentBudgetConfig } from './agent-budget-client'
+import { hostname } from 'node:os'
 
 const hosts = new WeakMap<OrcaRuntimeService, Promise<LocalWorkflowHost>>()
 
@@ -39,8 +41,11 @@ export function getLocalWorkflowHost(runtime: OrcaRuntimeService): Promise<Local
     // Once per app start; copies a live run of this process owns are kept.
     void sweepGraphCheckLanes()
     void sweepWorkflowContextFolders()
+    // Off unless OMNI_AGENT_BUDGET_ENFORCE=true; never a local balance of its own.
+    const budgetConfig = await resolveAgentBudgetConfig(process.env, hostname())
     const host = new LocalWorkflowHost({
       db,
+      ...(budgetConfig ? { budgetAuthority: new AgentBudgetClient(budgetConfig) } : {}),
       working: { db: runtime.getOrchestrationDb(), runtime },
       owner,
       slots: new WorkflowScriptSlots(defaultWorkflowScriptSlots()),

@@ -104,6 +104,22 @@ function suggestProject(
   return { summary }
 }
 
+function createProject(
+  request: Extract<SessionProjectRendererRequest, { kind: 'createProject' }>
+): SessionProjectReadResult {
+  const { entry, project } = findFolder(request.folder)
+  if (!project || project.id !== entry.id) {
+    throw new Error(
+      'Only a top-level folder, or a folder inside a company folder, can be a project.'
+    )
+  }
+  const saved = useSessionFolders.getState().setProjectSettings(project.id, request.settings)
+  if (!saved) {
+    throw new Error(useSessionFolders.getState().error ?? 'Could not save project settings.')
+  }
+  return readProject({ kind: 'readProject', folder: project.id })
+}
+
 export function answerSessionProjectRequest(
   request: SessionProjectRendererRequest
 ):
@@ -119,6 +135,8 @@ export function answerSessionProjectRequest(
       return listProjects()
     case 'suggestProject':
       return suggestProject(request)
+    case 'createProject':
+      return createProject(request)
     case 'projectForPane':
       return { folderId: sessionProjectForPane(useAppStore.getState(), request.paneKey) }
     case 'bindLaunchContext':

@@ -46,8 +46,10 @@ export function buildCodexStatusPayload(
     sessionBoundary: options.updateLead && eventName === 'SessionStart' ? true : undefined,
     toolName: snapshot.toolName,
     toolInput: snapshot.toolInput,
+    // Why Codex's own questions first: they show only on a finished turn, where the snapshot's
+    // prompt can only be the turn-end ask read from that turn's words (turn-end-question.ts).
     interactivePrompt:
-      snapshot.interactivePrompt ?? codexAsyncAskPrompt(state, paneKey, options.status),
+      codexAsyncAskPrompt(state, paneKey, options.status) ?? snapshot.interactivePrompt,
     lastAssistantMessage: snapshot.lastAssistantMessage,
     lastAssistantMessageIsToolOutput: snapshot.lastAssistantMessageIsToolOutput,
     subagents: codexRosterToSnapshots(state.codexSubagentRosterByPaneKey.get(paneKey))

@@ -4,6 +4,7 @@ import type { COUNCIL_REVISION, DISCOVER_REVISION } from './workflow-program-rev
 import type { GraphSnapshotFields } from './graph/graph-plan-types'
 import type { CouncilProgramRevision } from './presets/council'
 import type { AuditSnapshot } from './audit/audit-snapshot'
+import type { WorkflowBudgetSnapshot } from './workflow-call-budget'
 
 /** Graph runs add their frozen spec and seats (GraphSnapshotFields). */
 export type WorkflowProgramSnapshot = GraphSnapshotFields & {
@@ -22,6 +23,8 @@ export type WorkflowProgramSnapshot = GraphSnapshotFields & {
   access?: 'workspace-read'
   host?: unknown
   limits?: { concurrency: number }
+  /** Absent: not budgeted. Present: every call is admitted against this root before it runs. */
+  budget?: WorkflowBudgetSnapshot
   task: { prompt: string; evidence: string }
   seats: ResolvedLocalWorkflowSeat[]
   synthesizerId: string

@@ -17,7 +17,7 @@ actual PR base/head, uncommitted diff or requested files. Record the source and
 owning host; missing remote access means unverified, not exited or absent.
 Do not create a worktree just to read a change or assume every workspace is Git.
 
-In this repository, consult the relevant existing references rather than inventing a
+In main-next, consult the relevant existing references rather than inventing a
 parallel contract: `docs/reference/ssh-execution-boundary.md`,
 `remote-wire-compatibility.md`, `outcome-continuation-relaunch.md`,
 `windows-setup-shell.md` and `wsl-command-execution.md` under that same directory.
@@ -64,7 +64,7 @@ reviewer receives the same source/host scope and this skill; use the installed
 orchestration guide when supervising and returning its results. This prompt
 never chooses a model or launches workers on its own.
 
-Follow project verification policy. In this repository, required GitHub checks
+Follow project verification policy. For Sal's main-next, required GitHub checks
 remain the test/merge authority. No local/fleet suites or additional merge gates.
 A requested bounded live/preflight check must preserve existing sessions and
 side-effect limits. Use the repository's prescribed Electron/CDP workflow for
@@ -75,5 +75,5 @@ rendered UI verification; source inspection alone is not a live UI result.
 Type-boundary/security review framing adapted from ECC
 `agents/typescript-reviewer.md` at `bf70150eb2df8070024e5bdf08e4aa08959e2735`:
 https://github.com/affaan-m/ECC/blob/bf70150eb2df8070024e5bdf08e4aa08959e2735/agents/typescript-reviewer.md
-Electron/host guidance specializes the existing project contracts.
+Electron/host guidance specializes the existing main-next project contracts.
 The installed package includes the upstream [MIT license](LICENSE).

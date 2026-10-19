@@ -85,6 +85,7 @@ export type RightSidebarTab =
   | 'explorer'
   | 'search'
   | 'vault'
+  | 'deliverables'
   | 'workspaces'
   | 'pr-checks'
   | 'source-control'

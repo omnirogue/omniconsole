@@ -143,6 +143,44 @@ describe('discoverCommitMessageModelsLocal', () => {
     )
   })
 
+  it('lists Gemini as a verified probe once `gemini --version` runs', async () => {
+    const child = createMockDiscoveryChild()
+    spawnMock.mockReturnValue(child as never)
+
+    const pending = discoverCommitMessageModelsLocal('gemini', undefined)
+
+    child.stdout.emit('data', Buffer.from('0.62.0\n'))
+    child.emit('close', 0)
+
+    // Why 'probe': the pickers drop a 'spec' listing, which left Gemini model-unavailable.
+    await expect(pending).resolves.toMatchObject({
+      success: true,
+      catalogOrigin: 'probe',
+      defaultModelId: 'gemini-3.8-flash',
+      models: expect.arrayContaining([
+        expect.objectContaining({ id: 'gemini-3.8-flash', isDefault: true }),
+        expect.objectContaining({ id: 'gemini-3.5-flash' })
+      ])
+    })
+    expect(spawnMock).toHaveBeenCalledWith(
+      'gemini',
+      ['--version'],
+      expect.objectContaining({ windowsHide: true })
+    )
+  })
+
+  it('lists no Gemini models when the CLI does not run', async () => {
+    const child = createMockDiscoveryChild()
+    spawnMock.mockReturnValue(child as never)
+
+    const pending = discoverCommitMessageModelsLocal('gemini', undefined)
+
+    child.stderr.emit('data', Buffer.from('gemini: command failed\n'))
+    child.emit('close', 1)
+
+    await expect(pending).resolves.toMatchObject({ success: false })
+  })
+
   it('writes the Claude list_models request to stdin and parses the control response', async () => {
     const listeners = new Map<string, (value: unknown) => void>()
     const child = {

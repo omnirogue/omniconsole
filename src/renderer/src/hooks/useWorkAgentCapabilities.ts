@@ -164,6 +164,11 @@ export function useWorkAgentCapabilities(
         const evidence = currentProbes[`${currentOwner}:${entry.id}`]
         const probedModels =
           evidence && checkedNow - evidence.checkedAt < currentLifetimeMs ? evidence.models : null
+        const reading = targetRates ? workAgentProviderUsage(targetRates, entry.id) : null
+        // Why: Gemini's quota feed reads Google OAuth only, so on an API-key login its
+        // 'unavailable' says nothing about the agent. No key is no logout: OAuth also signs in.
+        const apiKeyLogin = entry.id === 'gemini' && targetRates?.geminiAuthConfigured === true
+        const usageUnreadable = apiKeyLogin && reading?.status === 'unavailable'
         return {
           ...entry,
           // Why: `models` is [] both when the probe listed nothing and when there is
@@ -179,16 +184,20 @@ export function useWorkAgentCapabilities(
                   ? !verifiedOpenRouter
                   : !['claude', 'codex', 'grok', 'gemini'].includes(entry.id))),
             skipUsageGating,
-            admitUncheckedUsage: mode === 'build-review' && hasUsageFeed(entry.id),
+            admitUncheckedUsage:
+              usageUnreadable || (mode === 'build-review' && hasUsageFeed(entry.id)),
             openrouterRouting: entry.id === 'omp',
-            installed: ids?.includes(entry.id) ?? false,
+            installed: (ids?.includes(entry.id) ?? false) || entry.id === 'deepseek',
             disabled: currentSettings?.disabledTuiAgents?.includes(entry.id) ?? false,
             models: skipUsageGating
               ? (probedModels ?? getAgentSessionOptionCatalog(entry.id)?.models ?? [])
               : probedModels,
             // Local credentials say nothing about an SSH or paired execution host.
-            usage: targetRates ? workAgentProviderUsage(targetRates, entry.id) : null,
-            signedIn: entry.id === 'kimi' ? (targetRates?.kimiAuthConfigured ?? null) : undefined,
+            usage: usageUnreadable ? null : reading,
+            signedIn:
+              entry.id === 'kimi'
+                ? (targetRates?.kimiAuthConfigured ?? null)
+                : apiKeyLogin || undefined,
             now: checkedNow
           })
         }

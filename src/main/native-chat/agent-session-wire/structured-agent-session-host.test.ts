@@ -495,7 +495,6 @@ describe('cancel', () => {
     expect(cancelTurn).toHaveBeenCalledTimes(1)
     expect(beforeRun).toHaveBeenCalledTimes(1)
   })
-
 })
 
 describe('respondToPrompt', () => {
@@ -587,7 +586,7 @@ describe('respondToPrompt', () => {
     })
   })
 
-  it('keeps the answer and reports it undelivered when the provider callback throws', async () => {
+  it('refuses, leaving the prompt open, and says so when the provider callback throws', async () => {
     const prompt = await seedApproval()
     await attach()
     answerPrompt.mockRejectedValueOnce(new Error('pipe closed'))
@@ -597,7 +596,7 @@ describe('respondToPrompt', () => {
       kind: 'approval',
       ...fields
     })
-    expect(result.ok).toBe(true)
+    expect(result.ok || result.refusal.message).toContain('the approval is still open')
     const page = host.history({ sessionId: SESSION, direction: 'tail' })
     const statusId = agentJournalItemKey({
       provider: 'omni',

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { compileWorkPlan, compileWorkPlanExecution } from './work-plan-compile'
-import { samWorkPlan } from './__fixtures__/work-plan/wp2/example-work-plan'
+import { samWorkPlan } from './__fixtures__/work-plan/wp2/sal-work-plan'
 import { councilWorkPlan } from './__fixtures__/work-plan/wp2/council-work-plan'
 import {
   workPlanFixtureContext,

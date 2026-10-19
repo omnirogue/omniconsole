@@ -9,6 +9,10 @@ export const WORK_PAGE_SECTIONS = [
     label: () => translate('commandCenter.content.section.needs-you', 'Needs you')
   },
   {
+    id: 'artifacts',
+    label: () => translate('commandCenter.content.section.artifacts', 'Shared artifacts')
+  },
+  {
     id: 'happening',
     label: () => translate('commandCenter.content.section.happening', "What's happening")
   },

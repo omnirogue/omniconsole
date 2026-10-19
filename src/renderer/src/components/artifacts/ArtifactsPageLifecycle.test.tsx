@@ -33,7 +33,10 @@ vi.mock('@/components/ui/tooltip', () => ({
   TooltipTrigger: ({ children }: { children: ReactNode }) => <>{children}</>,
   TooltipContent: ({ children }: { children: ReactNode }) => <div>{children}</div>
 }))
-vi.mock('@/runtime/runtime-rpc-client', () => ({ callRuntimeRpc: mocks.rpc }))
+vi.mock('@/runtime/runtime-rpc-client', () => ({
+  callRuntimeRpc: (...args: unknown[]) =>
+    args[1] === 'specPrBatch.available' ? Promise.resolve({ enabled: false }) : mocks.rpc(...args)
+}))
 vi.mock('@/lib/open-linked-session', () => ({ openLinkedSession: mocks.openLinkedSession }))
 vi.mock('@/lib/sidebar-sessions', () => ({ buildSidebarSessions: () => [] }))
 vi.mock('./ArtifactPreview', () => ({ ArtifactPreview: () => null }))

@@ -29,8 +29,11 @@ function deps(overrides: Partial<SessionControlDeps> = {}): SessionControlDeps {
     stillWorking: vi.fn(async () => false),
     resume: vi.fn(async () => ({
       summary: 'Resumed “Ads session”: the same conversation, in a new tab',
-      tabId: 'tab-7'
+      tabId: 'tab-7',
+      paneKey: 'tab-7:leaf-7'
     })),
+    confirmRestarted: vi.fn(async () => ({ state: 'same' as const, paneKey: 'tab-7:leaf-7' })),
+    keepCheckpoint: vi.fn(async () => true),
     rename: vi.fn(async (_target, title: string) => ({
       summary: `Renamed “Ads session” to “${title}”`,
       before: 'Ads session',
@@ -54,24 +57,92 @@ function target(
   }
 }
 
+const CONVERSATION = '2f0c9f4e-8d1a-4c7e-9b8e-0e6f3f2a1b7c'
+const exitedWithCheckpoint = () =>
+  target(
+    { verdict: 'exited', state: 'exited', terminal: null },
+    { resumable: true, providerSessionId: CONVERSATION }
+  )
+
 describe('session restart', () => {
   it('resumes an exited session in the same provider conversation and sends nothing', async () => {
     const d = deps()
     const result = await restartSession(d, {
       actor,
-      target: target({ verdict: 'exited', state: 'exited', terminal: null }, { resumable: true }),
+      target: exitedWithCheckpoint(),
       dryRun: false
     })
     expect(d.resume).toHaveBeenCalledWith(
-      { paneKey: 'tab-2:leaf-2', tabId: 'tab-2' },
+      { paneKey: 'tab-2:leaf-2', tabId: 'tab-2', keepCheckpoint: true },
       {
         trigger: 'session-resume',
         parentPaneKey: 'tab-2:leaf-2',
         actor: { kind: 'local-cli', paneKey: 'tab-9:leaf-9' }
       }
     )
+    expect(d.confirmRestarted).toHaveBeenCalledWith(
+      { sessionId: CONVERSATION, hostId: 'local', transcriptPath: null },
+      'tab-7:leaf-7'
+    )
     expect(d.interrupt).not.toHaveBeenCalled()
-    expect(result.summary).toContain('the same conversation')
+    expect(d.keepCheckpoint).not.toHaveBeenCalled()
+    expect(result).toMatchObject({ outcome: 'restarted' })
+    expect(result.summary).toContain('the same conversation, confirmed by its agent')
+  })
+
+  it.each([
+    [
+      'no hook report',
+      { state: 'unconfirmed' as const },
+      'did not report which conversation it opened within 30 s',
+      'launched',
+      'Its checkpoint was kept on that tab'
+    ],
+    [
+      'another conversation',
+      { state: 'different' as const, reported: 'fresh-1' },
+      'reported a different conversation (fresh-1)',
+      'original',
+      'Its checkpoint was put back on its old pane'
+    ]
+  ] as const)(
+    'reports a restart its agent hooks never confirmed as started_unconfirmed (%s), keeping its checkpoint',
+    async (_name, verdict, reason, onto, note) => {
+      const d = deps({ confirmRestarted: vi.fn(async () => verdict) })
+      const result = await restartSession(d, {
+        actor,
+        target: exitedWithCheckpoint(),
+        dryRun: false
+      })
+      expect(d.resume).toHaveBeenCalledWith(
+        expect.objectContaining({ keepCheckpoint: true }),
+        expect.anything()
+      )
+      expect(result).toMatchObject({
+        outcome: 'started_unconfirmed',
+        reason: expect.stringContaining(reason)
+      })
+      expect(d.keepCheckpoint).toHaveBeenCalledExactlyOnceWith('tab-7', onto)
+      expect(result.summary).not.toContain('Resumed')
+      expect(result.summary).toContain('unconfirmed')
+      expect(result.summary).toContain(note)
+      expect(result.summary).toContain(`omni session resume --ref claude:${CONVERSATION}@local`)
+    }
+  )
+
+  it('never calls a restart confirmed when the new pane cannot be named, and keeps its checkpoint', async () => {
+    const d = deps({ resume: vi.fn(async () => ({ summary: 'Resumed', tabId: 'tab-7' })) })
+    const result = await restartSession(d, {
+      actor,
+      target: exitedWithCheckpoint(),
+      dryRun: false
+    })
+    expect(d.confirmRestarted).not.toHaveBeenCalled()
+    expect(d.keepCheckpoint).toHaveBeenCalledExactlyOnceWith('tab-7', 'original')
+    expect(result).toMatchObject({
+      outcome: 'started_unconfirmed',
+      reason: 'its new pane could not be named'
+    })
   })
 
   it('refuses an exited session with no checkpoint to resume', async () => {

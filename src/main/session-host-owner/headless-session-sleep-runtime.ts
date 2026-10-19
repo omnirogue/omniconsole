@@ -122,7 +122,7 @@ export function runtimeHeadlessSessionSleep(input: {
       const reading = await readArchiveSleepHost(
         {
           ...runtimeArchiveSleepHostDeps(runtime),
-          rows: async () => (await inventory.rows()).rows
+          rows: async () => options?.rows ?? (await inventory.rows()).rows
         },
         { worktreeId: row.worktreeId, paneKey: row.paneKey, tabId: row.tabId },
         { reviewWait: options?.reviewWait === true }

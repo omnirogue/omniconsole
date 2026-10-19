@@ -113,6 +113,21 @@ describe('session assign --ref', () => {
     expect(result.summary).toBe(`Reopened ${REF}. Gave “Parser” a new task.`)
   })
 
+  it('still reads the first reply when a restart its agent had not confirmed then reads as free', async () => {
+    const world: World = { rows: [], entries: { 'tab-9:leaf-9': { state: 'idle' } } }
+    const base = deps(world)
+    const { deps: d, calls } = deps(world, {
+      resume: async (dryRun) => ({
+        ...(await base.deps.resume(dryRun)),
+        outcome: 'started_unconfirmed',
+        reason: 'its agent did not report which conversation it opened within 30 s'
+      })
+    })
+    await assignByRef(d, { ref: REF, dryRun: false })
+    expect(calls).toEqual(['assign tab-9:leaf-9 (first turn from transcript)'])
+    expect(base.calls).toEqual(['resume'])
+  })
+
   it('unarchives and resumes an archived conversation that exited', async () => {
     const world: World = {
       rows: [held({ archived: true, archiveKind: 'manual' })],

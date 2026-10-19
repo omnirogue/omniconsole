@@ -13,6 +13,8 @@ import { artifactName } from './artifact-display-labels'
 import { DEFAULT_ARTIFACT_LIST_FILTER, type ArtifactListFilter } from './artifact-list-filter'
 import { openArtifactInBrowser } from './artifact-link-actions'
 import { ArtifactSupersedePicker } from './ArtifactSupersedePicker'
+import { SpecPrBatchDialog } from './SpecPrBatchDialog'
+import { Button } from '@/components/ui/button'
 import { useArtifactLifecycleActions } from './use-artifact-lifecycle-actions'
 import { useArtifactSessionLinks } from './use-artifact-session-links'
 import { ArtifactsPageSkeleton } from './ArtifactsPageSkeleton'
@@ -50,6 +52,8 @@ export default function ArtifactsPage({
   const [filter, setFilter] = useState<ArtifactListFilter>(DEFAULT_ARTIFACT_LIST_FILTER)
   const [groupBySession, setGroupBySession] = useState(false)
   const [checkedSlugs, setCheckedSlugs] = useState<ReadonlySet<string>>(() => new Set())
+  const [batchEnabled, setBatchEnabled] = useState(false)
+  const [batchOpen, setBatchOpen] = useState(false)
   const signedIn = authStatus?.state === 'connected'
   const needsReconnect = authStatus?.state === 'reconnect-required'
   const openAccountSettings = (): void => {
@@ -78,6 +82,15 @@ export default function ArtifactsPage({
       ),
     [artifacts, checkedSlugs]
   )
+  const batchItems = useMemo(
+    () => artifacts.filter((item) => loadedChecked.has(item.artifact.slug)),
+    [artifacts, loadedChecked]
+  )
+  useEffect(() => {
+    void callRuntimeRpc<{ enabled: boolean }>(LOCAL_RUNTIME, 'specPrBatch.available', {})
+      .then((result) => setBatchEnabled(result.enabled))
+      .catch(() => setBatchEnabled(false))
+  }, [])
   const lifecycleActions = useArtifactLifecycleActions({
     identity: accountIdentity,
     artifacts,
@@ -264,6 +277,16 @@ export default function ArtifactsPage({
           <h1 className="truncate text-base font-semibold leading-8">
             {translate('auto.components.artifacts.ArtifactsPage.title', 'Artifacts')}
           </h1>
+          {batchEnabled ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto"
+              onClick={() => setBatchOpen(true)}
+            >
+              {translate('auto.components.artifacts.ArtifactsPage.specBatches', 'Spec batches')}
+            </Button>
+          ) : null}
         </header>
       ) : null}
 
@@ -317,6 +340,8 @@ export default function ArtifactsPage({
           running={lifecycleActions.bulkRunning || lifecycleActions.undoRunning}
           onAction={lifecycleActions.runBulk}
           onClear={() => setCheckedSlugs(new Set())}
+          batchEnabled={batchEnabled}
+          onBuildBatch={() => setBatchOpen(true)}
         />
       ) : null}
       {lifecycleSupported ? (
@@ -340,6 +365,13 @@ export default function ArtifactsPage({
         onClose={() => setSelectedSlug(null)}
         onDelete={(target) => void deleteArtifact(target)}
       />
+      {batchEnabled ? (
+        <SpecPrBatchDialog
+          open={batchOpen}
+          items={batchItems}
+          onClose={() => setBatchOpen(false)}
+        />
+      ) : null}
     </main>
   )
 }

@@ -74,9 +74,10 @@ export async function applyWhenFinished(
     const connection = upNextConnection(outcomeRuntimeTarget(session))
     const view = await readUpNext(source, connection)
     connection.assertCurrent()
-    // An older/disconnected host, a changed preference, or new activity cannot finish a session.
+    // An older/disconnected host, a changed preference, an open proposal/question, or new activity cannot finish a session.
     if (
       view.finishReady !== true ||
+      (expected.action === 'end' && view.archiveSleepClear === false) ||
       useSessionFolders.getState().metadata.finishActions?.[key] !== expected ||
       sessionTabHasUnfinishedAgent(session.tabId)
     ) {

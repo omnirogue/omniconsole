@@ -20,7 +20,7 @@ A folder workspace can have a file-scoped review without Git history.
 
 Read required GitHub check results when available and label them separately
 from source findings. Pending CI does not prevent source inspection, and green
-CI is not proof that a source concern is impossible. In this repository, do not
+CI is not proof that a source concern is impossible. For Sal's main-next, do not
 run local/fleet test suites or introduce extra mandatory review gates.
 
 ## Follow the data and lifecycle

@@ -112,8 +112,8 @@ export const SESSION_MANAGE_REUSE_METHODS: RpcMethod[] = [
             ...(result.profile ? { profile: result.profile.path } : {})
           }
         })
-        // The window already names a checkpoint resume in its own toast.
-        if (result.outcome !== 'restarted') {
+        // A checkpoint restart shows its own notice once its agent confirms it (or not).
+        if (result.outcome !== 'restarted' && result.outcome !== 'started_unconfirmed') {
           showSessionManageNotice(context.runtime, { kind: 'notice', summary: result.summary })
         }
         return auditError ? { ...result, auditError } : result
@@ -265,11 +265,8 @@ export const SESSION_MANAGE_REUSE_METHODS: RpcMethod[] = [
       if (params.cancel) {
         return { deliveries: [await engine.cancel(params.cancel)] }
       }
-      return {
-        deliveries: engine
-          .list()
-          .filter((delivery) => params.all === true || !isSessionPendingDeliverySettled(delivery))
-      }
+      // Why the caller: a prompt that ended unsent stays on top until its own requester has seen it.
+      return { deliveries: await engine.listFor(actorFor(context, []), params.all === true) }
     }
   })
 ]

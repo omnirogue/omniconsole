@@ -29,6 +29,7 @@ type Options = {
     workingMode?: string
     interactivePrompt: string | null
     agentPid?: number
+    agentType?: string
   } | null
   evidence?: { proof: TerminalAgentProcessProof | null; tree: { kind: string } } | null
   executionHostId?: string
@@ -202,5 +203,36 @@ describe('a message answer to a Codex async question', () => {
       answerAgentQuestionWithProof(rt, { ...request, text: 'Red\x1b[A' }, vi.fn())
     ).resolves.toMatchObject({ status: 'not-sent' })
     expect(rt.readTerminalProcessEvidence).not.toHaveBeenCalled()
+  })
+})
+
+describe("a message answer to Claude's turn-end question", () => {
+  beforeEach(() => resetAsyncQuestionAnswerClaimsForTests())
+  const asked = (agentType: string) => ({
+    state: 'done',
+    interactivePrompt: ASK,
+    agentPid: 200,
+    agentType
+  })
+  const holding = (agent: string) => ({ proof: { ...PROOF, agent }, tree: { kind: 'other' } })
+
+  it('is written to the proven Claude that asked it', async () => {
+    const rt = runtime({ hook: asked('claude'), evidence: holding('claude') })
+    await expect(answerAgentQuestionWithProof(rt, request, vi.fn())).resolves.toEqual({
+      status: 'delivered'
+    })
+  })
+
+  it.each([
+    ['Codex holds a terminal whose Claude asked', 'claude', 'codex'],
+    ['Claude holds a terminal whose Codex asked', 'codex', 'claude'],
+    ['a Claude-shaped agent asked (Kimi)', 'kimi', 'kimi']
+  ])('fails closed when %s', async (_name, asker, holder) => {
+    const rt = runtime({ hook: asked(asker), evidence: holding(holder) })
+    await expect(answerAgentQuestionWithProof(rt, request, vi.fn())).resolves.toMatchObject({
+      status: 'not-sent',
+      reason: expect.stringMatching(/could not be proven/)
+    })
+    expect(rt.sendTerminalAgentPrompt).not.toHaveBeenCalled()
   })
 })

@@ -13,7 +13,7 @@ function dispatchLoadFailure(
   Object.assign(event, {
     errorCode: failure.errorCode,
     errorDescription: 'failed',
-    validatedURL: 'https://console.example.com/a/report',
+    validatedURL: 'https://app.omnisi.ai/a/report',
     isMainFrame: failure.isMainFrame
   })
   webview.dispatchEvent(event)
@@ -34,7 +34,7 @@ describe('ArtifactPreview', () => {
   })
 
   it('ignores child-frame failures and aborted navigations', async () => {
-    render(<ArtifactPreview shareUrl="https://console.example.com/a/report" />)
+    render(<ArtifactPreview shareUrl="https://app.omnisi.ai/a/report" />)
     const webview = await waitFor(() => {
       const element = document.querySelector('webview')
       expect(element).not.toBeNull()
@@ -50,7 +50,7 @@ describe('ArtifactPreview', () => {
 
   it('stops waiting when navigation stalls', async () => {
     vi.useFakeTimers()
-    render(<ArtifactPreview shareUrl="https://console.example.com/a/report" />)
+    render(<ArtifactPreview shareUrl="https://app.omnisi.ai/a/report" />)
     await act(async () => {
       await Promise.resolve()
       await Promise.resolve()
@@ -65,7 +65,7 @@ describe('ArtifactPreview', () => {
   it('stops waiting when preview-session resolution stalls', () => {
     vi.useFakeTimers()
     vi.mocked(window.api.browser.sessionResolvePartition).mockReturnValue(new Promise(() => {}))
-    render(<ArtifactPreview shareUrl="https://console.example.com/a/report" />)
+    render(<ArtifactPreview shareUrl="https://app.omnisi.ai/a/report" />)
 
     act(() => vi.advanceTimersByTime(20_000))
 

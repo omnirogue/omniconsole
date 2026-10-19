@@ -1,0 +1,25 @@
+name: Business connect preflight
+
+on:
+  pull_request:
+    paths:
+      - 'config/scripts/*business_connect_preflight.py'
+      - '.github/workflows/business-connect-preflight.yml'
+  push:
+    branches: [omni-brand]
+    paths:
+      - 'config/scripts/*business_connect_preflight.py'
+      - '.github/workflows/business-connect-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  preflight-tests:
+    runs-on: [self-hosted, Linux, omni-ide-linux]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check offline connection evidence validation
+        run: python3 -B -m unittest discover -s config/scripts -p test_business_connect_preflight.py -v

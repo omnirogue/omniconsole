@@ -16,6 +16,8 @@ export type RpcDispatchStreamingOptions = {
   pairing?: PairingRpcContext
   /** Socket admission only: the caller is bound to an automatic cleanup run. */
   unattendedCaller?: SessionManageUnattended
+  /** Socket admission only: the local CLI's own pid, for process-tree checks. */
+  callerPid?: number
   sendBinary?: (bytes: Uint8Array<ArrayBufferLike>) => boolean | void
   registerBinaryStreamHandler?: (
     streamId: number,

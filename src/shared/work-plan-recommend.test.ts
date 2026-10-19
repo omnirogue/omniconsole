@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { recommendNextTransforms, type WorkPlanRecommendationState } from './work-plan-recommend'
-import { samWorkPlan } from './__fixtures__/work-plan/wp2/example-work-plan'
+import { samWorkPlan } from './__fixtures__/work-plan/wp2/sal-work-plan'
 import type { WorkPlanRole } from './work-plan-types'
 const outcome = { ...samWorkPlan().outcome, revision: 3 }
 function state(

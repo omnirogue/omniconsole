@@ -25,12 +25,16 @@ export function ProjectSettingsCoordinator({
   id,
   value,
   running,
+  title,
+  help,
   onChange
 }: {
   id: string
   value: ProjectCoordinatorDraft
   /** A chat is running under the saved pick; a new pick applies when it is started again. */
   running: boolean
+  title?: string
+  help?: string
   onChange: (next: ProjectCoordinatorDraft) => void
 }): React.JSX.Element {
   // Why: Local Ollama runs through OpenCode, and only where this app can reach Ollama.
@@ -48,7 +52,7 @@ export function ProjectSettingsCoordinator({
   return (
     <section className="space-y-2" data-project-settings-coordinator="">
       <h4 className="text-xs font-medium">
-        {translate('projects.settings.coordinator', 'Project chat')}
+        {title ?? translate('projects.settings.coordinator', 'Coordinator model & effort')}
       </h4>
       <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1">
@@ -112,15 +116,16 @@ export function ProjectSettingsCoordinator({
         />
       )}
       <p className="text-xs text-muted-foreground">
-        {running
-          ? translate(
-              'projects.settings.coordinatorRunning',
-              'Starts and follows the project’s threads from its chat. The running chat keeps its agent; this pick applies when it is started again.'
-            )
-          : translate(
-              'projects.settings.coordinatorHelp',
-              'Starts and follows the project’s threads from its chat, with the Coordinator instructions. Start it from the project page.'
-            )}
+        {help ??
+          (running
+            ? translate(
+                'projects.settings.coordinatorRunning',
+                'Starts and follows the project’s threads from its chat. The running chat keeps its agent; this pick applies when it is started again.'
+              )
+            : translate(
+                'projects.settings.coordinatorHelp',
+                'Starts and follows the project’s threads from its chat, with the Coordinator instructions. Start it from the project page.'
+              ))}
       </p>
     </section>
   )

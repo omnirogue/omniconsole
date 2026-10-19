@@ -8,12 +8,16 @@ export function ArtifactBulkBar({
   count,
   running,
   onAction,
-  onClear
+  onClear,
+  batchEnabled,
+  onBuildBatch
 }: {
   count: number
   running: boolean
   onAction: (action: ArtifactBulkAction) => void
   onClear: () => void
+  batchEnabled?: boolean
+  onBuildBatch?: () => void
 }): React.JSX.Element | null {
   if (count === 0) {
     return null
@@ -28,6 +32,11 @@ export function ArtifactBulkBar({
         {translate('auto.components.artifacts.bulk.count', '{{total}} selected', { total: count })}
       </span>
       {running ? <Loader2 className="size-3.5 animate-spin text-muted-foreground" /> : null}
+      {batchEnabled ? (
+        <Button size="xs" disabled={running || count !== 5} onClick={onBuildBatch}>
+          {translate('auto.components.artifacts.bulk.buildBatch', 'Build 5 draft PRs')}
+        </Button>
+      ) : null}
       <Button size="xs" variant="outline" disabled={running} onClick={() => onAction('done')}>
         <CircleCheck className="size-3.5" />
         {translate('auto.components.artifacts.bulk.markDone', 'Mark done')}

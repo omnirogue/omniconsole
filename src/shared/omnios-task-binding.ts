@@ -1,6 +1,6 @@
 import { BOARD_TASK_ID_PATTERN } from './board-task-id'
 
-export const OMNIOS_WORK_URL = 'https://console.example.com'
+export const OMNIOS_WORK_URL = 'https://app.omnisi.ai'
 // Keep runtime admission aligned with the signed-in omnios BFF card routes.
 export const HUB_TASK_ID_PATTERN = BOARD_TASK_ID_PATTERN
 

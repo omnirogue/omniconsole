@@ -2,6 +2,7 @@ import { linkSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync }
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import SyncDatabase from '../sqlite/sync-database'
 import { locateTranscripts, readTranscriptCwd } from './session-transcript-locate'
 
 const ID = '2f0c9f4e-8d1a-4c7e-9b8e-0e6f3f2a1b7c'
@@ -59,6 +60,22 @@ describe('locateTranscripts', () => {
     linkSync(path, linked)
     expect(await locateTranscripts('codex', ID, { userDataPath: userData, homeDir: home })).toEqual(
       [{ path, providerRoot: homeA, defaultRoot: false }]
+    )
+  })
+
+  it('resumes hardlinked Codex history under the account whose index records the thread', async () => {
+    const name = `rollout-2026-10-17T13-50-00-${ID}.jsonl`
+    const other = join(userData, 'codex-accounts', 'a1', 'home')
+    const ranUnder = join(userData, 'codex-accounts', 'b2', 'home')
+    const first = write(join(other, 'sessions', '2026', '10', '17', name), [{}])
+    const linked = join(ranUnder, 'sessions', '2026', '10', '17', name)
+    mkdirSync(join(linked, '..'), { recursive: true })
+    linkSync(first, linked)
+    const db = new SyncDatabase(join(ranUnder, 'state_5.sqlite'))
+    db.exec(`CREATE TABLE threads (id TEXT PRIMARY KEY); INSERT INTO threads (id) VALUES ('${ID}')`)
+    db.close()
+    expect(await locateTranscripts('codex', ID, { userDataPath: userData, homeDir: home })).toEqual(
+      [{ path: linked, providerRoot: ranUnder, defaultRoot: false }]
     )
   })
 

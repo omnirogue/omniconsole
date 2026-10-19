@@ -22,6 +22,8 @@ import {
 import { rankHeadToHead } from './jev-rank-pairwise'
 import { TypeSafeDecisionProvider } from './typesafe-provider'
 import { recordJevNotCalled } from './jev-call-rows'
+import { jevCallBudget, JEV_MAX_OUTPUT_TOKENS } from './jev-call-budget'
+import { randomUUID } from 'node:crypto'
 import type { JevCertainty, JevPairJudgment, JevUsage } from './jev-certainty'
 
 export { JEV_SCORE_MARGIN, JEV_SCORE_LEVELS } from './jev-rank-rubric'
@@ -157,6 +159,20 @@ async function jevAsk(
   const provider = new TypeSafeDecisionProvider({ resolveApiKey: async () => key })
   const evaluate = options.evaluate ?? provider.evaluate.bind(provider)
   return async (decision: DecisionRequest) => {
+    // A budgeted workflow admits each billed ballot first; a refusal sends nothing.
+    const budget = jevCallBudget.getStore()
+    const attemptId = randomUUID()
+    if (budget) {
+      await budget.admitBounded({
+        attemptId,
+        stage: 'jev',
+        callKey: `jev:${decision.capability}:${attemptId}`,
+        provider: 'typesafe',
+        model: 'jev',
+        maxInputTokens: Buffer.byteLength(JSON.stringify(decision)) + 256,
+        maxOutputTokens: JEV_MAX_OUTPUT_TOKENS
+      })
+    }
     const controller = new AbortController()
     const timer = setTimeout(
       () => controller.abort(new DecisionProviderError('timeout')),
@@ -164,7 +180,22 @@ async function jevAsk(
     )
     try {
       const call = directCall(options, decision.capability)
-      return await evaluate(decision, { signal: controller.signal, call })
+      const result = await evaluate(decision, { signal: controller.signal, call })
+      await budget
+        ?.settle({
+          attempt_id: attemptId,
+          outcome: 'ok',
+          input_tokens: result.usage.inputTokens,
+          output_tokens: result.usage.outputTokens,
+          ...(result.requestId ? { provider_request_id: result.requestId } : {}),
+          // TypeSafe reports tokens, not dollars: priced from the root's price version.
+          estimate_from_tokens: true
+        })
+        .catch(() => undefined)
+      return result
+    } catch (error) {
+      await budget?.unknown(attemptId).catch(() => undefined)
+      throw error
     } finally {
       clearTimeout(timer)
     }

@@ -6,7 +6,11 @@ import type {
 import type { RuntimeCreateAgentSessionResult } from '../../shared/agent-session-host-authority'
 import { WorkDeliveryHold } from './work-delivery-claimer-types'
 import type { ClaimableDelivery, WorkDeliveryTarget } from './work-delivery-kind'
-import { respawnFreshSession, respawnRefusal } from './work-delivery-respawn'
+import {
+  candidateRespawnFolders,
+  respawnFreshSession,
+  respawnRefusal
+} from './work-delivery-respawn'
 
 const DELIVERY = { key: 'jira:OMR-93:10500', workItem: 'jira:OMR-93' } as ClaimableDelivery
 const TARGET: WorkDeliveryTarget = {
@@ -89,6 +93,89 @@ describe('respawnFreshSession', () => {
     await expect(
       respawnFreshSession(runtime as never, DELIVERY, TARGET, 'b', OPERATION_ID)
     ).rejects.toMatchObject({ reason: 'not_found' })
+    expect(runtime.createAgentSession).not.toHaveBeenCalled()
+  })
+})
+
+describe('candidateRespawnFolders', () => {
+  const PATHS = {
+    workRoot: '/Users/maintainer/Work',
+    prototypesDir: '/Users/maintainer/Work/OmniAgentOS/Prototypes'
+  }
+
+  it('offers a worktree’s main checkout, then the Work root', () => {
+    expect(candidateRespawnFolders('/Users/maintainer/omni-ide-worktrees/feat-1', PATHS)).toEqual([
+      '/Users/maintainer/omni-ide-worktrees/feat-1',
+      '/Users/maintainer/Work/OmniAgentOS/Prototypes/omni-ide',
+      '/Users/maintainer/Work'
+    ])
+  })
+
+  it('offers enclosing folders up to the configured Work root, never above it', () => {
+    expect(candidateRespawnFolders('/Users/maintainer/Work/Shared/Lab/x', PATHS)).toEqual([
+      '/Users/maintainer/Work/Shared/Lab/x',
+      '/Users/maintainer/Work/Shared/Lab',
+      '/Users/maintainer/Work/Shared',
+      '/Users/maintainer/Work'
+    ])
+    expect(candidateRespawnFolders('/tmp/scratch', PATHS)).toEqual(['/tmp/scratch'])
+  })
+
+  it('follows configured roots rather than the estate defaults', () => {
+    expect(
+      candidateRespawnFolders('/home/a/repo-worktrees/b', {
+        workRoot: '/srv/work',
+        prototypesDir: '/srv/checkouts'
+      })
+    ).toEqual(['/home/a/repo-worktrees/b', '/srv/checkouts/repo', '/srv/work'])
+  })
+})
+
+describe('respawnFreshSession when the worktree is gone', () => {
+  const PATHS = {
+    workRoot: '/Users/maintainer/Work',
+    prototypesDir: '/Users/maintainer/Work/OmniAgentOS/Prototypes'
+  }
+  const GONE = {
+    ...TARGET,
+    ref: 'claude:conv-1@local',
+    folder: '/Users/maintainer/omni-ide-worktrees/feat-1'
+  }
+
+  it('starts in the repository’s main checkout and tells the session why', async () => {
+    const runtime = fakeRuntime()
+    runtime.agentLaunchReadiness.mockRejectedValueOnce(new Error('workspace_not_found'))
+    const pane = await respawnFreshSession(
+      runtime as never,
+      DELIVERY,
+      GONE,
+      'brief',
+      OPERATION_ID,
+      {
+        paths: PATHS,
+        exists: async () => false
+      }
+    )
+    expect(runtime.agentLaunchReadiness).toHaveBeenCalledTimes(2)
+    const [request] = runtime.createAgentSession.mock.calls[0] as unknown as [
+      Record<string, unknown>
+    ]
+    expect(request.worktree).toBe('path:/Users/maintainer/Work/OmniAgentOS/Prototypes/omni-ide')
+    expect(request.prompt).toContain('/Users/maintainer/omni-ide-worktrees/feat-1 no longer exists')
+    expect(request.prompt).toContain('brief')
+    expect(pane.folder).toBe('/Users/maintainer/Work/OmniAgentOS/Prototypes/omni-ide')
+  })
+
+  it('never swaps a folder that still exists for another', async () => {
+    const runtime = fakeRuntime()
+    runtime.agentLaunchReadiness.mockRejectedValueOnce(new Error('account_unverified'))
+    await expect(
+      respawnFreshSession(runtime as never, DELIVERY, GONE, 'brief', OPERATION_ID, {
+        paths: PATHS,
+        exists: async () => true
+      })
+    ).rejects.toMatchObject({ reason: 'not_found' })
+    expect(runtime.agentLaunchReadiness).toHaveBeenCalledOnce()
     expect(runtime.createAgentSession).not.toHaveBeenCalled()
   })
 })

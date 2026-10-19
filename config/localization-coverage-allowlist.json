@@ -705,5 +705,145 @@
     "text": "Not submitted",
     "dynamic": false,
     "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-judge-audit-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Judge audit",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-judge-audit-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Blind pairwise verdicts from independent model families. Same-family and order-dependent verdicts are shown but not counted.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-judge-audit-helpers.ts",
+    "kind": "object-property:label",
+    "text": "Show judgments",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-pareto-chart-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Quality and cost",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-pareto-chart-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Higher scores and lower costs are better. Frontier candidates have no alternative with an equal or higher score at an equal or lower cost and a strict improvement in at least one.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-warm-start-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Warm-start Evolve",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-warm-start-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Seed a hosted run with your best completed local or fleet candidate for this target.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/evolve/evolve-warm-start-helpers.ts",
+    "kind": "object-property:error",
+    "text": "The warm-start could not be started. Try again.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/omnirogue-arena/omnirogue-model-arena-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Model Arena",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/omnirogue-arena/omnirogue-model-arena-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Send one prompt to several OmniRogue models, compare the answers and pick a winner.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/omnirogue-media/omnirogue-asset-inspector-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Asset inspector",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/omnirogue-media/omnirogue-brand-kit-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Brand kit",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/omnirogue-media/omnirogue-brand-kit-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Keep your media consistent with saved colors, fonts, and brand guidance.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/onboarding/omnirogue-quickstart-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Get started with OmniRogue",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/onboarding/omnirogue-quickstart-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Connect your account to use models with your OmniRogue wallet.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/omnirogue-gateway-health-helpers.ts",
+    "kind": "object-property:title",
+    "text": "Model gateway health",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/omnirogue-gateway-health-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Token, expiry and model catalog for the OmniRogue multi-model gateway.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/omnisi-mcp-explorer-helpers.ts",
+    "kind": "object-property:title",
+    "text": "OmniSI MCP explorer",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/settings/omnisi-mcp-explorer-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Browse the tools available through your OmniSI connection.",
+    "dynamic": false,
+    "count": 1
+  },
+  {
+    "filePath": "src/renderer/src/components/terminal/prompt-cost-estimator-helpers.ts",
+    "kind": "object-property:description",
+    "text": "Approximate text input cost in USD. Excludes conversation history, system instructions, attachments, output, tools, and cache discounts. Actual usage may differ.",
+    "dynamic": false,
+    "count": 1
   }
 ]

@@ -33,7 +33,10 @@ export function formatAgentTemplate(template: AgentTemplateRecord): string {
   return [
     `${template.name} (${template.id}, ${templateKind(template)})`,
     template.description ? `Description: ${template.description}` : null,
+    template.preferredAgent ? `Preferred agent: ${template.preferredAgent}` : null,
     template.preferredModel ? `Preferred model: ${template.preferredModel}` : null,
+    template.skills?.length ? `Skills: ${template.skills.join(', ')}` : null,
+    template.memory ? `Memory: ${template.memory}` : null,
     `Digest: ${template.digest}`,
     '',
     template.instructions ?? '(adds nothing)'
@@ -98,11 +101,25 @@ export const AGENT_TEMPLATE_HANDLERS: Record<string, CommandHandler> = {
     const instructions = await readInstructions(flags, cwd)
     const name = getOptionalStringFlag(flags, 'name')
     const description = getOptionalStringFlag(flags, 'description')
+    const skillsRaw = getOptionalStringFlag(flags, 'skills')
+    const skills = skillsRaw
+      ? skillsRaw
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : undefined
+    const memory = getOptionalStringFlag(flags, 'memory')
+    const preferredModel = getOptionalStringFlag(flags, 'model')
+    const preferredAgent = getOptionalStringFlag(flags, 'agent')
     const result = await client.call<{ template: AgentTemplateRecord }>('agentTemplates.set', {
       id,
       instructions,
       ...(name !== undefined ? { name } : {}),
-      ...(description !== undefined ? { description } : {})
+      ...(description !== undefined ? { description } : {}),
+      ...(skills !== undefined ? { skills } : {}),
+      ...(memory !== undefined ? { memory } : {}),
+      ...(preferredModel !== undefined ? { preferredModel } : {}),
+      ...(preferredAgent !== undefined ? { preferredAgent } : {})
     })
     printResult(
       result,

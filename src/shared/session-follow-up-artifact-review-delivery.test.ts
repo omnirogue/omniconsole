@@ -8,7 +8,7 @@ import type { SessionFollowUpRule } from './session-follow-up-rule'
 const PAGE = {
   slug: 'launch-plan',
   title: 'Launch plan',
-  url: 'https://console.example.com/a/launch-plan'
+  url: 'https://app.omnisi.ai/a/launch-plan'
 }
 
 function exact(name: string, text: string): ExactHandoffFile {

@@ -9,6 +9,7 @@ import type {
   StructuredAgentSessionAdapter
 } from '../native-chat/agent-session-wire/structured-agent-session-adapter'
 import { AgentSessionOptionRejectedError } from '../native-chat/agent-session-wire/structured-agent-session-option-error'
+import { AgentSessionPromptGoneError } from '../native-chat/agent-session-wire/structured-agent-session-prompt-error'
 import { supportsCodexStructuredLocation } from '../codex/codex-structured-location-support'
 import {
   openAcpJsonRpcConnection,
@@ -198,13 +199,11 @@ export class AcpStructuredSessionAdapter implements StructuredAgentSessionAdapte
     const identity = parseAgentJournalItemKey(input.itemId)
     const pendingKey = identity?.provider === 'legacy' ? identity.recordId : input.itemId
     const pending = session?.pendingPermissions.get(pendingKey)
-    if (
-      !session ||
-      session.fence !== input.fence ||
-      !pending ||
-      (pending.optionIds && !pending.optionIds.includes(input.optionId))
-    ) {
-      throw new Error('ACP permission request is no longer pending')
+    if (!session || session.fence !== input.fence || !pending) {
+      throw new AgentSessionPromptGoneError('ACP permission request is no longer pending')
+    }
+    if (pending.optionIds && !pending.optionIds.includes(input.optionId)) {
+      throw new Error('ACP permission request does not offer that option')
     }
     session.pendingPermissions.delete(pendingKey)
     session.connection.respond(pending.id, acpPromptReply(pending, pendingKey, input.optionId))

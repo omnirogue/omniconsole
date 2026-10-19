@@ -13,6 +13,18 @@ export function ledgerIdForPane(paneId: string): string | null {
   return activeRegistry?.get(paneId)?.ledgerId ?? null
 }
 
+/** The pane's ledger id and provider conversation as the registry knows them now. */
+export function ledgerIdentityForPane(paneId: string): {
+  ledgerId?: string
+  nativeSessionId?: string
+} {
+  const entry = activeRegistry?.get(paneId)
+  return {
+    ...(entry?.ledgerId ? { ledgerId: entry.ledgerId } : {}),
+    ...(entry?.nativeSessionId ? { nativeSessionId: entry.nativeSessionId } : {})
+  }
+}
+
 /**
  * Lookup by any session handle another lane holds: a pane key, a PTY id, or the
  * provider's native session id (a Claude session uuid, a Codex thread id).

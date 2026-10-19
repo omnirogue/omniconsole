@@ -9,10 +9,41 @@ type PreviewState = 'loading' | 'ready' | 'unavailable'
 const PREVIEW_LOAD_TIMEOUT_MS = 20_000
 // Why: Chromium reports an aborted load (a reload superseding the previous one) as -3.
 const ERR_ABORTED = -3
+// Why: a busy guest must not hold back the new revision for long.
+const SCROLL_READ_TIMEOUT_MS = 1_000
+
+type ScrollOffset = { x: number; y: number }
 
 function schedulePreviewTimeout(onTimeout: () => void): () => void {
   const timeout = setTimeout(onTimeout, PREVIEW_LOAD_TIMEOUT_MS)
   return () => clearTimeout(timeout)
+}
+
+async function readScrollOffset(webview: Electron.WebviewTag): Promise<ScrollOffset | null> {
+  let timeout: ReturnType<typeof setTimeout> | undefined
+  try {
+    const result: unknown = await Promise.race([
+      webview.executeJavaScript('[window.scrollX, window.scrollY]'),
+      new Promise<null>((resolve) => {
+        timeout = setTimeout(() => resolve(null), SCROLL_READ_TIMEOUT_MS)
+      })
+    ])
+    // Why validate: the page controls this value and it is written back into a script.
+    if (
+      !Array.isArray(result) ||
+      result.length !== 2 ||
+      !result.every((n) => typeof n === 'number' && Number.isFinite(n))
+    ) {
+      return null
+    }
+    const [x, y] = result as number[]
+    return { x, y }
+  } catch {
+    // The guest may not have reached dom-ready; reload without restoring.
+    return null
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 /**
@@ -51,7 +82,7 @@ export function SessionArtifactPreview({
 }): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const onTitleRef = useRef(onTitle)
-  const webviewRef = useRef<Electron.WebviewTag | null>(null)
+  const reloadForRevisionRef = useRef<(() => void) | null>(null)
   const loadedRevisionRef = useRef<number | null>(null)
   const [state, setState] = useState<PreviewState>('loading')
 
@@ -64,25 +95,43 @@ export function SessionArtifactPreview({
     if (!container) {
       return
     }
+    const webview = createPreviewWebview(contentUrl)
     let cancelLoadTimeout: (() => void) | null = null
     let failed = false
+    let disposed = false
+    // Why: only a document already on screen reloads in place; a first load keeps its overlay.
+    let shown = false
+    let inPlaceReload = false
+    let restoreOffset: ScrollOffset | null = null
     const clearLoadTimeout = (): void => {
       cancelLoadTimeout?.()
       cancelLoadTimeout = null
     }
     const onLoadStarted = (): void => {
       failed = false
-      setState('loading')
+      if (!inPlaceReload) {
+        setState('loading')
+      }
       clearLoadTimeout()
       cancelLoadTimeout = schedulePreviewTimeout(() => {
         failed = true
+        shown = false
+        inPlaceReload = false
         setState('unavailable')
       })
     }
     const onLoadStopped = (): void => {
       clearLoadTimeout()
-      if (!failed) {
-        setState('ready')
+      inPlaceReload = false
+      const offset = restoreOffset
+      restoreOffset = null
+      if (failed) {
+        return
+      }
+      shown = true
+      setState('ready')
+      if (offset) {
+        void webview.executeJavaScript(`window.scrollTo(${offset.x}, ${offset.y})`).catch(() => {})
       }
     }
     const onLoadFailed = (event: Electron.DidFailLoadEvent): void => {
@@ -91,6 +140,8 @@ export function SessionArtifactPreview({
       }
       clearLoadTimeout()
       failed = true
+      shown = false
+      inPlaceReload = false
       setState('unavailable')
     }
     const onTitleUpdated = (event: Electron.PageTitleUpdatedEvent): void => {
@@ -99,18 +150,44 @@ export function SessionArtifactPreview({
         onTitleRef.current?.(title)
       }
     }
-    const webview = createPreviewWebview(contentUrl)
+    const reload = (): void => {
+      try {
+        // Why ignoring cache: the URL is unchanged across revisions; only the document is new.
+        webview.reloadIgnoringCache()
+      } catch {
+        // A guest that has not reached dom-ready yet is still loading the newest document.
+        inPlaceReload = false
+        restoreOffset = null
+      }
+    }
+    const reloadForRevision = (): void => {
+      if (!shown) {
+        reload()
+        return
+      }
+      inPlaceReload = true
+      void readScrollOffset(webview).then((offset) => {
+        if (disposed) {
+          return
+        }
+        // Why recheck: the document may have failed or a quicker reload finished meanwhile.
+        inPlaceReload = shown
+        restoreOffset = offset ?? restoreOffset
+        reload()
+      })
+    }
     webview.addEventListener('page-title-updated', onTitleUpdated)
     webview.addEventListener('did-start-loading', onLoadStarted)
     webview.addEventListener('did-stop-loading', onLoadStopped)
     webview.addEventListener('did-fail-load', onLoadFailed)
     onLoadStarted()
     container.appendChild(webview)
-    webviewRef.current = webview
+    reloadForRevisionRef.current = reloadForRevision
     loadedRevisionRef.current = null
     return () => {
+      disposed = true
       clearLoadTimeout()
-      webviewRef.current = null
+      reloadForRevisionRef.current = null
       webview.removeEventListener('page-title-updated', onTitleUpdated)
       webview.removeEventListener('did-start-loading', onLoadStarted)
       webview.removeEventListener('did-stop-loading', onLoadStopped)
@@ -129,12 +206,7 @@ export function SessionArtifactPreview({
     if (previous === null || previous === revision) {
       return
     }
-    try {
-      // Why ignoring cache: the URL is unchanged across revisions; only the document is new.
-      webviewRef.current?.reloadIgnoringCache()
-    } catch {
-      // A guest that has not reached dom-ready yet is still loading the newest document.
-    }
+    reloadForRevisionRef.current?.()
     // Why contentUrl too: a new artifact resets the baseline even when its revision number matches.
   }, [contentUrl, revision])
 

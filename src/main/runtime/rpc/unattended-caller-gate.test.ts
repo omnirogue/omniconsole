@@ -154,3 +154,12 @@ describe('the socket bound on an automatic cleanup session', () => {
     }
   })
 })
+
+describe('the socket caller pid', () => {
+  it('reaches the handler context from the socket, only as a real pid', async () => {
+    for (const callerPid of [4321, 1, 'x']) {
+      await expect(call('sessionManage.list', { callerPid })).resolves.toMatchObject({ ok: true })
+    }
+    expect(seen.map((entry) => entry.context.callerPid)).toEqual([4321, undefined, undefined])
+  })
+})

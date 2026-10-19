@@ -9,6 +9,9 @@ const execFile = promisify(execFileCb)
 // pinning idle CPU (issue #6288). Memoizing collapses overlapping scans to one.
 const PS_ARGS = ['-axo', 'pid=,ppid=,stat=,command='] as const
 const PS_TIMEOUT_MS = 3000
+// Why: a dev Mac's table is ~0.8 MiB and growing, near execFile's 1 MiB default; an overflow
+// rejects the whole scan. Same cap as pty-descendant-termination.ts.
+const PS_MAX_BUFFER_BYTES = 32 * 1024 * 1024
 
 // Why: 500ms is below the active cadence poll's minimum inter-poll gap (~675ms
 // = 750ms less jitter), so a cadence-driven pane never reuses a snapshot older
@@ -169,7 +172,8 @@ const defaultReader = createProcessTableSnapshotReader<ProcessTableRow[]>({
   runPs: async () => {
     const { stdout } = await execFile('ps', [...PS_ARGS], {
       encoding: 'utf-8',
-      timeout: PS_TIMEOUT_MS
+      timeout: PS_TIMEOUT_MS,
+      maxBuffer: PS_MAX_BUFFER_BYTES
     })
     // Why: parse once inside the deduped scan so a burst of panes sharing the
     // TTL window reuse one ProcessTableRow[] instead of each re-tokenizing the

@@ -38,6 +38,8 @@ export type SessionPendingDelivery = {
   settledAt?: number
   /** The prompt-queue entry it became. */
   entryId?: string
+  /** When its requester first listed it after it ended unsent (`omni session pending`). */
+  seenAt?: number
 }
 
 export type SessionContinueWhenIdleResult = SessionManageActionResult & {
@@ -54,6 +56,11 @@ export const SESSION_WHEN_IDLE_MAX_MS = 4 * 60 * 60_000
 
 export function isSessionPendingDeliverySettled(delivery: SessionPendingDelivery): boolean {
   return delivery.state !== 'waiting' && delivery.state !== 'delivering'
+}
+
+/** It ended without reaching its session (window over, or cut off mid-send) and its requester has not listed it since. */
+export function isUnseenUnsentDelivery(delivery: SessionPendingDelivery): boolean {
+  return (delivery.state === 'expired' || delivery.state === 'unknown') && !delivery.seenAt
 }
 
 /** `30m`, `2h`, `90s` or plain minutes, bounded to the window a held prompt may wait. */

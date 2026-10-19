@@ -30,12 +30,27 @@ describe('pending session questions', () => {
   })
 
   it('ships the inline answers on, off only when switched off', () => {
-    expect(normalizeSessionQuestionsSettings(undefined)).toEqual({ inlineAnswers: true })
+    expect(normalizeSessionQuestionsSettings(undefined)).toEqual({
+      inlineAnswers: true,
+      turnEndQuestions: false
+    })
     expect(normalizeSessionQuestionsSettings({ inlineAnswers: 'no' })).toEqual({
-      inlineAnswers: true
+      inlineAnswers: true,
+      turnEndQuestions: false
     })
     expect(normalizeSessionQuestionsSettings({ inlineAnswers: false })).toEqual({
-      inlineAnswers: false
+      inlineAnswers: false,
+      turnEndQuestions: false
     })
+  })
+
+  it('ships turn-end questions off, on only when switched on', () => {
+    expect(normalizeSessionQuestionsSettings(undefined).turnEndQuestions).toBe(false)
+    expect(normalizeSessionQuestionsSettings({ turnEndQuestions: 'yes' }).turnEndQuestions).toBe(
+      false
+    )
+    expect(normalizeSessionQuestionsSettings({ turnEndQuestions: true }).turnEndQuestions).toBe(
+      true
+    )
   })
 })

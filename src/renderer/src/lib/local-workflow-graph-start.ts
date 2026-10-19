@@ -46,6 +46,8 @@ export type LocalWorkflowGraphStart = {
   /** No cross-run known list: `--no-earlier-runs`, and every benchmark run. */
   skipEarlierRuns?: true
   focusFinding?: string
+  /** `--budget-root`: the approved budget root this run spends. */
+  budgetRootId?: string
   launch?: LocalWorkflowLaunch
 }
 
@@ -124,6 +126,7 @@ async function launchGraph(
       ...(start.runsOn ? { runsOn: start.runsOn } : {}),
       ...(start.focusFinding ? { focusFinding: start.focusFinding } : {}),
       ...(start.skipEarlierRuns ? { skipEarlierRuns: true } : {}),
+      ...(start.budgetRootId ? { budgetRootId: start.budgetRootId } : {}),
       ...start.choice
     })
   const pending = saved ?? { requestId: start.launch?.operationId ?? crypto.randomUUID(), draft }
@@ -179,6 +182,7 @@ export async function startLocalWorkflowRunConversation(
     ...(request.routes ? { routes: request.routes } : {}),
     ...(request.runsOn ? { runsOn: request.runsOn } : {}),
     ...(request.focusFinding ? { focusFinding: request.focusFinding } : {}),
+    ...(request.budgetRoot ? { budgetRootId: request.budgetRoot } : {}),
     // A benchmark rep must not be told what the previous rep found.
     ...(request.skipEarlierRuns || request.origin === 'benchmark'
       ? { skipEarlierRuns: true as const }

@@ -27,6 +27,7 @@ export const LAUNCHER_PROVIDERS = [
   'claude',
   'codex',
   'kimi',
+  'deepseek',
   'grok',
   'muse',
   'omp',

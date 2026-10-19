@@ -1,5 +1,15 @@
-import { describe, expect, it } from 'vitest'
-import { createProcessTableSnapshotReader, parseProcessTableRows } from './process-table-snapshot'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const { execFileMock } = vi.hoisted(() => ({ execFileMock: vi.fn() }))
+
+vi.mock('node:child_process', () => ({ execFile: execFileMock }))
+
+import {
+  createProcessTableSnapshotReader,
+  getProcessTableSnapshot,
+  parseProcessTableRows,
+  resetProcessTableSnapshotForTests
+} from './process-table-snapshot'
 
 function deferred<T>(): {
   promise: Promise<T>
@@ -196,6 +206,48 @@ describe('process-table-snapshot reader', () => {
     expect(parses).toBe(1)
     // Reference identity: the burst reuses one parse, not one-per-caller.
     expect(rowsA).toBe(rowsB)
+  })
+})
+
+describe('default ps scan', () => {
+  beforeEach(() => {
+    execFileMock.mockReset()
+    resetProcessTableSnapshotForTests()
+  })
+
+  it('reads a process table past the 1 MiB default output cap of execFile', async () => {
+    // Node rejects a scan whose output outgrows maxBuffer (1 MiB unless set), so the cap decides it.
+    const table = Array.from(
+      { length: 10_000 },
+      (_, index) => `${index + 2} 1 Ss /usr/libexec/${'d'.repeat(120)}-${index}`
+    ).join('\n')
+    expect(table.length).toBeGreaterThan(1024 * 1024)
+    execFileMock.mockImplementation(
+      (
+        _file: string,
+        _args: string[],
+        options: { maxBuffer?: number },
+        callback: (error: Error | null, result?: { stdout: string; stderr: string }) => void
+      ) => {
+        if (table.length > (options.maxBuffer ?? 1024 * 1024)) {
+          callback(
+            Object.assign(new Error('stdout maxBuffer length exceeded'), {
+              code: 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'
+            })
+          )
+          return
+        }
+        callback(null, { stdout: table, stderr: '' })
+      }
+    )
+
+    await expect(getProcessTableSnapshot()).resolves.toHaveLength(10_000)
+    expect(execFileMock).toHaveBeenCalledWith(
+      'ps',
+      ['-axo', 'pid=,ppid=,stat=,command='],
+      expect.objectContaining({ maxBuffer: 32 * 1024 * 1024 }),
+      expect.any(Function)
+    )
   })
 })
 

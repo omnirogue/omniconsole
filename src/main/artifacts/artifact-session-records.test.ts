@@ -9,13 +9,14 @@ import {
   saveArtifactShareRecord
 } from './artifact-share-record-store'
 import { listArtifactSessionRecordsForScope } from './artifact-session-records'
+import { artifactUpdateOriginOf } from './artifact-session-origin'
 
 const createdPaths: string[] = []
 const scope: ArtifactShareScope = {
   cloudUserId: 'user-a',
   cloudProfileId: 'cloud-a',
   cloudOrganizationId: 'org-a',
-  apiOrigin: 'https://console.example.com'
+  apiOrigin: 'https://app.omnisi.ai'
 }
 const PANE = 'tab-a:11111111-1111-4111-8111-111111111111'
 
@@ -30,7 +31,7 @@ function save(path: string, sourceKey: string, slug: string, extra: object = {})
     ...scope,
     slug,
     editToken: `edit-secret-${slug}`,
-    shareUrl: `https://console.example.com/a/${slug}`,
+    shareUrl: `https://app.omnisi.ai/a/${slug}`,
     ...extra
   })
 }
@@ -52,10 +53,10 @@ describe('listArtifactSessionRecordsForScope', () => {
     expect(records).toEqual([
       {
         slug: 'plan',
-        shareUrl: 'https://console.example.com/a/plan',
+        shareUrl: 'https://app.omnisi.ai/a/plan',
         sourceKey: '/repo/plan.html',
         savedAt: expect.any(Number),
-        contentUrl: 'https://console.example.com/a/plan/content',
+        contentUrl: 'https://app.omnisi.ai/a/plan/content',
         origin: { paneKey: PANE, worktreeId: 'wt-1' }
       }
     ])
@@ -124,5 +125,29 @@ describe('listArtifactSessionRecordsForScope', () => {
         paneKey: PANE
       }
     )
+  })
+
+  it('clears the old owner when the update came from a refused terminal', async () => {
+    const path = await userDataPath()
+    save(path, '/repo/plan.html', 'plan', { origin: { paneKey: PANE } })
+    const expected = { slug: 'plan', editToken: 'edit-secret-plan' }
+    const expiresAt = new Date(Date.now() + 60_000).toISOString()
+    const refused = { origin: { paneKey: PANE }, unboundReason: 'not its agent' }
+
+    refreshArtifactShareRecordExpiration(
+      'local-profile',
+      path,
+      '/repo/plan.html',
+      scope,
+      expected,
+      expiresAt,
+      artifactUpdateOriginOf(refused)
+    )
+
+    expect(
+      getArtifactShareRecord('local-profile', path, '/repo/plan.html', scope)
+    ).not.toHaveProperty('origin')
+    expect(artifactUpdateOriginOf({ origin: { paneKey: PANE } })).toEqual({ paneKey: PANE })
+    expect(artifactUpdateOriginOf({})).toBeUndefined()
   })
 })

@@ -101,6 +101,35 @@ describe('findForegroundAgentProcess', () => {
     expect(findForegroundAgentProcess([SHELL, stopped, STUB], 100, 400)).toBeNull()
   })
 
+  it('finds an agent the shell exec’d, which is the PTY’s own root process', () => {
+    // Managed launches exec the provider itself, so nothing sits under the root.
+    const rootClaude = row(100, 1, 'Ss+', CLAUDE.command)
+    expect(findForegroundAgentProcess([rootClaude, ELSEWHERE], 100, null)).toEqual({
+      pid: 100,
+      agent: 'claude',
+      via: 'command-line'
+    })
+    expect(findForegroundAgentProcess([rootClaude], 100, 100)).toEqual({
+      pid: 100,
+      agent: 'claude',
+      via: 'hook-report'
+    })
+    // An exec’d wrapper is still the outermost process of its agent, not its native child.
+    const rootWrapper = row(100, 1, 'Ss+', CODEX_WRAPPER.command)
+    const nativeChild = row(301, 100, 'S+', CODEX_NATIVE.command)
+    expect(findForegroundAgentProcess([rootWrapper, nativeChild], 100, null)).toEqual({
+      pid: 100,
+      agent: 'codex',
+      via: 'command-line'
+    })
+  })
+
+  it('never proves a root process that is stopped, in the background, or not an agent', () => {
+    expect(findForegroundAgentProcess([row(100, 1, 'Ss', CLAUDE.command)], 100, 100)).toBeNull()
+    expect(findForegroundAgentProcess([row(100, 1, 'T', CLAUDE.command)], 100, 100)).toBeNull()
+    expect(findForegroundAgentProcess([row(100, 1, 'Ss+', 'vim notes.md')], 100, 100)).toBeNull()
+  })
+
   it('re-proves a persisted native reporter without replacing the ordinary wrapper proof', () => {
     expect(completedReporter()).toEqual({
       ...WRAPPER_PROOF,
@@ -161,6 +190,17 @@ describe('agentProcessStillHolds', () => {
     expect(agentProcessStillHolds([SHELL, row(200, 1, 'S+', CLAUDE.command)], proof, 10_000)).toBe(
       false
     )
+  })
+
+  it('holds for an agent that is the PTY’s own root process, until it leaves the foreground', () => {
+    const rootProof = { rootPid: 100, pid: 100, startTimeMs: 10_000 }
+    const rootClaude = row(100, 1, 'Ss+', CLAUDE.command)
+    expect(agentProcessStillHolds([rootClaude], rootProof, 10_500)).toBe(true)
+    expect(agentProcessStillHolds([row(100, 1, 'Ss', CLAUDE.command)], rootProof, 10_000)).toBe(
+      false
+    )
+    // Same pid, a later start: another process.
+    expect(agentProcessStillHolds([rootClaude], rootProof, 60_000)).toBe(false)
   })
 })
 

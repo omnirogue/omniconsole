@@ -270,10 +270,9 @@ describe('FleetDispatchRows lifecycle controls', () => {
     expect(mocks.open).toHaveBeenCalledExactlyOnceWith(source)
     expect(mocks.openLink).not.toHaveBeenCalled()
     await user.click(screen.getByRole('button', { name: `Open decisions for ${title}` }))
-    expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith(
-      'https://console.example.com/work/decisions',
-      { forceSystemBrowser: true }
-    )
+    expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith('https://app.omnisi.ai/work/decisions', {
+      forceSystemBrowser: true
+    })
   })
 
   it('keeps a failure quiet when it has no supported retry', () => {
@@ -469,12 +468,9 @@ describe('FleetDispatchRows lifecycle controls', () => {
     expect(mocks.openLink).not.toHaveBeenCalled()
     const summary = await screen.findByRole('dialog')
     await user.click(within(summary).getByRole('button', { name: 'Open Decisions' }))
-    expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith(
-      'https://console.example.com/work/decisions',
-      {
-        forceSystemBrowser: true
-      }
-    )
+    expect(mocks.openLink).toHaveBeenCalledExactlyOnceWith('https://app.omnisi.ai/work/decisions', {
+      forceSystemBrowser: true
+    })
 
     cleanup()
     const review = {

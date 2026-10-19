@@ -1,5 +1,6 @@
 import type { OmniRogueAccountState, PrimaryAiBillingMode } from '../../shared/omnirogue-account'
 import { readFetchResponseJsonWithinLimit } from '../../shared/fetch-response-body'
+import { listMcpTools } from './omnirogue-mcp-tools-list'
 export type DoctorStatus = 'pass' | 'warn' | 'fail' | 'skipped'
 export type DoctorAction = 'reconnect' | 'top-up' | 'retry'
 export type OmniRogueDoctorCheck = {
@@ -61,50 +62,6 @@ const summary = (status: DoctorStatus, message: string, remediation?: DoctorActi
 const aggregate = (checks: OmniRogueDoctorCheck[]): DoctorStatus =>
   (['fail', 'warn'] as const).find((status) => checks.some((check) => check.status === status)) ??
   'pass'
-async function rpcResponse(response: Response, id: number): Promise<Record<string, unknown>> {
-  let value: unknown
-  if (response.headers.get('content-type')?.includes('text/event-stream')) {
-    const reader = response.body?.getReader()
-    assertResponse(reader)
-    const decoder = new TextDecoder()
-    let pending = '',
-      bytes = 0
-    try {
-      while (value === undefined) {
-        const chunk = await reader.read()
-        assertResponse(!chunk.done)
-        bytes += chunk.value.byteLength
-        assertResponse(bytes <= MAX_BYTES)
-        pending += decoder.decode(chunk.value, { stream: true })
-        let boundary: RegExpExecArray | null
-        while ((boundary = /\r?\n\r?\n/.exec(pending))) {
-          const event = pending.slice(0, boundary.index)
-          pending = pending.slice(boundary.index + boundary[0].length)
-          const data = event
-            .split(/\r?\n/)
-            .filter((line) => line.startsWith('data:'))
-            .map((line) => line.slice(5).replace(/^ /, ''))
-            .join('\n')
-          if (!data) {
-            continue
-          }
-          const message: unknown = JSON.parse(data)
-          if (record(message).id === id) {
-            value = message
-            break
-          }
-        }
-      }
-    } finally {
-      void reader.cancel().catch(() => undefined)
-    }
-  } else {
-    value = await readFetchResponseJsonWithinLimit(response, MAX_BYTES)
-  }
-  const message = record(value)
-  assertResponse(message.jsonrpc === '2.0' && message.id === id && !message.error && message.result)
-  return record(message.result)
-}
 /** Read-only probes; the caller supplies the lease belonging to the execution host. */
 export async function runOmniRogueDoctor(
   options: OmniRogueDoctorOptions
@@ -219,49 +176,12 @@ export async function runOmniRogueDoctor(
   })
   async function mcp(url: string): Promise<OmniRogueDoctorCheck> {
     return check(url, async (signal) => {
-      let id = 0
-      const headers: Record<string, string> = {}
-      async function rpc(method: string, params: unknown) {
-        const requestId = ++id
-        const body = { jsonrpc: '2.0', id: requestId, method, params }
-        const response = await request(url, signal, body, headers)
-        const result = await rpcResponse(response, requestId)
-        const session = response.headers.get('mcp-session-id')
-        if (method === 'initialize' && session) {
-          headers['Mcp-Session-Id'] = session
-        }
-        return result
-      }
-      const init = await rpc('initialize', {
-        protocolVersion: '2025-06-18',
-        capabilities: {},
-        clientInfo: { name: 'omnirogue-doctor', version: '1.0.0' }
-      })
-      assertResponse(['2025-03-26', '2025-06-18'].includes(String(init.protocolVersion)))
-      assertResponse(record(init.capabilities).tools)
-      headers['MCP-Protocol-Version'] = String(init.protocolVersion)
-      const notification = { jsonrpc: '2.0', method: 'notifications/initialized' }
-      const notified = await request(url, signal, notification, headers)
-      void notified.body?.cancel().catch(() => undefined)
-      const names = new Set<string>(),
-        cursors = new Set<string>()
-      let cursor: string | undefined
-      for (let page = 0; page < 20; page++) {
-        const result = await rpc('tools/list', cursor ? { cursor } : {})
-        assertResponse(Array.isArray(result.tools))
-        for (const tool of result.tools) {
-          const name = record(tool).name
-          assertResponse(typeof name === 'string')
-          names.add(name)
-        }
-        if (result.nextCursor === undefined) {
-          break
-        }
-        assertResponse(typeof result.nextCursor === 'string' && result.nextCursor)
-        assertResponse(!cursors.has(result.nextCursor) && page < 19)
-        cursor = result.nextCursor
-        cursors.add(cursor)
-      }
+      const tools = await listMcpTools(
+        (body, headers) => request(url, signal, body, headers),
+        'omnirogue-doctor',
+        () => new DoctorFailure('The service returned an invalid response.')
+      )
+      const names = new Set(tools.map((tool) => String(tool.name)))
       const missing = NAMESPACES.filter((namespace) =>
         namespace === 'tools_search'
           ? !names.has(namespace)

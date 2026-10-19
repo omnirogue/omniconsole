@@ -5,6 +5,8 @@ import {
 } from './claude-live-usage'
 /* eslint-disable max-lines -- Why: centralizes polling, stale-data handling, account-switch fetch semantics, and renderer push coordination in one place */
 import type { BrowserWindow } from 'electron'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 import type { AccountCapacityService } from './account-capacity-service'
 import type {
   CodexRateLimitResetResult,
@@ -26,6 +28,7 @@ import {
   type NormalizedClaudeAccountSelectionTarget
 } from '../claude-accounts/runtime-selection'
 import { fetchGeminiRateLimits } from './gemini-usage-fetcher'
+import { workflowGeminiApiKey } from '../runtime/workflow-script/workflow-gemini-key'
 import { deriveAntigravityRateLimits } from './antigravity-usage-mirror'
 import { fetchKimiRateLimits } from './kimi-fetcher'
 import { getHostKimiHome, type KimiHomeResolution } from '../kimi/kimi-runtime-home'
@@ -142,6 +145,11 @@ function isSystemDefaultClaudeAuth(
   return provenance === 'system' || Boolean(provenance?.endsWith(':system'))
 }
 
+// Why a boolean: only whether a key exists leaves this check; the value is never kept or sent.
+function readGeminiApiKeyConfigured(): boolean {
+  return Boolean(workflowGeminiApiKey(join(homedir(), '.gemini')))
+}
+
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
@@ -175,6 +183,7 @@ export class RateLimitService {
     grok: null
   }
   private grokAuthConfigured = readGrokAuthSession().status === 'ok'
+  private geminiAuthConfigured = readGeminiApiKeyConfigured()
   // Why undefined until the first read: launchers treat an unread login as unverified, never usable.
   private kimiAuthConfigured: boolean | undefined = undefined
   private kimiSignInGeneration = 0
@@ -433,6 +442,7 @@ export class RateLimitService {
       // Why: the cookie lives on the filesystem, not GlobalSettings; surface its presence so the renderer keeps the MiniMax bar across reloads.
       minimaxCookieConfigured: hasMiniMaxSessionCookie(),
       grokAuthConfigured: this.grokAuthConfigured,
+      geminiAuthConfigured: this.geminiAuthConfigured,
       ...(this.kimiAuthConfigured === undefined
         ? {}
         : { kimiAuthConfigured: this.kimiAuthConfigured }),
@@ -1759,6 +1769,7 @@ export class RateLimitService {
     // Why: getState() is hot (renderer pushes + mobile snapshots); keep Grok's sync auth-file probe on fetch cycles instead.
     const grokAuthReadResult = readGrokAuthSession()
     this.grokAuthConfigured = grokAuthReadResult.status === 'ok'
+    this.geminiAuthConfigured = readGeminiApiKeyConfigured()
 
     // Discard stale data on config change — it belongs to a different session/workspace.
     const currentConfigHash = `${cookie}|${workspaceIdOverride}`

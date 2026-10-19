@@ -22,7 +22,7 @@ import {
   removeArtifactShareRecords,
   saveArtifactShareRecord
 } from './artifact-share-record-store'
-import { artifactSessionOriginOf } from './artifact-session-origin'
+import { artifactSessionOriginOf, artifactUpdateOriginOf } from './artifact-session-origin'
 import { artifactSourceSessionRef } from './artifact-source-session'
 import { artifactSourceReview, sourceReviewForRevision } from './artifact-source-review-origin'
 
@@ -206,7 +206,7 @@ export class ArtifactPublisher {
         auth.scope,
         record,
         item.artifact.expiresAt,
-        artifactSessionOriginOf(request),
+        artifactUpdateOriginOf(request),
         sourceReviewForRevision(reviewSource, item.artifact)
       )
       return item

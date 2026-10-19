@@ -77,15 +77,21 @@ export const SESSION_PROJECT_METHODS: RpcMethod[] = [
   defineMethod({
     name: SESSION_PROJECTS_RPC.create,
     params: SessionProjectCreateParamsSchema,
-    handler: async (_params, context) => {
+    handler: async (params, context) => {
       assertLocalSessionFolderCaller(context)
       const actor = await callerActor(context)
-      // Why every caller: a pane or steward is an agent, and the plain CLI cannot prove a person.
-      throw new Error(
-        actor.kind === 'pane' || actor.kind === 'steward' || unattendedContextFor(actor)
-          ? PROJECT_CREATE_REFUSED_AGENT
-          : PROJECT_CREATE_REFUSED_CLI
-      )
+      if (actor.kind === 'pane' || actor.kind === 'steward' || unattendedContextFor(actor)) {
+        throw new Error(PROJECT_CREATE_REFUSED_AGENT)
+      }
+      const settings = (params as { settings?: unknown }).settings
+      if (!settings || typeof settings !== 'object') {
+        throw new Error(PROJECT_CREATE_REFUSED_CLI)
+      }
+      return context.runtime.requestSessionFolders({
+        kind: 'createProject',
+        folder: params.folder,
+        settings: settings as import('../../../../shared/project-settings').ProjectSettings
+      })
     }
   }),
   defineMethod({

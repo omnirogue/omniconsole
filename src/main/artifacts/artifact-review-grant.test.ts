@@ -40,7 +40,7 @@ function status(
         statusAt: null
       }
     },
-    shareUrl: 'https://console.example.com/a/launch-plan',
+    shareUrl: 'https://app.omnisi.ai/a/launch-plan',
     status: 'pending',
     latest: null,
     decisions: [],

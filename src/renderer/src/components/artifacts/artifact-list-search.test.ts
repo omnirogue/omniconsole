@@ -23,7 +23,7 @@ function item(overrides: Partial<ArtifactListItem['artifact']> = {}): ArtifactLi
       deletedAt: null,
       ...overrides
     },
-    shareUrl: 'https://console.example.com/a/report-123'
+    shareUrl: 'https://app.omnisi.ai/a/report-123'
   }
 }
 

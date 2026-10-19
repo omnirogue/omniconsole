@@ -6,6 +6,10 @@ import {
 } from '../shared/artifact-review'
 import type { ArtifactListItem, ArtifactListPage } from '../shared/artifacts'
 import {
+  artifactSessionBindingLine,
+  type ArtifactSessionBindingNotice
+} from '../shared/artifact-session'
+import {
   artifactSessionSleepLine,
   type ArtifactSessionSleepNotice
 } from '../shared/artifact-review-sleep'
@@ -43,13 +47,20 @@ export function formatArtifactListPage(page: ArtifactListPage): string {
 }
 
 export function formatArtifactShared(
-  item: ArtifactListItem & { sessionSleep?: ArtifactSessionSleepNotice }
+  item: ArtifactListItem & {
+    sessionSleep?: ArtifactSessionSleepNotice
+    sessionBinding?: ArtifactSessionBindingNotice
+  }
 ): string {
   const review = item.artifact.review
   // Why filtered: the hints come from the server and an older or newer one may shape them differently.
   const warnings = (Array.isArray(item.warnings) ? item.warnings : [])
     .filter((warning) => typeof warning?.hint === 'string' && warning.hint)
     .map((warning) => `warning: ${warning.hint}`)
+  const binding = artifactSessionBindingLine(item.sessionBinding)
+  if (binding) {
+    warnings.push(binding)
+  }
   if (!review) {
     return [item.shareUrl, ...warnings].join('\n')
   }

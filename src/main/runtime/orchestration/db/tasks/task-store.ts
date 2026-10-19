@@ -118,8 +118,8 @@ function insertTask(
     if (run?.hub_task_id && projectionHubTaskId === null) {
       throw new OrchestrationError(
         'hub_task_read_only',
-        `Run ${run.id} is bound to omnios card ${run.hub_task_id}. Create or change business tasks and dependencies through https://console.example.com or the person's omni-console MCP. Local workers must use the existing card projection.`,
-        { runId: run.id, hubTaskId: run.hub_task_id, omniosUrl: 'https://console.example.com' }
+        `Run ${run.id} is bound to omnios card ${run.hub_task_id}. Create or change business tasks and dependencies through https://app.omnisi.ai or the person's omni-console MCP. Local workers must use the existing card projection.`,
+        { runId: run.id, hubTaskId: run.hub_task_id, omniosUrl: 'https://app.omnisi.ai' }
       )
     }
     throw new Error('A matching run authority is required to insert a task projection.')

@@ -108,7 +108,7 @@ function runtimeWithCloud(options: {
   })
   const createShare = vi.fn(async () => ({
     status: 'ok' as const,
-    value: { id: 'share-id', url: 'https://console.example.com/skills/share/share-id' }
+    value: { id: 'share-id', url: 'https://app.omnisi.ai/skills/share/share-id' }
   }))
   const runtime = new OrcaRuntimeService({
     getSettings: () => ({

@@ -20,7 +20,10 @@ import {
 } from '../../../../shared/artifact-review'
 import { ARTIFACT_ORIGIN_FIELD_MAX_CHARS } from '../../../../shared/artifact-session'
 import { SLITE_DOC_ID_PATTERN } from '../../../../shared/session-linked-docs'
-import { withResolvedArtifactOrigin } from '../../../artifacts/artifact-session-origin'
+import {
+  withSessionBindingNotice,
+  withVerifiedArtifactOrigin
+} from '../../../artifacts/artifact-origin-caller'
 import { withArtifactSessionSleep } from '../../../artifacts/artifact-review-sleep-arm'
 import {
   listReviewSleepEntries,
@@ -114,7 +117,8 @@ const OriginField = z.string().min(1).max(ARTIFACT_ORIGIN_FIELD_MAX_CHARS).optio
 const WriteOrigin = z.object({
   terminalHandle: OriginField,
   paneKey: OriginField,
-  worktreeId: OriginField
+  worktreeId: OriginField,
+  claudeSessionId: OriginField
 })
 
 const WriteRequest = z
@@ -167,25 +171,37 @@ export const ARTIFACT_METHODS: readonly RpcAnyMethod[] = [
   defineMethod({
     name: 'artifacts.share',
     params: WriteRequest,
-    handler: async (params, { runtime }) => {
-      const request = withResolvedArtifactOrigin(runtime, params)
-      return withArtifactSessionSleep(runtime, request, await runtime.shareArtifact(request))
+    handler: async (params, { runtime, callerPid }) => {
+      const request = await withVerifiedArtifactOrigin(runtime, params, callerPid)
+      const operation = await runtime.shareArtifact(request)
+      return withSessionBindingNotice(
+        request,
+        await withArtifactSessionSleep(runtime, request, operation)
+      )
     }
   }),
   defineMethod({
     name: 'artifacts.publish',
     params: WriteRequest,
-    handler: async (params, { runtime }) => {
-      const request = withResolvedArtifactOrigin(runtime, params)
-      return withArtifactSessionSleep(runtime, request, await runtime.publishArtifact(request))
+    handler: async (params, { runtime, callerPid }) => {
+      const request = await withVerifiedArtifactOrigin(runtime, params, callerPid)
+      const operation = await runtime.publishArtifact(request)
+      return withSessionBindingNotice(
+        request,
+        await withArtifactSessionSleep(runtime, request, operation)
+      )
     }
   }),
   defineMethod({
     name: 'artifacts.update',
     params: WriteRequest,
-    handler: async (params, { runtime }) => {
-      const request = withResolvedArtifactOrigin(runtime, params)
-      return withArtifactSessionSleep(runtime, request, await runtime.updateArtifact(request))
+    handler: async (params, { runtime, callerPid }) => {
+      const request = await withVerifiedArtifactOrigin(runtime, params, callerPid)
+      const operation = await runtime.updateArtifact(request)
+      return withSessionBindingNotice(
+        request,
+        await withArtifactSessionSleep(runtime, request, operation)
+      )
     }
   }),
   defineMethod({

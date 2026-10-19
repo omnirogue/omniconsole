@@ -45,9 +45,9 @@ export const SESSION_PROJECT_COMMAND_SPECS: CommandSpec[] = [
   },
   {
     path: ['folder', 'project-create'],
-    summary: 'Always refused: projects are made by a person in OmniConsole',
-    usage: 'omni folder project-create --folder <id|path>',
-    allowedFlags: [...GLOBAL_FLAGS, 'folder'],
+    summary: 'Configure a top-level folder as a project with explicit settings JSON (refused for agents)',
+    usage: 'omni folder project-create --folder <id|path> [--settings <json>] [--json]',
+    allowedFlags: [...GLOBAL_FLAGS, 'folder', 'settings'],
     positionalArgs: ['folder'],
     examples: ['omni folder project-suggest "Ads" --reason "<why>"'],
     notes: [HUMAN_MADE_NOTE]

@@ -32,6 +32,7 @@ function matcherPatternForEvent(
     case 'pre_compact':
     case 'post_compact':
     case 'session_start':
+    case 'session_end':
     case 'subagent_start':
     case 'subagent_stop':
       return matcher
@@ -202,6 +203,7 @@ function isCodexEventLabel(value: string): value is CodexEventLabel {
     value === 'pre_compact' ||
     value === 'post_compact' ||
     value === 'session_start' ||
+    value === 'session_end' ||
     value === 'user_prompt_submit' ||
     value === 'subagent_start' ||
     value === 'subagent_stop' ||

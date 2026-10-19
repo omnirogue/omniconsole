@@ -40,6 +40,7 @@ export const SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT = {
   cursor: 'cursor',
   droid: 'droid',
   kimi: 'kimi-code-cli',
+  deepseek: null,
   'mistral-vibe': 'mistral-vibe',
   'qwen-code': 'qwen-code',
   rovo: 'rovodev',

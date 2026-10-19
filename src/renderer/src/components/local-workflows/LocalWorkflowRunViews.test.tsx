@@ -204,6 +204,13 @@ describe('Discover run view', () => {
     expect(screen.getByText('Round 3 skipped: the agent limit was reached.')).toBeVisible()
   })
 
+  it('shows the hypothesis matrix of verified findings in the Verify stage', () => {
+    render(<LocalWorkflowExecutionView view={discoverRunView()} />)
+    fireEvent.click(screen.getByRole('button', { name: /Verify/ }))
+    expect(screen.getByText('Hypothesis matrix')).toBeVisible()
+    expect(screen.getAllByText('Retry drops the idempotency key').length).toBeGreaterThan(0)
+  })
+
   it('filters findings, merges repeats and reports failed finders inline', () => {
     render(<LocalWorkflowExecutionView view={discoverRunView()} />)
     const find = screen.getByRole('button', { name: /Find/ })

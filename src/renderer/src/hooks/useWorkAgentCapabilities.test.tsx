@@ -8,7 +8,10 @@ import type { ProviderRateLimits, RateLimitState } from '../../../shared/rate-li
 import type { TuiAgent } from '../../../shared/tui-agent'
 import type { AgentDetectionTarget } from './useDetectedAgents'
 
-type TestRates = Pick<RateLimitState, 'claude' | 'codex' | 'grok' | 'gemini' | 'kimiAuthConfigured'>
+type TestRates = Pick<
+  RateLimitState,
+  'claude' | 'codex' | 'grok' | 'gemini' | 'kimiAuthConfigured' | 'geminiAuthConfigured'
+>
 
 const mocks = vi.hoisted(() => ({
   scope: 0,
@@ -732,5 +735,82 @@ describe('Kimi launcher sign-in gate', () => {
     cleanup()
     mocks.remoteRates = { ...mocks.rates, kimiAuthConfigured: true }
     expect(await launcherKimi()).toBe('usable')
+  })
+})
+
+describe('Gemini API-key login', () => {
+  // Gemini's quota feed reads Google OAuth only; with that read off it answers 'unavailable'.
+  const oauthOff = (): ProviderRateLimits => ({
+    provider: 'gemini',
+    status: 'unavailable',
+    error: 'Gemini CLI OAuth is disabled in settings',
+    updatedAt: Date.now(),
+    session: null,
+    weekly: null
+  })
+  const geminiIn = async (mode: WorkAgentCapabilityMode) => {
+    const { result } = renderHook(() => useWorkAgentCapabilities('worktree-1', undefined, mode))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    return result.current.capabilities.find((entry) => entry.id === 'gemini')
+  }
+
+  it.each(['workspace-launch', 'build-review'] as const)(
+    'keeps Gemini selectable in %s when an API key is its login and OAuth usage is off',
+    async (mode) => {
+      mocks.rates = { ...mocks.rates, gemini: oauthOff(), geminiAuthConfigured: true }
+      const gemini = await geminiIn(mode)
+
+      expect(gemini).toMatchObject({ status: 'usable', usageUnchecked: true })
+      expect(gemini?.models.map(({ id }) => id)).toEqual(['gemini-3.8-flash'])
+    }
+  )
+
+  it.each([undefined, false] as const)(
+    'still rules Gemini out when the host reports no API key (%s)',
+    async (flag) => {
+      mocks.rates = { ...mocks.rates, gemini: oauthOff(), geminiAuthConfigured: flag }
+
+      // Why not logged-out: OAuth is a login this flag cannot see.
+      expect((await geminiIn('workspace-launch'))?.status).toBe('health-check-failed')
+      cleanup()
+      expect((await geminiIn('build-review'))?.status).toBe('health-check-failed')
+    }
+  )
+
+  it('keeps judging a quota reading it can read, and never waves through a failed one', async () => {
+    const exhausted = availableUsage('gemini')
+    exhausted.session!.usedPercent = 100
+    mocks.rates = { ...mocks.rates, gemini: exhausted, geminiAuthConfigured: true }
+    expect((await geminiIn('workspace-launch'))?.status).toBe('quota-exhausted')
+    cleanup()
+
+    mocks.rates = { ...mocks.rates, gemini: availableUsage('gemini') }
+    const readable = await geminiIn('workspace-launch')
+    expect(readable?.status).toBe('usable')
+    expect(readable).not.toHaveProperty('usageUnchecked')
+    cleanup()
+
+    mocks.rates = { ...mocks.rates, gemini: { ...oauthOff(), status: 'error' } }
+    expect((await geminiIn('workspace-launch'))?.status).toBe('health-check-failed')
+  })
+
+  it('needs a model listing from its CLI, so a Gemini that does not run is not selectable', async () => {
+    mocks.rates = { ...mocks.rates, gemini: oauthOff(), geminiAuthConfigured: true }
+    mocks.discovery.mockImplementation(async (_runtime, agent: TuiAgent) =>
+      agent === 'gemini' ? { success: false, error: 'gemini failed' } : discoveredModels(agent)
+    )
+
+    expect((await geminiIn('workspace-launch'))?.status).toBe('model-unavailable')
+  })
+
+  it('reads the key from the remote execution host, not the desktop', async () => {
+    mocks.target = { kind: 'runtime', environmentId: 'paired-host' }
+    mocks.rates = { ...mocks.rates, gemini: oauthOff(), geminiAuthConfigured: true }
+    mocks.remoteRates = { ...mocks.rates, geminiAuthConfigured: false }
+    expect((await geminiIn('workspace-launch'))?.status).toBe('health-check-failed')
+    cleanup()
+
+    mocks.remoteRates = { ...mocks.rates, geminiAuthConfigured: true }
+    expect((await geminiIn('workspace-launch'))?.status).toBe('usable')
   })
 })

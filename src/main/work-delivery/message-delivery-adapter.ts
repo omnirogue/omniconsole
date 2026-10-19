@@ -24,7 +24,7 @@ import { organizationFields } from '../answer-delivery/answer-delivery-target'
 import type { OrcaRuntimeService } from '../runtime/omni-runtime'
 import { readSidebarRows } from '../session-manage/session-manage-runtime-actions'
 import { locateTranscripts } from '../session-manage/session-transcript-locate'
-import type { ClaimableDelivery, WorkDeliveryKindAdapter } from './work-delivery-kind'
+import type { ClaimableDelivery, WorkDeliveryTargetAdapter } from './work-delivery-kind'
 
 type MessageContext = { provider?: unknown; conversationId?: unknown }
 
@@ -59,7 +59,7 @@ export async function holdsConversation(
 export function messageDeliveryAdapter(
   userDataPath: string,
   holdDeps?: (runtime: OrcaRuntimeService) => MessageHoldDeps
-): WorkDeliveryKindAdapter {
+): WorkDeliveryTargetAdapter {
   const depsFor =
     holdDeps ??
     ((runtime: OrcaRuntimeService): MessageHoldDeps => ({

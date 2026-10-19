@@ -414,6 +414,8 @@ import {
 } from './claude-accounts/live-pty-gate'
 import { StarNagService } from './star-nag/service'
 import { agentHookServer, type AgentHookProviderSessionIdentity } from './agent-hooks/server'
+import { setTurnEndGeneralQuestionsResolver } from '../shared/agent-hook-listener/turn-end-question'
+import { normalizeSessionQuestionsSettings } from '../shared/session-questions-settings'
 import { createTerminalSessionPrepInterceptor } from './session-prep/session-prep-terminal-wiring'
 import { sessionLedgerService } from './session-ledger/ledger-service'
 import { reportStartupHealth } from './app-health/app-health-startup'
@@ -1379,6 +1381,11 @@ function startTerminalRuntimeStartupServices(): WindowsDesktopStartupServices {
       agentHookServer.setTransportInterferenceListener((report) => {
         track('agent_hook_transport_blocked', { count: report.count })
       })
+      // Why read live: Settings › Sessions may turn turn-end questions on (default off) without a restart.
+      setTurnEndGeneralQuestionsResolver(
+        () =>
+          normalizeSessionQuestionsSettings(store?.getSettings().sessionQuestions).turnEndQuestions
+      )
       // Why: "create sessions for …" typed in a terminal Claude session goes to session prep, not that agent.
       agentHookServer.setPromptSubmitInterceptor(
         createTerminalSessionPrepInterceptor(() => runtime)
@@ -3681,7 +3688,12 @@ void app.whenReady().then(async () => {
   )
   app.once('quit', stopHandoffArtifactReviews)
   // Why here too: a QA reply on a bound Jira issue reaches its session through the same account.
-  app.once('quit', installWorkDelivery(artifactService, app.getPath('userData'), runtimeService))
+  app.once(
+    'quit',
+    installWorkDelivery(artifactService, app.getPath('userData'), runtimeService, () =>
+      store?.getSettings()
+    )
+  )
   runtimeService.setSkillCloudService(new SkillCloudService(app.getPath('userData')))
   runtimeService.setAccountServices(accountServices.services)
   accountServices.start()

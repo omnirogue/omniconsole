@@ -22,8 +22,12 @@ export function sessionDoneArchiveRevision(
 ): string | null {
   const { session } = row
   const key = conversationViewKey(session)
+  const finish = metadata.finishActions?.[key]
   const status = session.paneKey ? state.agentStatusByPaneKey[session.paneKey] : null
   if (
+    // A finished answer does not make a conversation disposable; workers opt in with --ephemeral.
+    finish?.action !== 'end' ||
+    finish.afterCompletion !== true ||
     !unique ||
     state.workspaceSessionReady !== true ||
     !session.sessionKey ||
@@ -35,7 +39,7 @@ export function sessionDoneArchiveRevision(
     row.pursuitState !== 'done' ||
     row.attention ||
     row.planNeedsYou ||
-    row.unreadCompletion ||
+    (row.unreadCompletion && sessionTabLastSeenAt(session.tabId) !== null) ||
     row.activityUnverifiable ||
     row.waitingUntil ||
     row.backgroundTaskCount ||
@@ -45,8 +49,7 @@ export function sessionDoneArchiveRevision(
     state.pendingStartupByTabId?.[session.tabId] ||
     view.deleted?.includes(key) ||
     view.autoArchiveKeep?.includes(key) ||
-    isSessionSaved(metadata, key) ||
-    ['save', 'me'].includes(metadata.finishActions?.[key]?.action ?? '')
+    isSessionSaved(metadata, key)
   ) {
     return null
   }

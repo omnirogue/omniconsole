@@ -85,7 +85,8 @@ export function judgeArchivedPane(
           ? deps.readProtection(
               state,
               { worktreeId: session.worktreeId, tabId: session.tabId, paneKey: session.paneKey },
-              touch.now
+              touch.now,
+              { ignoreStartedToday: true }
             )
           : 'protection-unknown'
     })

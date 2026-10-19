@@ -78,7 +78,7 @@ it('keeps durable artifact records usable when directory fsync is unsupported', 
         cloudUserId: 'user-a',
         cloudProfileId: 'profile-a',
         cloudOrganizationId: 'org-a',
-        apiOrigin: 'https://console.example.com'
+        apiOrigin: 'https://app.omnisi.ai'
       },
       'key-a',
       { content: 'hello', contentType: 'text/markdown', fileName: 'report.md' }

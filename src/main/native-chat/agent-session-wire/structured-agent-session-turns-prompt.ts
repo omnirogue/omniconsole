@@ -1,11 +1,25 @@
 import { parseAgentJournalItemKey } from '../../../shared/agent-session-journal-item-key'
 import type {
+  AgentJournalApprovalItem,
   AgentJournalItemBody,
+  AgentJournalItemIdentity,
+  AgentJournalQuestionItem,
   AgentJournalResolution
 } from '../../../shared/agent-session-journal-types'
 import type { AgentSessionPromptResult } from '../../../shared/agent-session-wire'
 import { decodeCodexQuestionOptionId } from '../../codex/codex-structured-prompt-replies'
+import { isAgentSessionPromptGoneError } from './structured-agent-session-prompt-error'
 import type { AgentSessionTurnContext, TurnOutcome } from './structured-agent-session-turns'
+
+const PROMPT_GONE = 'The agent stopped waiting for this answer; nothing was sent.'
+const CANCELLED: AgentJournalResolution = {
+  state: 'cancelled',
+  selectedOptionId: null,
+  resolvedBy: null,
+  resolvedAt: null
+}
+/** Prompts whose answer is with the agent now: a second answer must not reach it meanwhile. */
+const inFlight = new WeakMap<AgentSessionTurnContext['journal'], Set<string>>()
 
 function invalid(message: string): TurnOutcome<never> {
   return { ok: false, refusal: { code: 'agent_session_operation_invalid', message } }
@@ -72,21 +86,32 @@ export async function performPrompt(
     return invalid(`Item id ${input.itemId} is not a well-formed item key.`)
   }
 
-  const resolution: AgentJournalResolution = {
-    state: 'resolved',
-    selectedOptionId: input.optionId,
-    resolvedBy: ctx.resolvedBy,
-    resolvedAt: ctx.now()
-  }
-  const appended = await ctx.journal.appendItem(
-    identity,
-    { ...item.body, resolution },
-    {
-      fence: ctx.fence
+  const answering = inFlight.get(ctx.journal) ?? new Set<string>()
+  if (answering.has(input.itemId)) {
+    return {
+      ok: false,
+      refusal: {
+        code: 'agent_session_operation_conflict',
+        message: `An answer to item ${input.itemId} is already on its way to the agent; nothing more was sent.`,
+        currentRevision: item.revision
+      }
     }
-  )
-  ctx.publish()
+  }
+  inFlight.set(ctx.journal, answering.add(input.itemId))
+  try {
+    return await deliverAnswer(ctx, input, identity, item.body)
+  } finally {
+    answering.delete(input.itemId)
+  }
+}
 
+// Why the agent first: a prompt marked resolved before the agent took the answer refuses every retry.
+async function deliverAnswer(
+  ctx: AgentSessionTurnContext,
+  input: { itemId: string; optionId: string; kind: 'approval' | 'question' },
+  identity: AgentJournalItemIdentity,
+  body: AgentJournalApprovalItem | AgentJournalQuestionItem
+): Promise<TurnOutcome<AgentSessionPromptResult>> {
   try {
     await ctx.adapter.answerPrompt({
       sessionId: ctx.sessionId,
@@ -96,20 +121,76 @@ export async function performPrompt(
       fence: ctx.fence
     })
   } catch (error) {
-    await ctx.journal.appendItem(
-      { provider: 'omni', clientMessageId: `${input.itemId}#delivery` },
-      {
-        kind: 'status',
-        text: `Your answer was recorded but the agent did not confirm it: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      },
-      { fence: ctx.fence }
-    )
-    ctx.publish()
+    if (isAgentSessionPromptGoneError(error)) {
+      return cancelGonePrompt(ctx, input.itemId, identity)
+    }
+    const message = `The agent did not take your answer, so the ${input.kind} is still open; answer it again: ${
+      error instanceof Error ? error.message : String(error)
+    }`
+    await appendDeliveryStatus(ctx, input.itemId, message)
+    return invalid(message)
   }
+  const resolution: AgentJournalResolution = {
+    state: 'resolved',
+    selectedOptionId: input.optionId,
+    resolvedBy: ctx.resolvedBy,
+    resolvedAt: ctx.now()
+  }
+  const appended = await ctx.journal.appendItem(
+    identity,
+    { ...body, resolution },
+    {
+      fence: ctx.fence
+    }
+  )
+  ctx.publish()
   return {
     ok: true,
     value: { itemId: appended.itemId, revision: appended.revision, resolution }
   }
+}
+
+/** The agent stopped waiting: a retry can never deliver, so the prompt closes as cancelled. */
+async function cancelGonePrompt(
+  ctx: AgentSessionTurnContext,
+  itemId: string,
+  identity: AgentJournalItemIdentity
+): Promise<TurnOutcome<never>> {
+  const current = ctx.journal.snapshot().items.find((entry) => entry.itemId === itemId)
+  const body = current?.body
+  if (!current || !body || (body.kind !== 'approval' && body.kind !== 'question')) {
+    return invalid(`No prompt ${itemId} in session ${ctx.sessionId}.`)
+  }
+  let revision = current.revision
+  let resolution = body.resolution
+  // Why re-read: the provider's own events may have settled it while the answer was out.
+  if (resolution.state === 'pending') {
+    resolution = CANCELLED
+    revision = (
+      await ctx.journal.appendItem(identity, { ...body, resolution }, { fence: ctx.fence })
+    ).revision
+    await appendDeliveryStatus(ctx, itemId, PROMPT_GONE)
+  }
+  return {
+    ok: false,
+    refusal: {
+      code: 'agent_session_already_resolved',
+      message: PROMPT_GONE,
+      currentRevision: revision,
+      resolution
+    }
+  }
+}
+
+async function appendDeliveryStatus(
+  ctx: AgentSessionTurnContext,
+  itemId: string,
+  text: string
+): Promise<void> {
+  await ctx.journal.appendItem(
+    { provider: 'omni', clientMessageId: `${itemId}#delivery` },
+    { kind: 'status', text },
+    { fence: ctx.fence }
+  )
+  ctx.publish()
 }

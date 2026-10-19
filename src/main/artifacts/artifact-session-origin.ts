@@ -5,6 +5,7 @@ import {
   sanitizeArtifactSessionOrigin
 } from '../../shared/artifact-session'
 import { parsePaneKey } from '../../shared/stable-pane-id'
+import { ledgerIdentityForPane } from '../session-ledger/ledger-lookup'
 
 /** The slice of the runtime that knows which pane and workspace a terminal handle belongs to. */
 export type ArtifactTerminalIdentitySource = {
@@ -56,9 +57,36 @@ export function withResolvedArtifactOrigin<T extends ArtifactWriteRequest>(
   return (resolved ? { ...rest, origin: resolved } : rest) as T
 }
 
-/** The stored form of a request's origin, if it carries one. */
-export function artifactSessionOriginOf(
-  request: Pick<ArtifactWriteRequest, 'origin'>
-): ArtifactSessionOrigin | undefined {
-  return sanitizeArtifactSessionOrigin(request.origin) ?? undefined
+type PinnedRequest = Pick<ArtifactWriteRequest, 'origin' | 'verifiedSession'>
+
+/** The terminal now runs another conversation than the one verified for this write. */
+export function artifactSessionSwitched(request: PinnedRequest): boolean {
+  const paneKey = sanitizeArtifactSessionOrigin(request.origin)?.paneKey
+  const pin = request.verifiedSession
+  if (!paneKey || !pin) {
+    return false
+  }
+  const now = ledgerIdentityForPane(paneKey)
+  return (
+    (pin.ledgerId !== undefined && pin.ledgerId !== now.ledgerId) ||
+    (pin.nativeSessionId !== undefined && pin.nativeSessionId !== now.nativeSessionId)
+  )
+}
+
+/**
+ * The stored form of a request's origin, if it carries one. Read when each piece is published, so
+ * a conversation that replaced the verified one meanwhile never inherits the page.
+ */
+export function artifactSessionOriginOf(request: PinnedRequest): ArtifactSessionOrigin | undefined {
+  const origin = sanitizeArtifactSessionOrigin(request.origin) ?? undefined
+  return origin && artifactSessionSwitched(request) ? undefined : origin
+}
+
+/** What an update stores: null clears a terminal whose command was refused, undefined keeps it. */
+export function artifactUpdateOriginOf(
+  request: PinnedRequest & Pick<ArtifactWriteRequest, 'unboundReason'>
+): ArtifactSessionOrigin | null | undefined {
+  return request.unboundReason || artifactSessionSwitched(request)
+    ? null
+    : artifactSessionOriginOf(request)
 }

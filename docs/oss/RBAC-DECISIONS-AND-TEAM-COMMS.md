@@ -16,7 +16,7 @@ not evidence that every hosted deployment implements them. The connected server'
 
 | Surface | Endpoint | Relevant tools |
 | --- | --- | --- |
-| OmniConsole estate | `https://console.example.com/mcp` | `whoami`, `connect_services`, `capabilities`, `explain_access`, `invoke`, `artifact_*`, `peer_*` |
+| OmniConsole estate | `https://console.omnisi.ai/mcp` | `whoami`, `connect_services`, `capabilities`, `explain_access`, `invoke`, `artifact_*`, `peer_*` |
 | OmniSI Cloud | `https://app.omnisi.ai/mcp` | `whoami`, `decision_*`, `study_*`, `page_*`, `session_*`, `relay_*`, `tools_list`, `tools_call`, subject to registration |
 
 The desktop configuration names these `omni-console` and `omnisi`. Preserve an

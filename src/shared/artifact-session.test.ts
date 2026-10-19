@@ -5,12 +5,12 @@ import {
   sanitizeArtifactSessionOrigin
 } from './artifact-session'
 
-const API = 'https://console.example.com'
+const API = 'https://app.omnisi.ai'
 
 describe('artifact content URLs', () => {
   it('round-trips a slug through the content URL', () => {
     const url = artifactContentUrl(API, 'plan_2-a')
-    expect(url).toBe('https://console.example.com/a/plan_2-a/content')
+    expect(url).toBe('https://app.omnisi.ai/a/plan_2-a/content')
     expect(parseArtifactContentUrl(url, API)).toBe('plan_2-a')
   })
 

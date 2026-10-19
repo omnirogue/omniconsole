@@ -8,7 +8,8 @@ import {
   normalizeAgentTemplateSettings,
   resolveAgentTemplates,
   type AgentTemplate,
-  type AgentTemplateSettings
+  type AgentTemplateSettings,
+  type PreferredAgent
 } from './agent-templates'
 
 /**
@@ -18,6 +19,7 @@ import {
 
 const MAX_NAME_LENGTH = 80
 const MAX_DESCRIPTION_LENGTH = 200
+const MAX_MEMORY_LENGTH = 500
 
 export type AgentTemplateRecord = AgentTemplate & { digest: string }
 
@@ -26,6 +28,12 @@ export type AgentTemplateEdit = {
   name?: string
   description?: string
   instructions: string
+  preferredModel?: string
+  preferredAgent?: PreferredAgent
+  skills?: readonly string[]
+  defaultSkills?: readonly string[]
+  callableSkills?: readonly string[]
+  memory?: string
 }
 
 export type AgentTemplateEditResult =
@@ -90,6 +98,7 @@ export function applyAgentTemplateEdit(
   )
   const name = checkText('Name', edit.name, MAX_NAME_LENGTH)
   const description = checkText('Description', edit.description, MAX_DESCRIPTION_LENGTH)
+  const memory = checkText('Memory', edit.memory, MAX_MEMORY_LENGTH)
   if (!instructions.ok) {
     return instructions
   }
@@ -99,9 +108,13 @@ export function applyAgentTemplateEdit(
   if (!description.ok) {
     return description
   }
+  if (!memory.ok) {
+    return memory
+  }
   const text = instructions.value ?? ''
   const newName = name.value
   const newDescription = description.value
+  const newMemory = memory.value
   const current = normalizeAgentTemplateSettings(stored)
   let next: AgentTemplateSettings
   if (isBuiltinAgentTemplateId(edit.id, current.custom)) {
@@ -116,7 +129,13 @@ export function applyAgentTemplateEdit(
         [edit.id]: {
           ...override,
           instructions: text,
-          ...(newDescription !== undefined ? { description: newDescription } : {})
+          ...(newDescription !== undefined ? { description: newDescription } : {}),
+          ...(edit.preferredModel !== undefined ? { preferredModel: edit.preferredModel } : {}),
+          ...(edit.preferredAgent !== undefined ? { preferredAgent: edit.preferredAgent } : {}),
+          ...(edit.skills !== undefined ? { skills: edit.skills } : {}),
+          ...(edit.defaultSkills !== undefined ? { defaultSkills: edit.defaultSkills } : {}),
+          ...(edit.callableSkills !== undefined ? { callableSkills: edit.callableSkills } : {}),
+          ...(newMemory !== undefined ? { memory: newMemory } : {})
         }
       }
     }
@@ -135,6 +154,12 @@ export function applyAgentTemplateEdit(
       ...(existing ?? { id: edit.id, name: newName!, description: '' }),
       ...(newName !== undefined ? { name: newName } : {}),
       ...(newDescription !== undefined ? { description: newDescription } : {}),
+      ...(edit.preferredModel !== undefined ? { preferredModel: edit.preferredModel } : {}),
+      ...(edit.preferredAgent !== undefined ? { preferredAgent: edit.preferredAgent } : {}),
+      ...(edit.skills !== undefined ? { skills: edit.skills } : {}),
+      ...(edit.defaultSkills !== undefined ? { defaultSkills: edit.defaultSkills } : {}),
+      ...(edit.callableSkills !== undefined ? { callableSkills: edit.callableSkills } : {}),
+      ...(newMemory !== undefined ? { memory: newMemory } : {}),
       instructions: text
     }
     next = {

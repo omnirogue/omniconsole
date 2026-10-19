@@ -12,7 +12,7 @@ import {
 } from './work-plan-types'
 import { councilWorkPlan } from './__fixtures__/work-plan/council-work-plan'
 import { outcomeGateWorkPlan } from './__fixtures__/work-plan/outcome-gate-work-plan'
-import { samWorkPlan } from './__fixtures__/work-plan/example-work-plan'
+import { samWorkPlan } from './__fixtures__/work-plan/sal-work-plan'
 import {
   WORK_PLAN_FIXTURE_ACTORS,
   workPlanFixtureContext

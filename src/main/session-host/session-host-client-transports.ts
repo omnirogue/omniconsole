@@ -17,8 +17,18 @@ import {
 } from '../../shared/session-host-client-declaration'
 import type { SessionHostReceivedRefusal } from '../../shared/session-host-refusal'
 import type { RuntimeRpcResponse } from '../../shared/runtime-rpc-envelope'
+import { SESSION_HOST_RPC } from '../../shared/session-host-protocol'
 
 const SESSION_HOST_REQUEST_TIMEOUT_MS = 30_000
+/** A restart waits up to 30 s on its host for the agent's own report, so its reply needs longer. */
+const SESSION_HOST_RESTART_TIMEOUT_MS = 45_000
+
+export function sessionHostCallTimeoutMs(method: string, params: unknown): number {
+  return method === SESSION_HOST_RPC.execute &&
+    (params as { action?: unknown } | null)?.action === 'restart'
+    ? SESSION_HOST_RESTART_TIMEOUT_MS
+    : SESSION_HOST_REQUEST_TIMEOUT_MS
+}
 
 export type RuntimeSessionHostRequest = (
   method: string,
@@ -47,7 +57,7 @@ export function runtimeSessionHostTransport(
       return runtimeAdvertisement(response.result)
     },
     call: async (method, params) => {
-      const response = await request(method, params, SESSION_HOST_REQUEST_TIMEOUT_MS)
+      const response = await request(method, params, sessionHostCallTimeoutMs(method, params))
       return response.ok
         ? { ok: true, result: response.result, incarnation: response._meta.runtimeId }
         : { ok: false, error: response.error }
@@ -98,7 +108,7 @@ export function sshSessionHostTransport(input: {
     call: async (method, params) => {
       try {
         const result = await input.mux().request(method, params as Record<string, unknown>, {
-          timeoutMs: SESSION_HOST_REQUEST_TIMEOUT_MS
+          timeoutMs: sessionHostCallTimeoutMs(method, params)
         })
         return { ok: true, result }
       } catch (error) {

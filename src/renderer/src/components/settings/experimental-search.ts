@@ -5,6 +5,7 @@ import { translateSearchKeyword } from './settings-search-keywords'
 import { getNewWorktreeCardStyleSearchEntry } from './new-worktree-card-style-search-entry'
 import { getNativeChatExperimentalSearchEntry } from './native-chat-experimental-search-entry'
 import { getEphemeralVmsSearchEntry } from './ephemeral-vms-search'
+import { getOmniSiPreviewsSearchEntry } from './omnisi-previews-search'
 import { getIdleAutoCloseSearchEntry } from './idle-auto-close-search-entry'
 import { getCommandCenterExperimentalSearchEntry } from './command-center-experimental-search-entry'
 
@@ -233,7 +234,8 @@ export const getExperimentalPaneSearchEntries = createLocalizedCatalog(
     },
     getIdleAutoCloseSearchEntry(),
     getNewWorktreeCardStyleSearchEntry(),
-    getEphemeralVmsSearchEntry()
+    getEphemeralVmsSearchEntry(),
+    getOmniSiPreviewsSearchEntry()
   ]
 )
 
@@ -281,6 +283,7 @@ export function getExperimentalSearchEntry() {
     ),
     ephemeralVms: findEntry(
       translate('auto.components.settings.ephemeralVms.search.cloudVmTitle', 'Cloud VM')
-    )
+    ),
+    omniSiPreviews: findEntry(getOmniSiPreviewsSearchEntry().title)
   } as const
 }

@@ -7,6 +7,9 @@ import type { CodexEventLabel, CodexTrustEntry } from './config-toml-trust'
 // install, status, and write-back promotion paths cannot drift.
 export const CODEX_HOOK_EVENT_LABEL: Record<string, CodexEventLabel> = {
   SessionStart: 'session_start',
+  // Why: without it every mirrored SessionEnd user hook got no trust entry, so Codex asked
+  // "Hooks need review" in each managed account it reached (17 Oct 2026).
+  SessionEnd: 'session_end',
   UserPromptSubmit: 'user_prompt_submit',
   SubagentStart: 'subagent_start',
   SubagentStop: 'subagent_stop',
@@ -20,6 +23,7 @@ export const CODEX_HOOK_EVENT_LABEL: Record<string, CodexEventLabel> = {
 
 export const CODEX_EVENT_NAME_BY_LABEL: Record<CodexEventLabel, string> = {
   session_start: 'SessionStart',
+  session_end: 'SessionEnd',
   user_prompt_submit: 'UserPromptSubmit',
   subagent_start: 'SubagentStart',
   subagent_stop: 'SubagentStop',

@@ -63,7 +63,7 @@ describe('codex structured launch resolution', () => {
       })
     })
     await expect(resolveLaunch({ identity: IDENTITY })).resolves.toMatchObject({
-      env: { OMNI_TASK_ID: 'btk_1234', OMNIOS_URL: 'https://console.example.com', PATH: '/bin' }
+      env: { OMNI_TASK_ID: 'btk_1234', OMNIOS_URL: 'https://app.omnisi.ai', PATH: '/bin' }
     })
   })
 
@@ -71,7 +71,7 @@ describe('codex structured launch resolution', () => {
     await expect(
       resolverFor(record({ hubTaskId: 'btk_1234' }))({ identity: IDENTITY })
     ).resolves.toMatchObject({
-      env: { OMNI_TASK_ID: 'btk_1234', OMNIOS_URL: 'https://console.example.com' }
+      env: { OMNI_TASK_ID: 'btk_1234', OMNIOS_URL: 'https://app.omnisi.ai' }
     })
   })
 

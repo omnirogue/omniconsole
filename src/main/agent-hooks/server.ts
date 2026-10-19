@@ -8,6 +8,18 @@ import { HookProcessIdentity, readAgentPid } from './hook-process-identity'
 import { SourcePromptAuthority, type SourcePromptRecord } from './source-prompt-authority'
 import type { PriorWorkShadow } from './prior-work-shadow'
 import { nextStepChatHookReplyBody } from '../../shared/next-step-chat-hook-reply'
+import type {
+  AgentHookAnswerReplies,
+  AgentHookAnswerReply
+} from '../answer-inbox/hook-answer-reply'
+import {
+  compactAnswerEvent,
+  HOOK_ANSWER_ACK_PATHNAME,
+  HookAnswerGate,
+  hookAnswerReplyOpen,
+  hookAnswerResponseBody,
+  PaneStatusEpochs
+} from './hook-answer-gate'
 import { pendingSessionAsk } from '../../shared/session-questions'
 import { quotedQuestionLine } from '../../shared/codex-async-question'
 import type { ShownAsyncQuestion } from '../../shared/codex-async-question-dismissal'
@@ -632,6 +644,38 @@ function shouldKeepClaudePermissionVisible(
   return true
 }
 
+function isClaudeQuestionSiblingToolEvent(
+  previous: EnrichedAgentHookEventPayload | undefined,
+  next: AgentHookEventPayload
+): boolean {
+  if (
+    previous?.restoredUnconfirmed ||
+    previous?.payload.agentType !== 'claude' ||
+    previous.payload.state !== 'waiting' ||
+    !isAskUserQuestionTool(previous.payload.toolName) ||
+    previous.payload.interactivePrompt === undefined ||
+    next.payload.agentType !== 'claude' ||
+    next.toolAgentId !== undefined ||
+    (next.hookEventName !== 'PreToolUse' &&
+      next.hookEventName !== 'PostToolUse' &&
+      next.hookEventName !== 'PostToolUseFailure')
+  ) {
+    return false
+  }
+  const questionToolUseId = previous.toolUseId?.trim() || undefined
+  const nextToolUseId = next.toolUseId?.trim() || undefined
+  // Why: only the listener can tell a parallel sibling from later work; it re-emits the same open
+  // card for a sibling, so key on that plus a different tool_use_id and keep the question's own
+  // identity (toolUseId, receivedAt for the typed-answer baseline) instead of the sibling's.
+  return (
+    questionToolUseId !== undefined &&
+    nextToolUseId !== undefined &&
+    nextToolUseId !== questionToolUseId &&
+    next.payload.state === 'waiting' &&
+    next.payload.interactivePrompt === previous.payload.interactivePrompt
+  )
+}
+
 function isClaudePermissionOwningChildEnding(
   previous: EnrichedAgentHookEventPayload,
   next: AgentHookEventPayload
@@ -771,6 +815,8 @@ export class AgentHookServer {
   private onAgentStatus: ((payload: EnrichedAgentHookEventPayload) => void) | null = null
   private onClaudeStatusLine: ((event: ClaudeStatusLineRateLimits) => void) | null = null
   private promptSubmitInterceptor: AgentHookPromptSubmitInterceptor | null = null
+  private readonly answerGate = new HookAnswerGate()
+  private readonly answerStatusEpochs = new PaneStatusEpochs()
   private priorWorkShadow: PriorWorkShadow | null = null
   private onPaneStatusCleared: PaneStatusClearListener | null = null
   private paneStatusClearListeners = new Set<PaneStatusClearListener>()
@@ -868,6 +914,11 @@ export class AgentHookServer {
   // reply, so that agent never sees it (the chat composer diverts the same request before sending).
   setPromptSubmitInterceptor(interceptor: AgentHookPromptSubmitInterceptor | null): void {
     this.promptSubmitInterceptor = interceptor
+  }
+
+  // Why: OmniOS answers ride the agent's own hook reply (answerDelivery.hookFirst pilot).
+  setAnswerReplyProvider(replies: AgentHookAnswerReplies | null): void {
+    this.answerGate.set(replies)
   }
 
   setPriorWorkShadow(shadow: PriorWorkShadow | null): void {
@@ -976,6 +1027,12 @@ export class AgentHookServer {
     }
     this.recordCurrentAuthorityObservation(event)
     this.applyNormalizedStatus(event, normalized.onAccepted)
+    this.answerGate.replayed({
+      source: record.source,
+      body,
+      event: normalized.event,
+      at: record.receivedAt
+    })
     // Why: child polls reuse the remembered lead body; a spooled lead hook makes it stale.
     if (record.source === 'codex' && !event.toolAgentId) {
       this.codexLeadPollBodyByPaneKey.delete(event.paneKey)
@@ -1698,12 +1755,13 @@ export class AgentHookServer {
     /** False for a row rewritten here: its pid is data, never proof of who owns the pane now. */
     bindsProcess = true
   ): EnrichedAgentHookEventPayload {
+    this.answerStatusEpochs.bump(this.resolvePaneKeyAlias(payload.paneKey))
     if (payload.hookEventName === 'UserPromptSubmit') {
       // Why: the prompt boundary is authoritative even when text is unchanged; its next OSC working row must not inherit the prior cron/background turn stamp.
       this.activeHookTurnCompletedAtByPaneKey.delete(payload.paneKey)
     }
     if (
-      payload.payload.agentType === 'codex' &&
+      (payload.payload.agentType === 'codex' || payload.payload.agentType === 'claude') &&
       !payload.toolAgentId &&
       (payload.hookEventName === 'UserPromptSubmit' || payload.hookEventName === 'SessionStart')
     ) {
@@ -1719,7 +1777,7 @@ export class AgentHookServer {
       }
     }
     if (
-      payload.payload.agentType === 'codex' &&
+      (payload.payload.agentType === 'codex' || payload.payload.agentType === 'claude') &&
       !payload.toolAgentId &&
       payload.hookEventName === 'Stop'
     ) {
@@ -1856,6 +1914,10 @@ export class AgentHookServer {
     const effectivePayload = attachClaudePermissionToolUseId(previous, identityResolvedPayload)
     const boundaryAwarePayload = attachClaudeChildOnlyBoundary(previous, effectivePayload)
     if (previous && shouldKeepClaudePermissionVisible(previous, effectivePayload)) {
+      return previous
+    }
+    // Why: a parallel sibling's tool hook must not replace the open question's identity with its own.
+    if (previous && isClaudeQuestionSiblingToolEvent(previous, effectivePayload)) {
       return previous
     }
     // Why: some TUIs emit a delayed tool/working hook after Ctrl+C stopped the turn; don't let it resurrect the row.
@@ -2331,6 +2393,7 @@ export class AgentHookServer {
       this.currentAuthorityObservations.delete(key)
       this.promptSentDedupeByPaneKey.delete(key)
       this.observations.forget(key)
+      this.answerStatusEpochs.forget(key)
     }
     if (aliasChanged) {
       this.notifyPaneKeyAliasPersistenceListener()
@@ -2509,6 +2572,10 @@ export class AgentHookServer {
     if (!this.acceptsLocalHookBody(body)) {
       return { event: null }
     }
+    if (source === 'codex') {
+      const event = normalizeHookPayload(this.state, source, body, this.env)
+      return { event: event && this.isCodexUnsavedSideThread(event) ? null : event }
+    }
     if (source !== 'claude' || typeof body !== 'object' || body === null) {
       return { event: normalizeHookPayload(this.state, source, body, this.env) }
     }
@@ -2531,6 +2598,22 @@ export class AgentHookServer {
       event,
       onAccepted: () => this.setClaudeBackgroundEvidence(paneKey, nextRunningTask, nextActiveCron)
     }
+  }
+
+  /** A hook from a Codex thread that is never saved, in a tab already holding a saved conversation.
+   *  Why: Codex's memories feature runs a "Memory Writing Agent" thread inside the same process after a
+   *  turn; its hooks carry that thread's id and no transcript_path, and the tab took that id as its
+   *  conversation, so the launched one vanished from the sidebar (18 Oct 2026, Codex 0.160). */
+  private isCodexUnsavedSideThread(event: AgentHookEventPayload): boolean {
+    const next = event.providerSession
+    if (event.payload.agentType !== 'codex' || event.toolAgentId || !next || next.transcriptPath) {
+      return false
+    }
+    const previous =
+      this.state.lastStatusByPaneKey.get(event.paneKey) ??
+      this.state.lastStatusByPaneKey.get(this.resolvePaneKeyAlias(event.paneKey))
+    const known = previous?.payload.agentType === 'codex' ? previous.providerSession : undefined
+    return Boolean(known?.transcriptPath) && known?.id !== next.id
   }
 
   private setClaudeBackgroundEvidence(
@@ -2991,7 +3074,11 @@ export class AgentHookServer {
           this.hookEvents.noteDrained(this.resolvePaneKeyAlias(record.paneKey), record.receivedAt)
       })
     }
-    const handleRequest = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    const handleRequest = async (
+      req: IncomingMessage,
+      res: ServerResponse,
+      openedAt: number
+    ): Promise<void> => {
       if (req.method !== 'POST') {
         res.writeHead(404)
         res.end()
@@ -3015,6 +3102,12 @@ export class AgentHookServer {
       const pathname = new URL(req.url ?? '/', 'http://127.0.0.1').pathname
       try {
         const body = await readRequestBody(req)
+        if (pathname === HOOK_ANSWER_ACK_PATHNAME) {
+          this.answerGate.ack(body)
+          res.writeHead(204)
+          res.end()
+          return
+        }
         if (pathname === CLAUDE_STATUSLINE_PATHNAME) {
           const statusLineEvent = parseClaudeStatusLineBody(body)
           if (statusLineEvent) {
@@ -3073,36 +3166,89 @@ export class AgentHookServer {
           return
         }
         let pointer: string | null = null
+        let answer: AgentHookAnswerReply | null = null
+        let recordIfUnacked: (() => void) | null = null
         if (normalized.event && statusDisposition !== 'suppress') {
+          const accepted = normalized.event
           const event =
-            statusDisposition === 'restart'
-              ? { ...normalized.event, launchToken: undefined }
-              : normalized.event
-          if (statusDisposition === 'restart') {
-            // Why: a retired pane accepting a new turn is a different agent session behind the
-            // same key — later observations must not be ordered against the retired one.
-            this.observations.rebind(event.paneKey)
-          }
-          if (this.sourcePrompts.invalidate(event)) {
-            this.flushStatusPersistSync()
-          }
-          this.recordCurrentAuthorityObservation(event)
-          const enriched = this.applyNormalizedStatus(event, normalized.onAccepted)
-          this.sourcePrompts.observe(event, aliasedBody)
-          if (event.hasExplicitPrompt || event.hookEventName === 'SessionStart') {
-            this.flushStatusPersistSync()
-          }
-          this.scheduleAssistantMessageRetry(source, aliasedBody, enriched)
-          this.scheduleCodexSubagentPoll(source, aliasedBody, enriched)
+            statusDisposition === 'restart' ? { ...accepted, launchToken: undefined } : accepted
           // Why: a "wait for X, then Y" or next-step message gets one pointer at `outcome context`;
           // every other prompt reaches the agent as typed (Sal, 2026-09-24).
           pointer = nextStepChatHookReplyBody({ source, event, body: aliasedBody })
-          // Why: shadow only (W2-A8) — it logs prior-work candidates later and never changes this reply.
-          this.priorWorkShadow?.observe(source, event, aliasedBody)
+          answer = this.answerGate.reply({
+            source,
+            body: aliasedBody,
+            event: accepted,
+            pointer,
+            deliverable: () => hookAnswerReplyOpen(req, openedAt)
+          })
+          const record = (): void => {
+            if (statusDisposition === 'restart') {
+              // Why: a retired pane accepting a new turn is a different agent session behind the
+              // same key — later observations must not be ordered against the retired one.
+              this.observations.rebind(event.paneKey)
+            }
+            if (this.sourcePrompts.invalidate(event)) {
+              this.flushStatusPersistSync()
+            }
+            this.recordCurrentAuthorityObservation(event)
+            const enriched = this.applyNormalizedStatus(event, normalized.onAccepted)
+            this.sourcePrompts.observe(event, aliasedBody)
+            if (event.hasExplicitPrompt || event.hookEventName === 'SessionStart') {
+              this.flushStatusPersistSync()
+            }
+            this.scheduleAssistantMessageRetry(source, aliasedBody, enriched)
+            this.scheduleCodexSubagentPoll(source, aliasedBody, enriched)
+            // Why: shadow only (W2-A8) — it logs prior-work candidates later and never changes this reply.
+            this.priorWorkShadow?.observe(source, event, aliasedBody)
+          }
+          // Why: a Stop an answer blocks is not the end of the turn; it ends only if never acknowledged,
+          // and never over a newer observation of the pane or after its launch changed.
+          if (answer?.continuesTurn) {
+            const unchanged = this.answerStatusEpochs.fence(this.resolvePaneKeyAlias(event.paneKey))
+            const disposition = () =>
+              this.getAgentStatusDisposition(accepted.paneKey, {
+                source,
+                hookEventName: accepted.hookEventName,
+                isReplay: accepted.isReplay,
+                hasExplicitPrompt: accepted.hasExplicitPrompt,
+                launchToken: accepted.launchToken
+              })
+            recordIfUnacked = () => {
+              if (unchanged() && disposition() === statusDisposition) {
+                record()
+              }
+            }
+          } else {
+            record()
+          }
+        } else {
+          // Why: a compaction's SessionStart records no status, yet may carry an unconfirmed answer.
+          const compact = compactAnswerEvent(source, aliasedBody)
+          if (
+            compact &&
+            this.getAgentStatusDisposition(compact.paneKey, {
+              source,
+              hookEventName: 'SessionStartCompact',
+              launchToken: compact.launchToken
+            }) === 'accept'
+          ) {
+            answer = this.answerGate.reply({
+              source,
+              body: aliasedBody,
+              event: compact,
+              pointer: null,
+              deliverable: () => hookAnswerReplyOpen(req, openedAt)
+            })
+          }
         }
-        if (pointer) {
+        const reply = answer ? hookAnswerResponseBody(answer) : pointer
+        if (reply) {
+          if (answer) {
+            this.answerGate.track(res, answer, () => recordIfUnacked?.())
+          }
           res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(pointer)
+          res.end(reply)
           return
         }
         res.writeHead(204)
@@ -3122,7 +3268,7 @@ export class AgentHookServer {
     }
     // Why: node ignores a returned promise, so the handler must settle it itself; handleRequest never rejects.
     this.server = createServer((req, res) => {
-      void handleRequest(req, res)
+      void handleRequest(req, res, Date.now())
     })
 
     await new Promise<void>((resolve, reject) => {

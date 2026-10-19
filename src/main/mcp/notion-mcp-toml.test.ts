@@ -12,7 +12,7 @@ describe('providing Notion in a TOML config', () => {
 
   it('keeps a person comments, ordering and other servers by appending', () => {
     const existing =
-      '# my notes\n[mcp_servers."omni-console"]\nurl = "https://console.example.com/mcp"\n'
+      '# my notes\n[mcp_servers."omni-console"]\nurl = "https://console.omnisi.ai/mcp"\n'
 
     const merged = mergeNotionMcpToml(existing)
 
@@ -40,8 +40,7 @@ describe('providing Notion in a TOML config', () => {
 
   it('falls back to a rewrite when the config cannot take an appended table', () => {
     // An inline table cannot be extended by appending [mcp_servers."notion"].
-    const inline =
-      'mcp_servers = { "omni-console" = { url = "https://console.example.com/mcp" } }\n'
+    const inline = 'mcp_servers = { "omni-console" = { url = "https://console.omnisi.ai/mcp" } }\n'
 
     const merged = mergeNotionMcpToml(inline)
 

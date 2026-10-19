@@ -24,7 +24,7 @@ import {
   consoleWorkflowLoopStopRule
 } from './console-workflow-loop'
 import { workPlanNodeInstruction } from './work-plan-instruction'
-import { samWorkPlan } from './__fixtures__/work-plan/example-work-plan'
+import { samWorkPlan } from './__fixtures__/work-plan/sal-work-plan'
 import { councilWorkPlan } from './__fixtures__/work-plan/council-work-plan'
 
 describe('work plan roles', () => {

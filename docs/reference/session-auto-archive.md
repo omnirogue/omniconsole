@@ -1,5 +1,12 @@
 # Completed sessions and automatic archive
 
+Ordinary conversations stay open when an agent finishes answering. Automatic
+Done archiving requires an explicit **When finished: End** choice, as installed
+by `omni session launch --ephemeral` for disposable agent work. A missing choice,
+Keep open, Save, and an outcome-only finish preference never qualify for this
+background archive path. Clearing the choice cancels its Done clock. Existing
+finite orchestration workers still use their accepted-result cleanup contract.
+
 The Conversations clock menu has two independent controls: **Fold idle groups**
 (presentation only), and **Archive completed sessions**. Archive defaults to two
 hours continuously Done, has Off, preset delays and a custom 1–43,200 minute

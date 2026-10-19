@@ -5,12 +5,15 @@
  */
 
 import type { ArtifactCloudService } from '../artifacts/artifact-cloud-service'
+import type { GlobalSettings } from '../../shared/global-settings-types'
 import { clearClaimerPolled, noteClaimerPolled } from '../answer-delivery/answer-delivery-handover'
 import { answerLoginGate } from '../answer-delivery/answer-login-gate'
 import { loginCutOf } from '../answer-delivery/login-killed-turns'
 import { questionDeliveryAdapter } from '../answer-delivery/question-delivery-adapter'
 import { reviewDeliveryAdapter } from '../answer-delivery/review-delivery-adapter'
 import { agentHookServer } from '../agent-hooks/server'
+import { installHookFirstAnswers } from '../answer-inbox/answer-inbox-install'
+import { answerInboxRuntime } from '../answer-inbox/answer-inbox-runtime'
 import { reviewHostLabel } from '../artifacts/artifact-source-state-report'
 import type { OrcaRuntimeService } from '../runtime/omni-runtime'
 import { readSidebarRows } from '../session-manage/session-manage-runtime-actions'
@@ -42,7 +45,9 @@ function claimerPollNoted(api: WorkDeliveryApi): WorkDeliveryApi {
 export function installWorkDelivery(
   service: ArtifactCloudService,
   userDataPath: string,
-  runtime: OrcaRuntimeService
+  runtime: OrcaRuntimeService,
+  /** Reads answerDelivery.hookFirst; absent keeps every delivery on the typed path. */
+  settings?: () => Partial<GlobalSettings> | null | undefined
 ): () => void {
   if (process.env.OMNI_WORK_DELIVERY === '0') {
     return () => {}
@@ -58,16 +63,27 @@ export function installWorkDelivery(
   let stopped = false
   let timer: NodeJS.Timeout | null = null
   let unhook: (() => void) | null = null
+  let hookFirst: ReturnType<typeof installHookFirstAnswers> | null = null
   void reviewHostLabel().then((hostLabel) => {
     if (stopped) {
       return
     }
     const api = claimerPollNoted(workDeliveryApi(service))
-    const deps = {
+    const base = {
       ...runtimeWorkDeliveryDeps({ runtime, userDataPath, api, hostLabel, adapters }),
       loginReady: answerLoginGate(runtime),
       loginCut: (pane: { paneKey: string }, since: number) => loginCutOf(pane.paneKey, since)
     }
+    hookFirst = settings
+      ? installHookFirstAnswers({
+          userDataPath,
+          settings,
+          hookServer: agentHookServer,
+          ...answerInboxRuntime(runtime)
+        })
+      : null
+    // The one routing point: hook-first wraps enqueue/resume/queue state, and passes through when off.
+    const deps = hookFirst ? hookFirst.router.wrap(base) : base
     const claimer = new WorkDeliveryClaimer(deps)
     const bind = installWorkBinder((request) =>
       bindWorkOwner({ runtime, api, hostId: deps.hostId(), hostLabel }, request)
@@ -95,6 +111,7 @@ export function installWorkDelivery(
     clearClaimerPolled()
     installWorkBinder(null)
     unhook?.()
+    hookFirst?.stop()
     if (timer) {
       clearInterval(timer)
     }

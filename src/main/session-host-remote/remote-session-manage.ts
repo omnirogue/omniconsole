@@ -89,8 +89,14 @@ function summaryOf(
       return `Would ask the computer that runs ${name} to ${VERB[action]}.`
     case 'pending':
       return `Sent to the computer that runs ${name}; it has not confirmed yet (operation ${outcome.operationId}). It is never resent.`
-    case 'completed':
+    case 'completed': {
+      const result = outcome.operation.result as { outcome?: unknown; reason?: unknown } | null
+      if (result?.outcome === 'started_unconfirmed') {
+        const reason = typeof result.reason === 'string' ? `: ${result.reason}` : ''
+        return `The computer that runs ${name} started it again, but it is not confirmed${reason}. Check it before sending it anything.`
+      }
       return `The computer that runs ${name} did it (${VERB[action]}).`
+    }
   }
 }
 

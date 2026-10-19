@@ -8,6 +8,7 @@ import { COMPUTER_ERROR_CODES } from '../../../shared/runtime-types'
 import { LINEAR_ERROR_CODES } from '../../../shared/linear/agent-access'
 import { AGENT_SESSION_RPC_ERROR_CODES } from '../../../shared/agent-session-host-authority'
 import { AGENT_LAUNCH_REFUSAL_CODES } from '../../../shared/agent-launch-account'
+import { WORK_CONTRACT_REFUSAL_CODES } from '../../../shared/work-contract-admission'
 import { ARTIFACT_SHARING_DISABLED_CODE } from '../../../shared/artifact-sharing-gate'
 import { AGENT_SKILL_SHARING_DISABLED_CODE } from '../../../shared/agent-skill-sharing-gate'
 import {
@@ -132,6 +133,8 @@ const STRUCTURED_RUNTIME_PASSTHROUGH_CODES: ReadonlySet<string> = new Set([
   SKILL_INSTALL_RPC_ERROR_CODE,
   // Why: launch refusals carry data (expected vs running runtime) that runtime_error would drop.
   ...AGENT_LAUNCH_REFUSAL_CODES,
+  // Why: a work-contract refusal carries the admission record the caller must act on.
+  ...WORK_CONTRACT_REFUSAL_CODES,
   // Why: an owner conflict is a distinct client decision (reload the host, re-adopt,
   // stop offering the action) — flattened to runtime_error it can only be guessed at.
   ...Object.values(AUTOMATION_OWNER_CONFLICT_CODES),

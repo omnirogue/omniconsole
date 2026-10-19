@@ -269,6 +269,8 @@ export function buildDefaultSettings(args: {
     idleAutoCloseMinutes: DEFAULT_IDLE_AUTO_CLOSE_MINUTES,
     experimentalNewWorktreeCardStyle: false,
     experimentalEphemeralVms: false,
+    experimentalOmniSiPreviews: false,
+    experimentalDecisionsTitlebarBadge: false,
     experimentalCardlessHandoffs: DEFAULT_CARDLESS_HANDOFFS,
     compactWorktreeCards: false,
     // Why: local desktop stays the default until the user picks a saved runtime environment.

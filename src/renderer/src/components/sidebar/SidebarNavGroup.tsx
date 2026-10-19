@@ -33,7 +33,8 @@ export function SidebarNavGroup({
   badge?: React.ReactNode
   children?: React.ReactNode
 }): React.JSX.Element {
-  const [expanded, setExpanded] = useState('name' in group || (group.id === 'work' && active))
+  const [userExpanded, setUserExpanded] = useState<boolean | null>(null)
+  const expanded = userExpanded ?? ('name' in group || (group.id === 'work' && active))
   const label = 'name' in group ? group.name : translate(group.labelKey, group.labelFallback)
   const membersId = useId()
   return (
@@ -43,7 +44,7 @@ export function SidebarNavGroup({
           <button
             type="button"
             onClick={() => {
-              setExpanded((value) => !value)
+              setUserExpanded(!expanded)
               if (group.primaryView) {
                 onOpen?.()
               }
@@ -56,7 +57,7 @@ export function SidebarNavGroup({
               event.preventDefault()
               event.stopPropagation()
               event.dataTransfer.dropEffect = 'move'
-              setExpanded(true)
+              setUserExpanded(true)
             }}
             onDrop={(event) => {
               const source = sidebarDragInFlight()
@@ -77,7 +78,7 @@ export function SidebarNavGroup({
                 state.sidebarLayout.orders[destination] ?? []
               )
               clearSidebarDrag()
-              setExpanded(true)
+              setUserExpanded(true)
             }}
             aria-expanded={expanded}
             aria-controls={membersId}

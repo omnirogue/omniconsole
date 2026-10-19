@@ -35180,6 +35180,7 @@ export class OrcaRuntimeService {
           ...(accountFingerprint ? [{ preparedAccount: accountFingerprint }] : []),
           ...(request.revealInSidebar ? [{ revealInSidebar: true }] : []),
           ...(request.agentTemplateId ? [{ agentTemplateId: request.agentTemplateId }] : []),
+          ...(request.workContract !== undefined ? [{ workContract: request.workContract }] : []),
           ...(request.sshAccountSelection
             ? [
                 [

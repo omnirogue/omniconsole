@@ -23,6 +23,7 @@ import { isTuiAgent } from '../../../../shared/tui-agent-config'
 import { isValidTerminalTabId } from '../../../../shared/terminal-tab-id'
 import type { OrcaRuntimeService } from '../../omni-runtime'
 import { defineMethod, type RpcAnyMethod } from '../core'
+import { admitCreateAgentSession, WorkContractParam } from './agent-session-work-admission'
 
 const MAX_WORKTREE_SELECTOR_LENGTH = 32_768
 const MAX_TRANSCRIPT_PATH_BYTES = 16 * 1024
@@ -214,7 +215,8 @@ export const CreateAgentSessionParams: z.ZodType<RuntimeCreateAgentSessionReques
     revealInSidebar: z.boolean().optional(),
     placement: Placement.optional(),
     viewMode: z.enum(['terminal', 'chat']).optional(),
-    agentTemplateId: AgentTemplateIdParam.optional()
+    agentTemplateId: AgentTemplateIdParam.optional(),
+    workContract: WorkContractParam.optional()
   })
   .strict()
   .superRefine((value, context) => {
@@ -289,17 +291,20 @@ export const AGENT_SESSION_METHODS: RpcAnyMethod[] = [
   defineMethod({
     name: 'terminal.createAgentSession',
     params: CreateAgentSessionParams,
-    handler: (params, context) => {
+    handler: async (params, context) => {
       assertOperationTimestampWithinFutureSkew(params.clientOperationId)
-      return (context.runtime as AgentSessionRuntime).createAgentSession(
+      const launchCause = rpcTerminalLaunchCause(
+        context,
+        'agent-session-create',
+        params.clientOperationId,
+        params.launchCause
+      )
+      // Why raw params: the viewer-local focused->background rewrite is not an unattended signal.
+      const workAdmission = admitCreateAgentSession(params, launchCause)
+      const result = await (context.runtime as AgentSessionRuntime).createAgentSession(
         withExecutionHostAgentPresentation(params, context.clientKind),
         {
-          launchCause: rpcTerminalLaunchCause(
-            context,
-            'agent-session-create',
-            params.clientOperationId,
-            params.launchCause
-          ),
+          launchCause,
           ...callerContext(
             context.pairedDeviceId ?? context.clientId,
             context.clientKind,
@@ -307,6 +312,7 @@ export const AGENT_SESSION_METHODS: RpcAnyMethod[] = [
           )
         }
       )
+      return { ...result, workAdmission }
     }
   })
 ]

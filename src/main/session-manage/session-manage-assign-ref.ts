@@ -167,7 +167,11 @@ export async function assignByRef(
       )
     }
     paneKey = free.paneKey
-    firstTurn = resumed.outcome === 'resumed' || resumed.outcome === 'restarted'
+    // Why unconfirmed too: it read live and free in the window just now, so its reply is the first.
+    firstTurn =
+      resumed.outcome === 'resumed' ||
+      resumed.outcome === 'restarted' ||
+      resumed.outcome === 'started_unconfirmed'
   }
   try {
     const assigned = await deps.assign(paneKey!, { firstTurn, dryRun: input.dryRun })
